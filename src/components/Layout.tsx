@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
 import { Kbd } from './ui';
@@ -17,6 +17,7 @@ interface NavItem {
 /** Các trang phụ được tô sáng dưới mục menu chứa chúng. */
 const NAV_OF_SECTION: Record<string, string> = {
   dashboard: 'home',
+  assistant: 'assistant',
   library: 'home',
   'nic-reader': 'home',
   standards: 'guide',
@@ -43,7 +44,8 @@ export function Layout({ section, children }: { section: string; children: React
 
   const items: NavItem[] = [
     { href: '#/library', key: 'home', label: t.nav.library, icon: <BookOpen className="h-5 w-5" /> },
-    { href: '#/standards', key: 'guide', label: 'Hướng dẫn chẩn đoán', icon: <BookText className="h-5 w-5" /> },
+    { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Chẩn đoán', icon: <Sparkles className="h-5 w-5" /> },
+    { href: '#/standards', key: 'guide', label: 'Hướng dẫn chẩn đoán', short: 'Hướng dẫn', icon: <BookText className="h-5 w-5" /> },
     { href: '#/plans', key: 'plans', label: t.nav.plansShort, icon: <ClipboardList className="h-5 w-5" /> },
     { href: '#/references', key: 'references', label: t.nav.referencesShort, icon: <Library className="h-5 w-5" /> },
   ];
@@ -131,7 +133,7 @@ export function Layout({ section, children }: { section: string; children: React
       {/* Thanh điều hướng dưới cùng trên điện thoại và máy tính bảng */}
       <nav
         aria-label={t.app.name}
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95 print:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95 print:hidden"
       >
         {[...items, settingsItem].map((item) => {
           const active = activeKey === item.key;

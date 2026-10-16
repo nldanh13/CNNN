@@ -23,7 +23,7 @@ import { goalState, newEntry, planProgress } from '../lib/carePlan';
 import { nandaDomain, nocDomain } from '../data/taxonomy';
 import { dataHub } from '../data/dataHub';
 import { NOC_SCALES } from '../data/reference';
-import { bmiCategory, computeBmi, cx, formatDate, signed } from '../lib/utils';
+import { bmiCategory, computeBmi, cx, formatDate, signed, uid } from '../lib/utils';
 import { Badge, Button, Card, CardHeader, CodeBadge, EmptyState, Field, IconButton, Input, PageHeader, ProgressBar, Select, SYSTEM_DOT, TagInput, Term } from '../components/ui';
 import { EntryForm } from '../components/EntryForm';
 import { scaleLabel } from '../components/Likert';
@@ -31,6 +31,20 @@ import { NocAssessmentPanel } from '../components/NocAssessmentPanel';
 import { PrintView } from '../components/PrintView';
 import { RETIRED_NIC7 } from '../data/nicMigration';
 import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
+import { PREFILL_KEY } from '../lib/diagnosisAssistant';
+
+/** Đọc một lần mục kế hoạch do Trợ lý chẩn đoán chuẩn bị. */
+function takeAssistantPrefill(): CareEntry | null {
+  try {
+    const raw = sessionStorage.getItem(PREFILL_KEY);
+    sessionStorage.removeItem(PREFILL_KEY);
+    if (!raw) return null;
+    const entry = JSON.parse(raw) as CareEntry;
+    return entry?.nanda?.code && Array.isArray(entry.nic) ? { ...newEntry(), ...entry, id: uid('entry') } : null;
+  } catch {
+    return null;
+  }
+}
 
 export function PlanEditorPage({ id, query }: { id: string; query: URLSearchParams }) {
   const { t, lang, plans, updatePlan, deletePlan, toast } = useApp();
@@ -48,7 +62,14 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
   const allOpen = !!plan && plan.entries.length > 0 && plan.entries.every((e) => openIds.has(e.id));
 
   // Mở sẵn biểu mẫu khi đến từ thư viện với ?add=nanda&code=…
+  // hoặc từ Trợ lý chẩn đoán với ?add=assistant (mục đã điền sẵn trong sessionStorage).
   useEffect(() => {
+    if (query.get('add') === 'assistant') {
+      const entry = takeAssistantPrefill();
+      if (entry) setEditing({ entry, isNew: true });
+      history.replaceState(null, '', `#/plans/${id}`);
+      return;
+    }
     const code = query.get('code');
     if (query.get('add') === 'nanda' && code) {
       const item = dataHub.getTerm('nanda', code, query.get('label') ?? undefined);

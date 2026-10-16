@@ -23,6 +23,7 @@
     "check:nic8-translations:strict": "tsx scripts/check-nic8-translations.ts --require-complete",
     "nic8:translation-worklist": "tsx scripts/export-nic8-worklist.ts",
     "check:nic8-reader": "tsx scripts/check-nic8-reader.ts",
+    "check:assistant": "tsx scripts/check-assistant.ts",
     "check:unified-catalog": "tsx scripts/check-unified-catalog.ts"
   },
   "dependencies": {
