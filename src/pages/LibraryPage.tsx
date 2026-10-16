@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { AlertTriangle, BookOpen, Copy, Search } from 'lucide-react';
+import { AlertTriangle, BookOpen, CheckCircle2, Copy, Search } from 'lucide-react';
 import type { NandaItem, NocItem, TaxonomySystem } from '../types';
 import { useApp } from '../store/AppContext';
 import { editionLabel, NANDA_DOMAINS, NOC_DOMAINS, nandaDomain, nocDomain } from '../data/taxonomy';
@@ -55,15 +55,22 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
   const detail=selectedItem?<ItemDetail system={system} item={selectedItem} edition={edition}/>:null;
 
   return <>
-    <PageHeader title={t.library.title} subtitle="Tìm theo mã, tên tiếng Việt có dấu hoặc không dấu. Nhãn chưa thẩm định được đánh dấu để đối chiếu." />
+    <PageHeader title={t.library.title} subtitle="Một danh mục thống nhất: NANDA-I, NOC và NIC. Tra cứu bằng mã hoặc tên tiếng Việt." />
     <p className="mb-4 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-      Danh mục NANDA-I, NOC và NIC bằng tiếng Việt. Tra cứu theo mã hoặc tên thuật ngữ;
-      định nghĩa và hoạt động của từng mã NIC 8 được mở từ mục NIC tương ứng, không có danh mục NIC riêng.
-      Mỗi mục đều có nút báo cáo sai sót để bổ sung dữ liệu sau khi được duyệt.
+      Chọn NANDA-I, NOC hoặc NIC để xem mã, phân lớp và giải thích áp dụng.
+      Định nghĩa và hoạt động NIC 8 mở từ đúng mã can thiệp trong danh mục này.
     </p>
-    <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
-      Bản phục hồi đang chờ kiểm duyệt: {dataHub.translationReview.automatic} nhãn dịch theo quy tắc và {dataHub.translationReview.missingClass} mục chưa xác minh phân lớp. Không sử dụng bản dịch dự thảo làm chuẩn lâm sàng.
-    </p>
+    {dataHub.ownerReview ? (
+      <div className="mb-4 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+        <span>Chủ dự án xác nhận đã kiểm duyệt danh mục hiện có ({dataHub.ownerReview.recordedAt}).</span>
+        <span className="text-slate-500">1.431 thuật ngữ · Không phải xác nhận của nhà xuất bản.</span>
+      </div>
+    ) : (
+      <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
+        Danh mục chưa có xác nhận kiểm duyệt của chủ dự án.
+      </p>
+    )
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
         options={(['nanda','noc','nic'] as const).map(s=>({
@@ -107,7 +114,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
                   <CodeBadge system={system} code={item.code} className="w-14 justify-center"/>
                   <span className="min-w-0 flex-1"><Term code={item.code} en={item.label}
                     className="block truncate text-sm text-slate-800 dark:text-slate-200"/>
-                    {dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
+                    {!dataHub.ownerReview&&dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
                       <span className="mt-0.5 block text-[10px] text-amber-600">Bản dịch dự thảo</span>
                     )}</span>
                   {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<AlertTriangle className="h-4 w-4 text-amber-500"/>}
@@ -163,6 +170,9 @@ function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;ed
     <h2 className="mt-3 text-lg font-semibold leading-snug text-slate-900 dark:text-white">{tr.text}</h2>
     <p className="mt-2 text-xs text-slate-500">Tên gốc để đối chiếu: {item.label}</p>
     {tr.machine&&<p className="mt-1 text-xs text-amber-600">{t.app.machineTranslatedHint}</p>}
+    {dataHub.ownerReview&&<p className="mt-2 text-xs text-slate-500">
+      Đã được chủ dự án xác nhận kiểm duyệt · dấu vết biên dịch và nguồn dữ liệu được giữ nguyên.
+    </p>}
     <dl className="mt-5 space-y-3 text-sm">{rows.map(([label,value])=><div key={label}>
       <dt className="text-xs text-slate-500">{label}</dt>
       <dd className="mt-0.5 text-slate-700 dark:text-slate-300">{value}</dd>
