@@ -60,7 +60,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
     <PageHeader title={t.library.title} subtitle="Tìm theo mã, tên tiếng Việt có dấu hoặc không dấu. Nhãn chưa thẩm định được đánh dấu để đối chiếu." />
     <p className="mb-4 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
       Danh mục NANDA-I, NOC và NIC bằng tiếng Việt. Tra cứu theo mã hoặc tên thuật ngữ;
-      định nghĩa và hoạt động NIC 8 có thể tra cứu tại trang Đọc NIC 8.
+      định nghĩa và hoạt động của từng mã NIC 8 được mở từ mục NIC tương ứng, không có danh mục NIC riêng.
       Mỗi mục đều có nút báo cáo sai sót để bổ sung dữ liệu sau khi được duyệt.
     </p>
     <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
