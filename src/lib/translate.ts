@@ -1,5 +1,5 @@
 import { CLASS_NAME_VI, CLINICAL_PHRASE_VI, VI_TERM_TRANSLATIONS } from './viDictionary';
-import { SHARED_CATALOG } from '../data/sharedCatalog';
+import { SHARED_CATALOG, OWNER_REVIEW } from '../data/sharedCatalog';
 import { NIC7_LEGACY_LABELS, RETIRED_NIC7 } from '../data/nicMigration';
 import classesVi from '../data/vi/classes.vi.json';
 import nandaLegacyVi from '../data/vi/nanda-legacy.vi.json';
@@ -325,7 +325,7 @@ export function autoTranslateVi(code: string | null, enText: string): string {
 
 export interface ViLabel {
   text: string;
-  /** true khi bản dịch lấy từ từ điển đã được biên soạn, false khi là dịch máy theo luật. */
+  /** True when a catalog label is owner-reviewed or is curated; false for a rule-based fallback. */
   curated: boolean;
 }
 
@@ -334,7 +334,7 @@ export function translateVi(code: string | null, enText: string): ViLabel {
     const exact = CATALOG_EXACT.get(code + '\u0000' + enText);
     if (exact) return {
       text: exact.labelVi,
-      curated: exact.translationMethod !== 'rule-draft',
+      curated: OWNER_REVIEW?.status === 'confirmed-by-project-owner' || exact.translationMethod !== 'rule-draft',
     };
   }
   if (LABEL_VI[enText]) return { text: LABEL_VI[enText], curated: true };
