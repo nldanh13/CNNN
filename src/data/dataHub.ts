@@ -7,7 +7,7 @@
  * Historical mappings and textbook extracts are NOT independent catalogs.
  */
 import type { NandaItem, NicItem, NocItem, TaxonomySystem } from '../types';
-import { SHARED_CATALOG } from './sharedCatalog';
+import { SHARED_CATALOG, TRANSLATION_REVIEW } from './sharedCatalog';
 import { NANDA_ITEMS, NOC_ITEMS, NIC_ITEMS, NANDA_EDITION, NOC_EDITION, NIC_EDITION } from './taxonomy';
 import { normalize } from '../lib/utils';
 
@@ -95,6 +95,7 @@ function search<S extends TaxonomySystem>(
 export const dataHub = {
   revision: SHARED_CATALOG.revision,
   systems: NNN_SYSTEMS,
+  translationReview: TRANSLATION_REVIEW,
   /** The only active catalog for each system; never a Reader/clinical copy. */
   listLibrary<S extends TaxonomySystem>(system: S): CatalogItemFor<S>[] {
     return definitions[system].items as unknown as CatalogItemFor<S>[];
@@ -105,6 +106,9 @@ export const dataHub = {
   },
   getTranslation(system: TaxonomySystem, code: string): string | undefined {
     return translations.get(system + ':' + code)?.labelVi;
+  },
+  getTranslationMethod(system: TaxonomySystem, code: string): string | undefined {
+    return translations.get(system + ':' + code)?.translationMethod;
   },
   getTranslationStatus(system: TaxonomySystem, code: string): string | undefined {
     return translations.get(system + ':' + code)?.translationStatus;
