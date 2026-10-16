@@ -19,8 +19,8 @@ const NAV_OF_SECTION: Record<string, string> = {
   dashboard: 'home',
   assistant: 'assistant',
   library: 'home',
-  'nic-reader': 'nic-reader',
-  standards: 'home',
+  'nic-reader': 'home',
+  standards: 'guide',
   plans: 'plans',
   references: 'references',
   quality: 'references',
@@ -45,7 +45,7 @@ export function Layout({ section, children }: { section: string; children: React
   const items: NavItem[] = [
     { href: '#/library', key: 'home', label: t.nav.library, icon: <BookOpen className="h-5 w-5" /> },
     { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Chẩn đoán', icon: <Sparkles className="h-5 w-5" /> },
-    { href: '#/nic-reader', key: 'nic-reader', label: 'Đọc NIC 8', short: 'NIC 8', icon: <BookText className="h-5 w-5" /> },
+    { href: '#/standards', key: 'guide', label: 'Hướng dẫn chẩn đoán', short: 'Hướng dẫn', icon: <BookText className="h-5 w-5" /> },
     { href: '#/plans', key: 'plans', label: t.nav.plansShort, icon: <ClipboardList className="h-5 w-5" /> },
     { href: '#/references', key: 'references', label: t.nav.referencesShort, icon: <Library className="h-5 w-5" /> },
   ];

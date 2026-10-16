@@ -1,5 +1,6 @@
 import type { CareEntry, CarePlan, Lang, Patient, NocAssessment } from '../types';
-import { findNanda, findNoc, nandaDomain, nocDomain } from '../data/taxonomy';
+import { nandaDomain, nocDomain } from '../data/taxonomy';
+import { dataHub } from '../data/dataHub';
 import { computeBmi, signed, uid } from './utils';
 import { translateVi } from './translate';
 import { correctedNandaCode } from './nandaCodeMigration';
@@ -70,14 +71,14 @@ export function planProgress(plan: CarePlan) {
 // ---------------------------------------------------------------------------
 
 function nandaDomainText(code: string, label: string) {
-  const item = findNanda(code, label);
+  const item = dataHub.getTerm('nanda', code, label);
   if (!item) return { domain: '', class: '' };
   const d = nandaDomain(item.domainNumber);
   return { domain: `${item.domainNumber} - ${d?.nameEn ?? ''}`, class: `${item.classNumber} - ${item.className}` };
 }
 
 function nocDomainText(code: string) {
-  const item = findNoc(code);
+  const item = dataHub.getTerm('noc', code);
   if (!item) return { domain: '', class: '' };
   const d = nocDomain(item.domainId);
   return { domain: `${d?.roman ?? item.domainNumber} - ${d?.nameEn ?? ''}`, class: `${item.classLetter} - ${item.className}` };
