@@ -9,6 +9,7 @@ import { LibraryPage } from './pages/LibraryPage';
 import { StandardsPage } from './pages/StandardsPage';
 import { QualityPage } from './pages/QualityPage';
 import { ReferencesPage } from './pages/ReferencesPage';
+import { AssistantPage } from './pages/AssistantPage';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
 
@@ -24,6 +25,9 @@ export function App() {
     case 'dashboard':
     case 'home':
       page = <HomePage />;
+      break;
+    case 'assistant':
+      page = <AssistantPage />;
       break;
     case 'library':
       page = <LibraryPage query={query} />;
