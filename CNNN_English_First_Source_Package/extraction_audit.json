@@ -1,0 +1,43 @@
+{
+  "counts": {
+    "NANDA-I English": {
+      "codes": 277,
+      "definitions": 277,
+      "characteristics": 2776,
+      "relatedFactors": 1927,
+      "riskFactors": 1840
+    },
+    "NOC6 English": {
+      "codes": 540,
+      "definitions": 540,
+      "indicators": 8986,
+      "indicatorLabelsWithLayoutCleanup": 619,
+      "indicatorsFlaggedForLayoutReview": 389
+    },
+    "NIC7 English historical": {
+      "codes": 565,
+      "definitions": 565,
+      "activities": 13799
+    },
+    "NIC8 Working": {
+      "codes": 614,
+      "provisionalEnglishLabels": 614,
+      "officialEnglishDefinitions": 0,
+      "englishActivities": 0,
+      "spanishSourceActivities": 16051,
+      "historicNIC7Overlap": 554
+    },
+    "Ackley11 historical": {
+      "indexEntries": 235
+    }
+  },
+  "reviewRequired": true,
+  "sourceEvidence": "Google Drive book files supplied by user",
+  "generatedFrom": [
+    "Nanda.pdf",
+    "NOC.pdf",
+    "NIC.pdf",
+    "NIC.epub",
+    "Ackley 11th PDF"
+  ]
+}

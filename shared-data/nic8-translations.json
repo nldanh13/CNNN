@@ -1,0 +1,60 @@
+{
+  "schema": "clinicalnnn.nic8-translations/v1",
+  "sourceLanguage": "es",
+  "canonicalLanguage": "en",
+  "secondaryLanguage": "vi",
+  "method": "human-draft-from-Spanish-source",
+  "reviewPolicy": "Unreviewed drafts are not official clinical translations. Translation entries require exact activity alignment by code.",
+  "entries": [
+    {
+      "code": "0140",
+      "definitionEn": "Facilitate the use of appropriate posture and movement in daily activities to prevent fatigue, strain, or musculoskeletal injury.",
+      "activitiesEn": [
+        "Assess the patient's commitment to learning correct postures.",
+        "Collaborate with physical therapy in developing a plan to promote appropriate body mechanics, if indicated.",
+        "Assess the patient's understanding of body mechanics and exercises (e.g., demonstrating correct techniques during activities or exercises).",
+        "Teach the patient about the structure and function of the spine and optimal posture for moving and using the body.",
+        "Teach the patient the importance of correct posture to prevent fatigue, strain, or injury.",
+        "Teach the patient to use appropriate posture and body mechanics to prevent injury during physical activity.",
+        "Assess the patient's awareness of their musculoskeletal abnormalities and the potential effects of posture and muscle condition.",
+        "Instruct the patient in the use of firm mattresses, chairs, or pillows, as appropriate.",
+        "Teach the patient to avoid sleeping in the prone position.",
+        "Help the patient demonstrate correct sleeping postures.",
+        "Help the patient avoid sitting in the same position for prolonged periods.",
+        "Teach the patient to shift weight from one foot to the other while standing.",
+        "Teach the patient to move the feet first and then turn the body when changing direction while walking from a standing position.",
+        "Apply body mechanics principles along with safe patient handling and mobility aids.",
+        "Help the patient and family identify appropriate posture exercises.",
+        "Help the patient select warm-up activities before beginning exercise or unfamiliar work.",
+        "Help the patient perform flexion exercises to improve back mobility, if indicated.",
+        "Teach the patient and family how often and how many times to repeat each exercise.",
+        "Monitor improvement in the patient's posture and body mechanics.",
+        "Provide information about possible posture-related causes of muscle or joint pain."
+      ],
+      "definitionVi": "Hỗ trợ người bệnh sử dụng tư thế và cách vận động phù hợp trong các hoạt động hằng ngày nhằm phòng tránh mệt mỏi, căng cơ hoặc chấn thương cơ xương khớp.",
+      "activitiesVi": [
+        "Đánh giá mức độ sẵn sàng và cam kết của người bệnh trong việc học sử dụng tư thế đúng.",
+        "Phối hợp với chuyên viên vật lý trị liệu xây dựng kế hoạch khuyến khích vận dụng cơ học cơ thể phù hợp, khi có chỉ định.",
+        "Đánh giá mức độ hiểu biết của người bệnh về cơ học cơ thể và các bài tập (ví dụ: yêu cầu trình diễn kỹ thuật đúng khi thực hiện hoạt động hoặc bài tập).",
+        "Hướng dẫn người bệnh về cấu trúc, chức năng của cột sống và tư thế tối ưu để vận động và sử dụng cơ thể.",
+        "Giải thích cho người bệnh về sự cần thiết của tư thế đúng nhằm phòng tránh mệt mỏi, căng cơ hoặc chấn thương.",
+        "Hướng dẫn người bệnh sử dụng tư thế và nguyên tắc cơ học cơ thể phù hợp để phòng tránh chấn thương khi hoạt động thể lực.",
+        "Đánh giá nhận thức của người bệnh về những bất thường cơ xương khớp của bản thân và tác động tiềm ẩn của tư thế, tình trạng cơ.",
+        "Hướng dẫn sử dụng nệm, ghế hoặc gối có độ cứng phù hợp khi cần thiết.",
+        "Hướng dẫn người bệnh tránh ngủ ở tư thế nằm sấp.",
+        "Hỗ trợ người bệnh thực hành các tư thế ngủ đúng.",
+        "Hỗ trợ người bệnh tránh ngồi cố định một tư thế trong thời gian dài.",
+        "Hướng dẫn người bệnh chuyển trọng lượng cơ thể từ chân này sang chân kia khi đứng.",
+        "Hướng dẫn người bệnh di chuyển bàn chân trước, sau đó mới xoay thân người khi chuyển hướng đi từ tư thế đứng.",
+        "Áp dụng nguyên tắc cơ học cơ thể kết hợp với kỹ thuật hỗ trợ di chuyển người bệnh an toàn và dụng cụ trợ giúp vận động.",
+        "Hỗ trợ người bệnh và gia đình xác định các bài tập điều chỉnh tư thế phù hợp.",
+        "Hỗ trợ người bệnh chọn hoạt động khởi động trước khi tập luyện hoặc thực hiện công việc chưa quen.",
+        "Hỗ trợ người bệnh thực hiện các bài tập gập để tăng khả năng vận động của lưng khi có chỉ định.",
+        "Hướng dẫn người bệnh và gia đình về tần suất và số lần lặp lại của từng bài tập.",
+        "Theo dõi sự cải thiện về tư thế và cách vận dụng cơ học cơ thể của người bệnh.",
+        "Cung cấp thông tin về các nguyên nhân có thể gây đau cơ hoặc khớp liên quan đến tư thế."
+      ],
+      "translationStatus": "draft-unreviewed"
+    }
+  ]
+}

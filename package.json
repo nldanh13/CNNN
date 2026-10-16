@@ -1,0 +1,43 @@
+{
+  "name": "clinicalnnn",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "check:vi": "tsx scripts/check-vi.ts",
+    "check:nanda": "tsx scripts/check-nanda.ts",
+    "check:care-plan": "tsx scripts/check-care-plan.ts",
+    "check:editions": "tsx scripts/check-editions.ts",
+    "check:explanations": "tsx scripts/check-explanations.ts",
+    "check:data-hub": "tsx scripts/check-data-hub.ts",
+    "check:shared-data": "tsx scripts/check-shared-data.ts",
+    "audit:translations": "tsx scripts/audit-translations.ts",
+    "check:search": "tsx scripts/check-search.ts",
+    "check:nic8-english": "tsx scripts/check-nic8-english.ts",
+    "check:nic8-source": "tsx scripts/check-nic8-licensed-source.ts",
+    "check:nic8-translations": "tsx scripts/check-nic8-translations.ts",
+    "check:nic8-translations:strict": "tsx scripts/check-nic8-translations.ts --require-complete",
+    "nic8:translation-worklist": "tsx scripts/export-nic8-worklist.ts",
+    "check:nic8-reader": "tsx scripts/check-nic8-reader.ts"
+  },
+  "dependencies": {
+    "lucide-react": "0.460.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "5.6.3",
+    "vite": "6.0.7"
+  }
+}

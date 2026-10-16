@@ -1,0 +1,947 @@
+{
+  "schema": "clinicalnnn.ackley11-historical-index/v1",
+  "edition": "11th Edition (2017)",
+  "notice": "Older 2015–2017-era NANDA diagnosis naming. Guidance on clinical reasoning only; do not use as current 2024–2026 diagnostic classification.",
+  "entries": [
+    {
+      "diagnosisTitleEn": "Activity intolerance",
+      "printedPage": 122
+    },
+    {
+      "diagnosisTitleEn": "Risk for Activity intolerance",
+      "printedPage": 127
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Activity planning",
+      "printedPage": 127
+    },
+    {
+      "diagnosisTitleEn": "Risk for Ineffective Activity planning",
+      "printedPage": 130
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Airway clearance",
+      "printedPage": 130
+    },
+    {
+      "diagnosisTitleEn": "Risk for Allergy response",
+      "printedPage": 136
+    },
+    {
+      "diagnosisTitleEn": "Anxiety",
+      "printedPage": 139
+    },
+    {
+      "diagnosisTitleEn": "Death Anxiety",
+      "printedPage": 144
+    },
+    {
+      "diagnosisTitleEn": "Risk for Aspiration",
+      "printedPage": 147
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Attachment",
+      "printedPage": 152
+    },
+    {
+      "diagnosisTitleEn": "Autonomic Dysreflexia",
+      "printedPage": 158
+    },
+    {
+      "diagnosisTitleEn": "Risk for Autonomic Dysreflexia",
+      "printedPage": 161
+    },
+    {
+      "diagnosisTitleEn": "Risk for Bleeding",
+      "printedPage": 162
+    },
+    {
+      "diagnosisTitleEn": "Disturbed Body Image",
+      "printedPage": 167
+    },
+    {
+      "diagnosisTitleEn": "Insufficient Breast Milk",
+      "printedPage": 171
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Breastfeeding",
+      "printedPage": 174
+    },
+    {
+      "diagnosisTitleEn": "Interrupted Breastfeeding",
+      "printedPage": 176
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Breastfeeding",
+      "printedPage": 179
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Breathing pattern",
+      "printedPage": 181
+    },
+    {
+      "diagnosisTitleEn": "Decreased Cardiac output",
+      "printedPage": 187
+    },
+    {
+      "diagnosisTitleEn": "Risk for decreased Cardiac output",
+      "printedPage": 194
+    },
+    {
+      "diagnosisTitleEn": "Risk for decreased Cardiac tissue perfusion",
+      "printedPage": 195
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Cardiovascular function",
+      "printedPage": 200
+    },
+    {
+      "diagnosisTitleEn": "Caregiver Role Strain",
+      "printedPage": 200
+    },
+    {
+      "diagnosisTitleEn": "Risk for Caregiver Role Strain",
+      "printedPage": 206
+    },
+    {
+      "diagnosisTitleEn": "Risk for ineffective Cerebral tissue perfusion",
+      "printedPage": 207
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Childbearing process",
+      "printedPage": 209
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Childbearing process",
+      "printedPage": 213
+    },
+    {
+      "diagnosisTitleEn": "Risk for ineffective Childbearing process",
+      "printedPage": 218
+    },
+    {
+      "diagnosisTitleEn": "Impaired Comfort",
+      "printedPage": 219
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Comfort",
+      "printedPage": 222
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Communication",
+      "printedPage": 228
+    },
+    {
+      "diagnosisTitleEn": "Impaired verbal Communication",
+      "printedPage": 230
+    },
+    {
+      "diagnosisTitleEn": "Acute Confusion",
+      "printedPage": 236
+    },
+    {
+      "diagnosisTitleEn": "Chronic Confusion",
+      "printedPage": 243
+    },
+    {
+      "diagnosisTitleEn": "Risk for acute Confusion",
+      "printedPage": 251
+    },
+    {
+      "diagnosisTitleEn": "Constipation",
+      "printedPage": 251
+    },
+    {
+      "diagnosisTitleEn": "Chronic functional Constipation",
+      "printedPage": 259
+    },
+    {
+      "diagnosisTitleEn": "Perceived Constipation",
+      "printedPage": 263
+    },
+    {
+      "diagnosisTitleEn": "Risk for Constipation",
+      "printedPage": 266
+    },
+    {
+      "diagnosisTitleEn": "Risk for chronic functional Constipation",
+      "printedPage": 267
+    },
+    {
+      "diagnosisTitleEn": "Contamination",
+      "printedPage": 267
+    },
+    {
+      "diagnosisTitleEn": "Risk for Contamination",
+      "printedPage": 272
+    },
+    {
+      "diagnosisTitleEn": "Risk for adverse reaction to iodinated Contrast Media",
+      "printedPage": 272
+    },
+    {
+      "diagnosisTitleEn": "Compromised family Coping",
+      "printedPage": 275
+    },
+    {
+      "diagnosisTitleEn": "Defensive Coping",
+      "printedPage": 280
+    },
+    {
+      "diagnosisTitleEn": "Ineffective community Coping",
+      "printedPage": 284
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Coping",
+      "printedPage": 287
+    },
+    {
+      "diagnosisTitleEn": "Disabled family Coping",
+      "printedPage": 294
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Coping",
+      "printedPage": 297
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced community Coping",
+      "printedPage": 302
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced family Coping",
+      "printedPage": 303
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Decision-Making",
+      "printedPage": 306
+    },
+    {
+      "diagnosisTitleEn": "Impaired emancipated Decision-Making",
+      "printedPage": 309
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced emancipated Decision-Making",
+      "printedPage": 312
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired emancipated Decision-Making",
+      "printedPage": 315
+    },
+    {
+      "diagnosisTitleEn": "Decisional Conflict",
+      "printedPage": 317
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Denial",
+      "printedPage": 321
+    },
+    {
+      "diagnosisTitleEn": "Impaired Dentition",
+      "printedPage": 324
+    },
+    {
+      "diagnosisTitleEn": "Risk for delayed Development",
+      "printedPage": 329
+    },
+    {
+      "diagnosisTitleEn": "Diarrhea",
+      "printedPage": 332
+    },
+    {
+      "diagnosisTitleEn": "Risk for Disuse syndrome",
+      "printedPage": 338
+    },
+    {
+      "diagnosisTitleEn": "Deficient Diversional activity",
+      "printedPage": 343
+    },
+    {
+      "diagnosisTitleEn": "Risk for Electrolyte imbalance",
+      "printedPage": 348
+    },
+    {
+      "diagnosisTitleEn": "Labile Emotional Control",
+      "printedPage": 350
+    },
+    {
+      "diagnosisTitleEn": "Risk for dry Eye",
+      "printedPage": 353
+    },
+    {
+      "diagnosisTitleEn": "Risk for Falls",
+      "printedPage": 355
+    },
+    {
+      "diagnosisTitleEn": "Dysfunctional Family processes",
+      "printedPage": 361
+    },
+    {
+      "diagnosisTitleEn": "Interrupted Family processes",
+      "printedPage": 366
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Family processes",
+      "printedPage": 369
+    },
+    {
+      "diagnosisTitleEn": "Fatigue",
+      "printedPage": 372
+    },
+    {
+      "diagnosisTitleEn": "Fear",
+      "printedPage": 378
+    },
+    {
+      "diagnosisTitleEn": "Ineffective infant Feeding pattern",
+      "printedPage": 383
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Fluid balance",
+      "printedPage": 386
+    },
+    {
+      "diagnosisTitleEn": "Deficient Fluid volume",
+      "printedPage": 388
+    },
+    {
+      "diagnosisTitleEn": "Excess Fluid volume",
+      "printedPage": 393
+    },
+    {
+      "diagnosisTitleEn": "Risk for Deficient Fluid volume",
+      "printedPage": 397
+    },
+    {
+      "diagnosisTitleEn": "Risk for imbalanced Fluid volume",
+      "printedPage": 397
+    },
+    {
+      "diagnosisTitleEn": "Frail Elderly syndrome",
+      "printedPage": 401
+    },
+    {
+      "diagnosisTitleEn": "Risk for Frail Elderly syndrome",
+      "printedPage": 403
+    },
+    {
+      "diagnosisTitleEn": "Impaired Gas exchange",
+      "printedPage": 404
+    },
+    {
+      "diagnosisTitleEn": "Dysfunctional Gastrointestinal motility",
+      "printedPage": 408
+    },
+    {
+      "diagnosisTitleEn": "Risk for dysfunctional Gastrointestinal motility",
+      "printedPage": 412
+    },
+    {
+      "diagnosisTitleEn": "Risk for ineffective Gastrointestinal perfusion",
+      "printedPage": 412
+    },
+    {
+      "diagnosisTitleEn": "Risk for unstable blood Glucose level",
+      "printedPage": 414
+    },
+    {
+      "diagnosisTitleEn": "Grieving",
+      "printedPage": 420
+    },
+    {
+      "diagnosisTitleEn": "Complicated Grieving",
+      "printedPage": 426
+    },
+    {
+      "diagnosisTitleEn": "Risk for complicated Grieving",
+      "printedPage": 431
+    },
+    {
+      "diagnosisTitleEn": "Risk for disproportionate Growth",
+      "printedPage": 431
+    },
+    {
+      "diagnosisTitleEn": "Deficient community Health",
+      "printedPage": 435
+    },
+    {
+      "diagnosisTitleEn": "Risk-prone Health behavior",
+      "printedPage": 438
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Health management",
+      "printedPage": 443
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Family Health management",
+      "printedPage": 448
+    },
+    {
+      "diagnosisTitleEn": "Readiness for Enhanced Health management",
+      "printedPage": 451
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Health maintenance",
+      "printedPage": 455
+    },
+    {
+      "diagnosisTitleEn": "Impaired Home maintenance",
+      "printedPage": 459
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Hope",
+      "printedPage": 463
+    },
+    {
+      "diagnosisTitleEn": "Hopelessness",
+      "printedPage": 466
+    },
+    {
+      "diagnosisTitleEn": "Risk for compromised Human Dignity",
+      "printedPage": 471
+    },
+    {
+      "diagnosisTitleEn": "Hyperthermia",
+      "printedPage": 473
+    },
+    {
+      "diagnosisTitleEn": "Hypothermia",
+      "printedPage": 478
+    },
+    {
+      "diagnosisTitleEn": "Risk for Hypothermia",
+      "printedPage": 484
+    },
+    {
+      "diagnosisTitleEn": "Risk for Perioperative Hypothermia",
+      "printedPage": 485
+    },
+    {
+      "diagnosisTitleEn": "Disturbed personal Identity",
+      "printedPage": 488
+    },
+    {
+      "diagnosisTitleEn": "Risk for disturbed personal Identity",
+      "printedPage": 495
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Impulse control",
+      "printedPage": 495
+    },
+    {
+      "diagnosisTitleEn": "Bowel Incontinence",
+      "printedPage": 498
+    },
+    {
+      "diagnosisTitleEn": "Functional urinary Incontinence",
+      "printedPage": 503
+    },
+    {
+      "diagnosisTitleEn": "Overflow urinary Incontinence",
+      "printedPage": 507
+    },
+    {
+      "diagnosisTitleEn": "Reflex urinary Incontinence",
+      "printedPage": 507
+    },
+    {
+      "diagnosisTitleEn": "Risk for urge urinary Incontinence",
+      "printedPage": 511
+    },
+    {
+      "diagnosisTitleEn": "Stress urinary Incontinence",
+      "printedPage": 512
+    },
+    {
+      "diagnosisTitleEn": "Urge urinary Incontinence",
+      "printedPage": 517
+    },
+    {
+      "diagnosisTitleEn": "Disorganized Infant behavior",
+      "printedPage": 522
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced organized Infant behavior",
+      "printedPage": 527
+    },
+    {
+      "diagnosisTitleEn": "Risk for disorganized Infant behavior",
+      "printedPage": 527
+    },
+    {
+      "diagnosisTitleEn": "Parental Role conflict",
+      "printedPage": 727
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Role performance",
+      "printedPage": 730
+    },
+    {
+      "diagnosisTitleEn": "Sedentary lifestyle",
+      "printedPage": 735
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Self-Care",
+      "printedPage": 740
+    },
+    {
+      "diagnosisTitleEn": "Bathing Self-Care deficit",
+      "printedPage": 747
+    },
+    {
+      "diagnosisTitleEn": "Dressing Self-Care deficit",
+      "printedPage": 751
+    },
+    {
+      "diagnosisTitleEn": "Feeding Self-Care deficit",
+      "printedPage": 753
+    },
+    {
+      "diagnosisTitleEn": "Toileting Self-Care deficit",
+      "printedPage": 757
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Self-Concept",
+      "printedPage": 760
+    },
+    {
+      "diagnosisTitleEn": "Chronic low Self-Esteem",
+      "printedPage": 763
+    },
+    {
+      "diagnosisTitleEn": "Risk for chronic low Self-Esteem",
+      "printedPage": 767
+    },
+    {
+      "diagnosisTitleEn": "Risk for situational low Self-Esteem",
+      "printedPage": 767
+    },
+    {
+      "diagnosisTitleEn": "Situational low Self-Esteem",
+      "printedPage": 770
+    },
+    {
+      "diagnosisTitleEn": "Self-Mutilation",
+      "printedPage": 772
+    },
+    {
+      "diagnosisTitleEn": "Risk for Self-Mutilation",
+      "printedPage": 775
+    },
+    {
+      "diagnosisTitleEn": "Self-Neglect",
+      "printedPage": 780
+    },
+    {
+      "diagnosisTitleEn": "Sexual dysfunction",
+      "printedPage": 784
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Sexuality pattern",
+      "printedPage": 790
+    },
+    {
+      "diagnosisTitleEn": "Risk for Shock",
+      "printedPage": 797
+    },
+    {
+      "diagnosisTitleEn": "Impaired Sitting",
+      "printedPage": 802
+    },
+    {
+      "diagnosisTitleEn": "Impaired Skin integrity",
+      "printedPage": 805
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Skin integrity",
+      "printedPage": 808
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Sleep",
+      "printedPage": 811
+    },
+    {
+      "diagnosisTitleEn": "Sleep deprivation",
+      "printedPage": 814
+    },
+    {
+      "diagnosisTitleEn": "Disturbed Sleep pattern",
+      "printedPage": 817
+    },
+    {
+      "diagnosisTitleEn": "Impaired Social interaction",
+      "printedPage": 820
+    },
+    {
+      "diagnosisTitleEn": "Social Isolation",
+      "printedPage": 824
+    },
+    {
+      "diagnosisTitleEn": "Chronic Sorrow",
+      "printedPage": 829
+    },
+    {
+      "diagnosisTitleEn": "Spiritual distress",
+      "printedPage": 833
+    },
+    {
+      "diagnosisTitleEn": "Risk for Spiritual distress",
+      "printedPage": 838
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Spiritual well-being",
+      "printedPage": 838
+    },
+    {
+      "diagnosisTitleEn": "Impaired Standing",
+      "printedPage": 842
+    },
+    {
+      "diagnosisTitleEn": "Stress overload",
+      "printedPage": 845
+    },
+    {
+      "diagnosisTitleEn": "Risk for Sudden Infant Death syndrome",
+      "printedPage": 849
+    },
+    {
+      "diagnosisTitleEn": "Risk for Suffocation",
+      "printedPage": 852
+    },
+    {
+      "diagnosisTitleEn": "Risk for Suicide",
+      "printedPage": 855
+    },
+    {
+      "diagnosisTitleEn": "Delayed Surgical recovery",
+      "printedPage": 865
+    },
+    {
+      "diagnosisTitleEn": "Risk for delayed Surgical recovery",
+      "printedPage": 870
+    },
+    {
+      "diagnosisTitleEn": "Impaired Swallowing",
+      "printedPage": 870
+    },
+    {
+      "diagnosisTitleEn": "Risk for imbalanced body Temperature",
+      "printedPage": 875
+    },
+    {
+      "diagnosisTitleEn": "Risk for Thermal injury",
+      "printedPage": 875
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Thermoregulation",
+      "printedPage": 877
+    },
+    {
+      "diagnosisTitleEn": "Impaired Tissue integrity",
+      "printedPage": 882
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Tissue integrity",
+      "printedPage": 886
+    },
+    {
+      "diagnosisTitleEn": "Ineffective peripheral Tissue Perfusion",
+      "printedPage": 886
+    },
+    {
+      "diagnosisTitleEn": "Risk for ineffective peripheral Tissue Perfusion",
+      "printedPage": 891
+    },
+    {
+      "diagnosisTitleEn": "Impaired Transfer ability",
+      "printedPage": 891
+    },
+    {
+      "diagnosisTitleEn": "Risk for Trauma",
+      "printedPage": 895
+    },
+    {
+      "diagnosisTitleEn": "Unilateral Neglect",
+      "printedPage": 900
+    },
+    {
+      "diagnosisTitleEn": "Impaired Urinary elimination",
+      "printedPage": 902
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Urinary elimination",
+      "printedPage": 905
+    },
+    {
+      "diagnosisTitleEn": "Urinary Retention",
+      "printedPage": 907
+    },
+    {
+      "diagnosisTitleEn": "Risk for Vascular Trauma",
+      "printedPage": 912
+    },
+    {
+      "diagnosisTitleEn": "Impaired spontaneous Ventilation",
+      "printedPage": 916
+    },
+    {
+      "diagnosisTitleEn": "Dysfunctional Ventilatory weaning response",
+      "printedPage": 922
+    },
+    {
+      "diagnosisTitleEn": "Risk for other-directed Violence",
+      "printedPage": 927
+    },
+    {
+      "diagnosisTitleEn": "Risk for self-directed Violence",
+      "printedPage": 939
+    },
+    {
+      "diagnosisTitleEn": "Impaired Walking",
+      "printedPage": 939
+    },
+    {
+      "diagnosisTitleEn": "Wandering",
+      "printedPage": 943
+    },
+    {
+      "diagnosisTitleEn": "Risk for Infection",
+      "printedPage": 528
+    },
+    {
+      "diagnosisTitleEn": "Risk for Injury",
+      "printedPage": 534
+    },
+    {
+      "diagnosisTitleEn": "Risk for corneal Injury",
+      "printedPage": 540
+    },
+    {
+      "diagnosisTitleEn": "Risk for urinary tract Injury",
+      "printedPage": 542
+    },
+    {
+      "diagnosisTitleEn": "Insomnia",
+      "printedPage": 544
+    },
+    {
+      "diagnosisTitleEn": "Decreased Intracranial adaptive capacity",
+      "printedPage": 547
+    },
+    {
+      "diagnosisTitleEn": "Neonatal Jaundice",
+      "printedPage": 550
+    },
+    {
+      "diagnosisTitleEn": "Risk for neonatal Jaundice",
+      "printedPage": 554
+    },
+    {
+      "diagnosisTitleEn": "Deficient Knowledge",
+      "printedPage": 555
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Knowledge",
+      "printedPage": 559
+    },
+    {
+      "diagnosisTitleEn": "Latex Allergy response",
+      "printedPage": 561
+    },
+    {
+      "diagnosisTitleEn": "Risk for Latex Allergy response",
+      "printedPage": 566
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Liver function",
+      "printedPage": 568
+    },
+    {
+      "diagnosisTitleEn": "Risk for Loneliness",
+      "printedPage": 572
+    },
+    {
+      "diagnosisTitleEn": "Risk for disturbed Maternal–Fetal dyad",
+      "printedPage": 576
+    },
+    {
+      "diagnosisTitleEn": "Impaired Memory",
+      "printedPage": 579
+    },
+    {
+      "diagnosisTitleEn": "Impaired bed Mobility",
+      "printedPage": 583
+    },
+    {
+      "diagnosisTitleEn": "Impaired physical Mobility",
+      "printedPage": 588
+    },
+    {
+      "diagnosisTitleEn": "Impaired wheelchair Mobility",
+      "printedPage": 595
+    },
+    {
+      "diagnosisTitleEn": "Impaired Mood regulation",
+      "printedPage": 599
+    },
+    {
+      "diagnosisTitleEn": "Moral Distress",
+      "printedPage": 601
+    },
+    {
+      "diagnosisTitleEn": "Nausea",
+      "printedPage": 604
+    },
+    {
+      "diagnosisTitleEn": "Noncompliance",
+      "printedPage": 609
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Nutrition",
+      "printedPage": 609
+    },
+    {
+      "diagnosisTitleEn": "Imbalanced Nutrition: less than body requirements",
+      "printedPage": 615
+    },
+    {
+      "diagnosisTitleEn": "Obesity",
+      "printedPage": 621
+    },
+    {
+      "diagnosisTitleEn": "Impaired Oral Mucous Membrane",
+      "printedPage": 625
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Oral Mucous Membrane",
+      "printedPage": 630
+    },
+    {
+      "diagnosisTitleEn": "Overweight",
+      "printedPage": 631
+    },
+    {
+      "diagnosisTitleEn": "Risk for Overweight",
+      "printedPage": 635
+    },
+    {
+      "diagnosisTitleEn": "Acute Pain",
+      "printedPage": 639
+    },
+    {
+      "diagnosisTitleEn": "Chronic Pain",
+      "printedPage": 646
+    },
+    {
+      "diagnosisTitleEn": "Labor Pain",
+      "printedPage": 654
+    },
+    {
+      "diagnosisTitleEn": "Chronic Pain syndrome",
+      "printedPage": 654
+    },
+    {
+      "diagnosisTitleEn": "Impaired Parenting",
+      "printedPage": 655
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Parenting",
+      "printedPage": 659
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Parenting",
+      "printedPage": 662
+    },
+    {
+      "diagnosisTitleEn": "Risk for Perioperative Positioning injury",
+      "printedPage": 663
+    },
+    {
+      "diagnosisTitleEn": "Risk for Peripheral Neurovascular dysfunction",
+      "printedPage": 666
+    },
+    {
+      "diagnosisTitleEn": "Risk for Poisoning",
+      "printedPage": 668
+    },
+    {
+      "diagnosisTitleEn": "Post-Trauma syndrome",
+      "printedPage": 675
+    },
+    {
+      "diagnosisTitleEn": "Risk for Post-Trauma syndrome",
+      "printedPage": 679
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Power",
+      "printedPage": 683
+    },
+    {
+      "diagnosisTitleEn": "Powerlessness",
+      "printedPage": 685
+    },
+    {
+      "diagnosisTitleEn": "Risk for Powerlessness",
+      "printedPage": 689
+    },
+    {
+      "diagnosisTitleEn": "Risk for Pressure ulcer",
+      "printedPage": 690
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Protection",
+      "printedPage": 694
+    },
+    {
+      "diagnosisTitleEn": "Rape-Trauma syndrome",
+      "printedPage": 698
+    },
+    {
+      "diagnosisTitleEn": "Ineffective Relationship",
+      "printedPage": 704
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Relationship",
+      "printedPage": 704
+    },
+    {
+      "diagnosisTitleEn": "Risk for ineffective Relationship",
+      "printedPage": 707
+    },
+    {
+      "diagnosisTitleEn": "Impaired Religiosity",
+      "printedPage": 708
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Religiosity",
+      "printedPage": 710
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Religiosity",
+      "printedPage": 711
+    },
+    {
+      "diagnosisTitleEn": "Relocation stress syndrome",
+      "printedPage": 712
+    },
+    {
+      "diagnosisTitleEn": "Risk for Relocation stress syndrome",
+      "printedPage": 717
+    },
+    {
+      "diagnosisTitleEn": "Risk for ineffective Renal perfusion",
+      "printedPage": 717
+    },
+    {
+      "diagnosisTitleEn": "Impaired Resilience",
+      "printedPage": 721
+    },
+    {
+      "diagnosisTitleEn": "Readiness for enhanced Resilience",
+      "printedPage": 723
+    },
+    {
+      "diagnosisTitleEn": "Risk for impaired Resilience",
+      "printedPage": 725
+    }
+  ]
+}
