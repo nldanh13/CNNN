@@ -1,6 +1,6 @@
 import raw from '../../shared-data/nic8-licensed-es-source.json';
 import translated from '../../shared-data/nic8-translations.json';
-import { SHARED_CATALOG } from './sharedCatalog';
+import { dataHub } from './dataHub';
 import { normalize } from '../lib/utils';
 
 export type ReaderLanguage = 'en' | 'vi' | 'es' | 'both';
@@ -20,10 +20,6 @@ export interface Nic8SourceEntry {
 }
 interface SourcePack { schema: string; entries: Nic8SourceEntry[] }
 const source = raw as SourcePack;
-const titles = new Map(
-  SHARED_CATALOG.entries.filter(item => item.system === 'nic')
-    .map(item => [item.code, { en: item.label, vi: item.labelVi }]),
-);
 
 interface TranslationEntry {
   code: string;
@@ -36,9 +32,17 @@ interface TranslationEntry {
 const translationLookup = new Map(
   (translated.entries as TranslationEntry[]).map(entry => [entry.code, entry]),
 );
-// Giữ nguyên tệp gốc Tây Ban Nha, ghép bản dịch theo mã tại thời điểm đọc.
-export const NIC8_SOURCE: Nic8SourceEntry[] = source.entries.map(item => {
-  const localized = translationLookup.get(item.code);
+// NIC Reader is a detailed VIEW of the same NIC 8 catalog, not another NIC list.
+ // Definitions and activities are supplementary content linked by canonical NIC code.
+const licensedByCode = new Map(source.entries.map(item => [item.code, item] as const));
+const catalogNic = dataHub.listLibrary('nic');
+if (licensedByCode.size !== source.entries.length || licensedByCode.size !== catalogNic.length) {
+  throw new Error('NIC 8 reader content and canonical NIC catalog differ; review sources before publishing.');
+}
+export const NIC8_SOURCE: Nic8SourceEntry[] = catalogNic.map(term => {
+  const item = licensedByCode.get(term.code);
+  if (!item) throw new Error('NIC 8 missing details for canonical code ' + term.code);
+  const localized = translationLookup.get(term.code);
   return localized
     ? { ...item, definitionEn: localized.definitionEn, activitiesEn: localized.activitiesEn,
         definitionVi: localized.definitionVi, activitiesVi: localized.activitiesVi,
@@ -47,11 +51,12 @@ export const NIC8_SOURCE: Nic8SourceEntry[] = source.entries.map(item => {
 });
 export const NIC8_TOTAL_ACTIVITIES = NIC8_SOURCE.reduce((sum, item) => sum + item.activitiesEs.length, 0);
 export function nic8Titles(item: Nic8SourceEntry) {
-  const title = titles.get(item.code);
+  const term = dataHub.getTerm('nic', item.code);
+  if (!term) throw new Error('Unknown NIC code ' + item.code);
   return {
     es: item.titleEs,
-    en: item.titleEn || title?.en || item.titleEs,
-    vi: item.titleVi || title?.vi || item.titleEs,
+    en: term.label,
+    vi: dataHub.getTranslation('nic', item.code) ?? term.label,
   };
 }
 export function nic8Text(

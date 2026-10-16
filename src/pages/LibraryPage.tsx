@@ -5,7 +5,6 @@ import { useApp } from '../store/AppContext';
 import { editionLabel, NANDA_DOMAINS, NOC_DOMAINS, nandaDomain, nocDomain } from '../data/taxonomy';
 import { DUPLICATE_NANDA_CODES } from '../lib/dataQuality';
 import { dataHub } from '../data/dataHub';
-import { SHARED_CATALOG, TRANSLATION_REVIEW } from '../data/sharedCatalog';
 import type { AnyItem } from '../lib/search';
 import { copyText, cx } from '../lib/utils';
 import { DataIssueReport } from '../components/DataIssueReport';
@@ -24,7 +23,6 @@ function useIsDesktop() {
   return desktop;
 }
 const itemKey=(i:AnyItem)=>i.code+'|'+i.label;
-const REVIEW_METHOD = new Map(SHARED_CATALOG.entries.map(x => [x.system+':'+x.code, x.translationMethod]));
 
 export function LibraryPage({query}:{query:URLSearchParams}) {
   const {t,lang}=useApp();
@@ -60,11 +58,11 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
     <PageHeader title={t.library.title} subtitle="Tìm theo mã, tên tiếng Việt có dấu hoặc không dấu. Nhãn chưa thẩm định được đánh dấu để đối chiếu." />
     <p className="mb-4 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
       Danh mục NANDA-I, NOC và NIC bằng tiếng Việt. Tra cứu theo mã hoặc tên thuật ngữ;
-      định nghĩa và hoạt động NIC 8 có thể tra cứu tại trang Đọc NIC 8.
+      định nghĩa và hoạt động của từng mã NIC 8 được mở từ mục NIC tương ứng, không có danh mục NIC riêng.
       Mỗi mục đều có nút báo cáo sai sót để bổ sung dữ liệu sau khi được duyệt.
     </p>
     <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
-      Bản phục hồi đang chờ kiểm duyệt: {TRANSLATION_REVIEW.automatic} nhãn dịch theo quy tắc và {TRANSLATION_REVIEW.missingClass} mục chưa xác minh phân lớp. Không sử dụng bản dịch dự thảo làm chuẩn lâm sàng.
+      Bản phục hồi đang chờ kiểm duyệt: {dataHub.translationReview.automatic} nhãn dịch theo quy tắc và {dataHub.translationReview.missingClass} mục chưa xác minh phân lớp. Không sử dụng bản dịch dự thảo làm chuẩn lâm sàng.
     </p>
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
@@ -109,7 +107,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
                   <CodeBadge system={system} code={item.code} className="w-14 justify-center"/>
                   <span className="min-w-0 flex-1"><Term code={item.code} en={item.label}
                     className="block truncate text-sm text-slate-800 dark:text-slate-200"/>
-                    {REVIEW_METHOD.get(system+':'+item.code)==='rule-draft'&&(
+                    {dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
                       <span className="mt-0.5 block text-[10px] text-amber-600">Bản dịch dự thảo</span>
                     )}</span>
                   {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<AlertTriangle className="h-4 w-4 text-amber-500"/>}

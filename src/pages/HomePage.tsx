@@ -1,8 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { ArrowRight, BookOpen, ClipboardList, HandHeart, Library, Ruler, Search, Stethoscope, Target, X } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { editionLabel, NANDA_EDITION, NANDA_ITEMS, NIC_EDITION, NIC_ITEMS, NOC_EDITION, NOC_ITEMS } from '../data/taxonomy';
-import { searchSystem } from '../lib/search';
+import { editionLabel } from '../data/taxonomy';
+import { dataHub } from '../data/dataHub';
 import { cx, formatDate } from '../lib/utils';
 import type { TaxonomySystem } from '../types';
 import { Card, CodeBadge, Term } from '../components/ui';
@@ -21,15 +21,15 @@ export function HomePage() {
   const query = q.trim();
 
   const results = useMemo(
-    () => (query ? SYSTEMS.map(({ system }) => ({ system, items: searchSystem(system, query) })) : []),
+    () => (query ? SYSTEMS.map(({ system }) => ({ system, items: dataHub.search(system, query) })) : []),
     [query],
   );
   const total = results.reduce((n, r) => n + r.items.length, 0);
 
   const catalog: Record<TaxonomySystem, { count: number; edition: string; desc: string }> = {
-    nanda: { count: NANDA_ITEMS.length, edition: editionLabel(NANDA_EDITION, lang), desc: t.home.nandaDesc },
-    noc: { count: NOC_ITEMS.length, edition: editionLabel(NOC_EDITION, lang), desc: t.home.nocDesc },
-    nic: { count: NIC_ITEMS.length, edition: editionLabel(NIC_EDITION, lang), desc: t.home.nicDesc },
+    nanda: { count: dataHub.listLibrary('nanda').length, edition: editionLabel(dataHub.editionFor('nanda'), lang), desc: t.home.nandaDesc },
+    noc: { count: dataHub.listLibrary('noc').length, edition: editionLabel(dataHub.editionFor('noc'), lang), desc: t.home.nocDesc },
+    nic: { count: dataHub.listLibrary('nic').length, edition: editionLabel(dataHub.editionFor('nic'), lang), desc: t.home.nicDesc },
   };
   const recent = [...plans].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 3);
 

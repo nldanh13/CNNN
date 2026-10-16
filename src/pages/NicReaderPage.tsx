@@ -88,7 +88,7 @@ export function NicReaderPage({ query }: { query: URLSearchParams }) {
 
   return (
     <>
-      <PageHeader title="Thư viện NIC 8 · Nội dung chi tiết"
+      <PageHeader title="NIC 8 · Chi tiết can thiệp trong danh mục chung"
         subtitle="Đọc toàn bộ 614 định nghĩa và 16.051 hoạt động đã trích xuất từ NIC 8, có liên kết đến mã can thiệp và nguồn EPUB." />
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <Card className="px-4 py-3"><p className="text-xs text-slate-500">Mã can thiệp</p>

@@ -1,5 +1,5 @@
 import type { CareEntry } from '../types';
-import { NANDA_ITEMS, NOC_ITEMS, NIC_ITEMS } from '../data/taxonomy';
+import { dataHub } from '../data/dataHub';
 import { NOC_SCALES } from '../data/reference';
 import { NIC7_LEGACY_LABELS } from '../data/nicMigration';
 
@@ -31,12 +31,12 @@ const validScore = (v: number | null) => v === null || (Number.isInteger(v) && v
 export function validateCareEntry(entry: CareEntry, lang: IssueLang = 'vi'): string[] {
   const errors: string[] = [];
   const m = messages[lang];
-  if (!NANDA_ITEMS.some((x) => x.code === entry.nanda.code && x.label === entry.nanda.label)) errors.push(m.nanda);
-  if (!NOC_ITEMS.some((x) => x.code === entry.noc.code && x.label === entry.noc.label)) errors.push(m.noc);
+  if (dataHub.getTerm('nanda', entry.nanda.code)?.label !== entry.nanda.label) errors.push(m.nanda);
+  if (dataHub.getTerm('noc', entry.noc.code)?.label !== entry.noc.label) errors.push(m.noc);
   // NIC 8 là danh mục duy nhất cho kế hoạch mới. Bí danh NIC 7 chỉ hợp lệ
   // khi chúng đã được ghi trong kế hoạch cũ; không xuất hiện trong bộ chọn.
   if (entry.nic.length === 0 || entry.nic.some(n =>
-    !NIC_ITEMS.some(x => x.code === n.code && x.label === n.label) &&
+    dataHub.getTerm('nic', n.code)?.label !== n.label &&
     NIC7_LEGACY_LABELS[n.code] !== n.label
   )) errors.push(m.nic);
   if (new Set(entry.nic.map((n) => n.code)).size !== entry.nic.length) errors.push(m.duplicate);

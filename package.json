@@ -22,7 +22,8 @@
     "check:nic8-translations": "tsx scripts/check-nic8-translations.ts",
     "check:nic8-translations:strict": "tsx scripts/check-nic8-translations.ts --require-complete",
     "nic8:translation-worklist": "tsx scripts/export-nic8-worklist.ts",
-    "check:nic8-reader": "tsx scripts/check-nic8-reader.ts"
+    "check:nic8-reader": "tsx scripts/check-nic8-reader.ts",
+    "check:unified-catalog": "tsx scripts/check-unified-catalog.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",
