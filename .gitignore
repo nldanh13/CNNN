@@ -3,6 +3,3 @@ dist
 dist-single
 *.log
 .DS_Store
-private-data/
-public/private/
-dist-private/
