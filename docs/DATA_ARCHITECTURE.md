@@ -1,272 +1,110 @@
-# CNNN — Thiết kế kiến trúc dữ liệu thống nhất (đề xuất v2)
+# CNNN — Một hệ thống NNN duy nhất
 
-> Trạng thái: **Design proposal / chưa áp dụng cho runtime**. Ngày rà soát: 2026-10-17.  
-> Phạm vi: repository `nldanh13/CNNN`, nhánh `main`.  
-> Mục tiêu: gom về một bộ catalog có phiên bản; phân biệt dữ liệu xuất bản, dữ liệu nguồn hạn chế, bản dịch, mapping lịch sử và dữ liệu kế hoạch chăm sóc; tái cấu trúc không làm mất dữ liệu hay đổi hành vi đang chạy.
+> Trạng thái: **đã bắt đầu triển khai trên nhánh thiết kế**, không đổi dữ liệu gốc trên `main`.  
+> Nguyên tắc: **3 danh mục duy nhất — NANDA-I, NOC, NIC — và 1 quy trình hướng dẫn chẩn đoán**.  
+> Ngày: 2026-10-17.
 
-## 1. Hiện trạng và ranh giới dữ liệu
+## 1. Quy tắc bất biến
 
-| Lớp hiện tại | Vị trí | Vai trò / vấn đề |
-|---|---|---|
-| Catalog đang được app sử dụng | `shared-data/nnn-catalog.json` → `src/data/sharedCatalog.ts` → `src/data/taxonomy.ts` | Catalog chung 1.431 bản ghi: NANDA-I 277 (ấn bản 13, 2024–2026), NOC 540 (ấn bản 6), NIC 614 (ấn bản 8). Metadata, nhãn Việt và thông tin kiểm duyệt đang nằm chung một tệp lớn. |
-| Nội dung NIC 8 cho Reader | `shared-data/nic8-licensed-es-source.json`, `shared-data/nic8-translations.json`, `src/data/nic8Reader.ts` | Dữ liệu nguyên bản tiếng Tây Ban Nha và bản dịch ghép theo code, có fallback. Cần tách khỏi catalog dùng chung, kiểm soát quyền sử dụng. |
-| Kho trích xuất đầu vào | `CNNN_English_First_Source_Package/*` | Gói nguồn/historical/work-in-progress gồm NANDA, NOC, NIC 7, NIC 8 và Ackley. Không được mặc nhiên coi là dữ liệu xuất bản hoặc bản dịch chính thức. |
-| Mapping và bản cũ | `src/data/nicMigration.ts`, `src/data/reference.ts`, `legacy/*` | Trộn bảng chuyển mã, thuật ngữ cũ, thang đo NOC và các bảng tham chiếu; khó theo dõi nguồn và phiên bản. |
-| Dịch và giải thích | `src/lib/translate.ts`, `src/lib/viDictionary.ts`, `src/data/vi/*`, `src/data/nnnExplanations.ts` | Dịch quy tắc/dịch tạm có thể xen với dịch hiệu đính. Giải thích mang tính biên tập không nên nhầm với nội dung sách. |
-| Nghiệp vụ và dữ liệu người bệnh | `src/types.ts`, `src/lib/carePlan.ts`, `src/store/AppContext.tsx`, `src/store/storage.ts` | Kế hoạch và thông tin người bệnh lưu trên localStorage theo key `clinicalnnn.plans.v2`. Cần tách domain model, repository và persistence. |
-| Kiểm tra | `scripts/check-*.ts`, `src/data/editionAudit.ts` | Đã có bộ kiểm tra; còn phụ thuộc đường dẫn, tổng bản ghi và trạng thái xuất bản hiện hành. |
+1. **Một danh mục NANDA-I, một danh mục NOC, một danh mục NIC.** Không tạo `NANDA for library`, `NIC for Reader`, `NIC for care plan` hay kho thuật ngữ độc lập theo màn hình.
+2. **Mọi mã và nhãn dùng chung nguồn `shared-data/nnn-catalog.json`.** Tệp đã có 1.431 bản ghi: 277 NANDA-I, 540 NOC, 614 NIC. Chỉ quản lý đúng một ấn bản đang hoạt động cho mỗi hệ: NANDA-I 13 (2024–2026), NOC 6 (2018), NIC 8 (2024). Không nâng phiên bản tự động.
+3. **Mỗi thuật ngữ định danh bằng `system:code` trong danh mục đang hoạt động; khi lưu lịch sử thêm edition/revision**. Code là chuỗi để giữ các số 0 đầu. Không liên kết bằng code đơn lẻ giữa các hệ.
+4. **Có duy nhất một cửa truy cập: `src/data/dataHub.ts`.** Thư viện, tìm kiếm, ô chọn chẩn đoán, kiểm tra kế hoạch, và trình đọc chi tiết đều hỏi cùng dataHub. Các module cũ chỉ là adapter tạm.
+5. **Chi tiết là thuộc tính mở rộng của mã, không phải một danh mục mới.** Định nghĩa/hoạt động NIC Reader, thang đo NOC, phân lớp NANDA, dịch Việt, chú giải, và bằng chứng đều được nối về đúng `system:code`.
+6. **Một hướng dẫn thống nhất**: Nhận định → NANDA-I → NOC → NIC → Lượng giá lại. Dùng cùng `NnnReasoningWorkflow` trong trang Hướng dẫn và khi lập kế hoạch; không tự suy đoán liên kết lâm sàng NANDA–NOC–NIC.
+7. **Kế hoạch người bệnh không phải bộ thuật ngữ**. Chỉ tham chiếu 3 catalog, lưu dữ liệu bệnh nhân riêng. Không ghi dữ liệu người bệnh vào catalog hoặc GitHub.
 
-**Phân loại nguồn chân lý (source of truth):**
-1. *Dữ liệu nguồn có giấy phép* là tư liệu tham chiếu riêng, không phải artifact public.
-2. *Authoring catalog* là tập dữ liệu được chuẩn hóa và kiểm duyệt, có provenance/edition theo từng mục.
-3. *Compiled catalog* là đầu ra **chỉ đọc**, được build từ authoring; ứng dụng không chỉnh sửa trực tiếp.
-4. *Care plans* là dữ liệu nghiệp vụ độc lập, không nằm trong catalog, không commit lên GitHub.
-
-## 2. Đề xuất bố cục thư mục
-
-~~~text
-CNNN/
-├── data/
-│   ├── authoring/                         # Nguồn chân lý cho dữ liệu được phép xuất bản
-│   │   ├── manifest.json                  # Phiên bản + revision + số lượng + checksum
-│   │   ├── taxonomies/
-│   │   │   ├── nanda/13/
-│   │   │   │   ├── terms.json             # Mã, nhãn gốc, domainId, classId
-│   │   │   │   ├── domains.json
-│   │   │   │   └── classes.json
-│   │   │   ├── noc/6/
-│   │   │   │   ├── terms.json
-│   │   │   │   ├── domains.json
-│   │   │   │   ├── classes.json
-│   │   │   │   └── scales.json
-│   │   │   └── nic/8/
-│   │   │       ├── terms.json
-│   │   │       ├── domains.json
-│   │   │       └── classes.json
-│   │   ├── locales/
-│   │   │   └── vi/
-│   │   │       ├── nanda-13.json         # Dịch theo composite key
-│   │   │       ├── noc-6.json
-│   │   │       └── nic-8.json
-│   │   ├── crosswalks/
-│   │   │   ├── nanda-renames.json
-│   │   │   ├── nanda-retired.json
-│   │   │   └── nic7-to-nic8.json         # Alias lịch sử; không cho phép chọn mới
-│   │   ├── editorial/
-│   │   │   └── explanations.json         # Bài giải thích do nhóm CNNN biên soạn
-│   │   └── references/
-│   │       ├── sources.json              # Edition, ISBN, URL, quyền sử dụng
-│   │       ├── reviewed-links.json       # Liên kết NANDA–NOC–NIC đã duyệt
-│   │       └── edition-audit.json
-│   ├── restricted/                        # KHÔNG COMMIT, gitignore; kho riêng có kiểm soát
-│   │   ├── textbook-extracts/
-│   │   └── nic8-source/                  # Nội dung đầy đủ chỉ theo quyền được cấp
-│   └── generated/
-│       ├── nnn-catalog.json              # Dữ liệu an toàn để cấp cho web
-│       ├── search-index.json             # Tuỳ chọn: index sinh trong bước build
-│       └── generation-report.json        # Diff/count/status/error
-├── src/
-│   ├── domain/
-│   │   ├── catalog/
-│   │   │   ├── types.ts                  # Taxonomy, Term, Translation, Provenance
-│   │   │   ├── validators.ts
-│   │   │   └── selectors.ts
-│   │   └── care-plan/
-│   │       ├── types.ts                  # Patient/CarePlan/CareEntry
-│   │       ├── validation.ts
-│   │       └── migrations.ts
-│   ├── repositories/
-│   │   ├── CatalogRepository.ts          # API đọc catalog thống nhất
-│   │   ├── NicReaderRepository.ts        # Nội dung Reader tách khỏi catalog
-│   │   └── CarePlanRepository.ts         # API lưu/đọc kế hoạch
-│   ├── services/
-│   │   ├── search.ts
-│   │   ├── localization.ts
-│   │   ├── carePlan.ts
-│   │   └── evidence.ts
-│   ├── data/
-│   │   ├── dataHub.ts                    # Facade tương thích trong giai đoạn chuyển đổi
-│   │   └── taxonomy.ts                   # Adapter tương thích, sẽ thu gọn dần
-│   ├── pages/
-│   └── components/
-├── scripts/
-│   ├── build-catalog.ts                   # Authoring -> generated/compiled
-│   ├── validate-catalog.ts               # Rules + referential integrity
-│   ├── audit-translation.ts
-│   ├── compare-catalog.ts                # Diff mã, edition, nhãn
-│   └── migrate-legacy.ts
-├── shared-data/
-│   └── nnn-catalog.json                  # FILE BUILD OUTPUT TƯƠNG THÍCH TẠM THỜI
-└── docs/
-    └── DATA_ARCHITECTURE.md
-~~~
-
-**Không cần di chuyển toàn bộ mã cùng lúc.** `shared-data/nnn-catalog.json` tiếp tục được tạo ra dưới đúng đường dẫn cũ trong giai đoạn chuyển tiếp để mọi import hiện tại còn hoạt động. Sau khi đổi hết import, mới xóa adapter và output cũ.
-
-## 3. Mô hình dữ liệu chuẩn
-
-Dùng khóa thuật ngữ `system:edition:code` (ví dụ `nanda:13:00097`, `noc:6:2102`, `nic:8:0140`). **Code luôn là string** để giữ số 0 đầu; không được join chỉ theo code, vì code/nhãn có thể trùng giữa hệ hoặc thay đổi qua ấn bản.
-
-### 3.1 Term: một record mỗi mã trong mỗi ấn bản
-
-~~~json
-{
-  "id": "nanda:13:00097",
-  "system": "nanda",
-  "edition": "13",
-  "code": "00097",
-  "labelOriginal": "Decreased diversional activity engagement",
-  "originalLanguage": "en",
-  "domainId": "Domain_1_Health_promotion",
-  "classId": "Class_1_Health_awareness",
-  "sourceId": "nanda-i-13",
-  "status": "active"
-}
-~~~
-
-`status`: `active | retired | historical`. Một `Term` không chứa dịch máy, các hoạt động đầy đủ, hay dữ liệu người bệnh.
-
-### 3.2 Translation: tách theo ngôn ngữ và trạng thái
-
-~~~json
-{
-  "termId": "nanda:13:00097",
-  "field": "label",
-  "locale": "vi",
-  "text": "Giảm tham gia hoạt động giải trí",
-  "method": "rule-draft",
-  "reviewStatus": "draft-unreviewed",
-  "reviewer": null,
-  "reviewedAt": null
-}
-~~~
-
-Trạng thái đề xuất: `draft-unreviewed | clinician-reviewed | publisher-verified`. Không tự chuyển `draft-unreviewed` thành `clinician-reviewed` khi build; luôn giữ nguồn gốc `method` và ghi `reviewer/reviewedAt` nếu được duyệt.
-
-### 3.3 Source / Provenance
-
-~~~json
-{
-  "id": "nic-8",
-  "system": "nic",
-  "edition": "8",
-  "year": 2024,
-  "citation": "NIC, 8th edition",
-  "licenseStatus": "review-required",
-  "distribution": "metadata-only",
-  "verifiedAt": null
-}
-~~~
-
-Phân biệt `official-label`, `provisional-label`, `editorial-summary`, `licensed-source-text` ở mức dữ liệu, không chỉ trên giao diện.
-
-### 3.4 NOC indicator và NIC activity
-
-- `NocIndicator`: `id = noc:6:<outcomeCode>:indicator:<sourceStableId>`, `outcomeTermId`, `code?`, `order`, `sourceId`, `translationStatus`. Không suy luận ngẫu nhiên một indicator hoặc scale thuộc một outcome nếu chưa đối chiếu nguồn.
-- `NicActivity`: `id = nic:8:<interventionCode>:activity:<ordinal>`, `interventionTermId`, `order`, `sourceLanguage`, `sourceId`, `reviewStatus`. Trong quá trình xuất bản, xác nhận số activity và sự căn chỉnh bản dịch; mã thứ tự do pipeline cấp, không dùng nội dung câu làm ID. Giữ bảng mapping nếu source có thay đổi thứ tự giữa các edition.
-- **Nội dung toàn văn** chỉ đưa vào Reader nếu giấy phép cho phép. Không đưa vào public catalog.
-
-### 3.5 Clinical link và care plan
-
-~~~text
-CatalogTerm (NANDA) ──┐
-CatalogTerm (NOC) ────┼──> ReviewedClinicalLink (cần reviewer + evidence + scope)
-CatalogTerm (NIC) ────┘
-
-CarePlan ──> CareEntry
-CareEntry ──> NandaTermRef
-          ├─> NocTermRef ──> NocAssessment[]
-          └─> NicTermRef[]
-~~~
-
-`ReviewedClinicalLink` phải có `nandaTermId`, `nocTermId`, `nicTermIds`, `sourceId`, `sourceLocation`, `reviewer`, `reviewedAt`, `clinicalScope`, `status`. Repo hiện có mảng liên kết đã duyệt rỗng: **không sinh liên kết lâm sàng tự động từ mã hoặc từ việc xuất hiện cùng một kế hoạch**.
-
-Kế hoạch chăm sóc tham chiếu đến `termId` nhưng vẫn có `labelSnapshot` và `catalogRevision` để hồ sơ cũ có thể đọc đúng sau nâng cấp edition. Khi import sao lưu cũ, adapter chuyển từ `{code,label}` sang `{termId,labelSnapshot}` theo phiên bản tương ứng; nếu không xác định được mã, giữ nội dung cũ và đánh dấu `needs-review`, không âm thầm sửa.
-
-## 4. Luồng dữ liệu chuẩn
+## 2. Sơ đồ kiến trúc thực tế
 
 ~~~mermaid
 flowchart TD
-  A[Restricted source / tài liệu được cấp phép] --> B[Import + đối chiếu thủ công]
-  B --> C[Authoring catalog theo edition]
-  D[Bản dịch + trạng thái kiểm duyệt] --> C
-  E[Migration + provenance] --> C
-  C --> F[Validate / diff / quyền phân phối]
-  F --> G[Generated public catalog]
-  G --> H[CatalogRepository]
-  H --> I[Tìm kiếm / Thư viện / NANDA-NOC-NIC picker]
-  H --> J[Care-plan validation]
-  K[Licensed NIC Reader bundle riêng] --> L[NicReaderRepository]
-  M[CarePlanRepository: lưu an toàn] --> N[Care-plan UI]
-  H --> N
+  A["shared-data/nnn-catalog.json — 1431 thuật ngữ"] --> B["sharedCatalog.ts → taxonomy.ts"]
+  B --> C["dataHub.ts — một API, ba nhóm NANDA / NOC / NIC"]
+  C --> D["Thư viện và tìm kiếm"]
+  C --> E["Chọn mã và kiểm tra kế hoạch"]
+  C --> F["NIC 8 chi tiết (tra cứu theo cùng mã)"]
+  G["NIC định nghĩa / hoạt động có phép sử dụng"] --> F
+  C --> H["Hướng dẫn chẩn đoán duy nhất"]
+  H --> E
+  I["Dịch / phân lớp / thang đo / tham chiếu"] -. "metadata theo mã" .-> C
+  E --> J["Kế hoạch người bệnh (localStorage / sao lưu)"]
 ~~~
 
-**Chỉ có một cửa đọc catalog là `CatalogRepository` (hoặc `dataHub` làm facade trong giai đoạn đầu).** Các trang không tự import JSON nguồn, không tái dựng bản dịch ở mỗi nơi, không truy vấn NIC 7 như catalog NIC 8 hiện hành.
+`NIC 8 chi tiết` **không còn là một mục thư viện riêng trên menu**. Nó vẫn có thể mở theo link từ đúng can thiệp NIC trong ba hệ. Metadata nguồn có thể nằm ở tệp khác vì quyền truy cập/kích thước, nhưng tập hợp mã và tên luôn lấy từ **một catalog NIC duy nhất**.
 
-Giao diện nhận mô hình đã chuẩn hóa: `getTerm(termId)`, `getTerms(system,edition)`, `searchTerms(query,filters)`, `getTermTranslation(termId,locale)`, `getEdition(system)`, `getReviewedLinks(termId)`. Reader riêng: `getNicDetail(termId,lang)`, hiển thị đúng `fallbackLanguage` và `reviewStatus`.
+## 3. Dữ liệu được thống nhất như thế nào?
 
-## 5. Ánh xạ từ tệp cũ sang tệp mới
-
-| Hiện tại | Đích đề xuất | Quy tắc |
+| Dữ liệu | Nguồn chuẩn / cách dùng | Có phải catalog độc lập? |
 |---|---|---|
-| `shared-data/nnn-catalog.json` | `data/authoring/taxonomies/**/terms.json` + `locales/vi/**` | Tách theo hệ/edition, giữ nguyên code và source label; compiled JSON sinh tự động ở đường dẫn cũ. |
-| `shared-data/nic8-translations.json` | `data/authoring/locales/{en,vi}/nic-8-detail.json` hoặc restricted translation store | Join `nic:8:code` + activity id, validate length, giữ trạng thái draft. |
-| `shared-data/nic8-licensed-es-source.json` | `data/restricted/nic8-source/` (ngoài public repo) | Kiểm tra quyền, không publish tự động; Reader bundle chỉ khi được phép. |
-| `CNNN_English_First_Source_Package/*` | Kho nguồn có quyền truy cập + manifest riêng | Chỉ làm input/audit; **không** là runtime dependencies. |
-| `src/data/nicMigration.ts` | `crosswalks/nic7-to-nic8.json` + typed adapter | Giữ alias để đọc plan lịch sử; không dùng tạo can thiệp mới. |
-| `src/data/reference.ts` | `scales.json`, `crosswalks/nanda-*.json`, `references/*` | Phân rã dữ liệu theo nghĩa; giữ exports tương thích tạm thời. |
-| `src/data/vi/*`, `src/lib/viDictionary.ts` | `locales/vi/*` + translation rules riêng | Dịch đã duyệt ưu tiên trước, rule chỉ là fallback và có cờ. |
-| `src/data/nnnExplanations.ts` | `editorial/explanations.json` | Đánh dấu rõ tóm tắt do nhóm biên soạn, không giả là nội dung chuẩn của sách. |
-| `src/data/evidence.ts` | `references/sources.json` + `reviewed-links.json` | Không coi clinical linking chưa duyệt là được xác nhận. |
-| `src/store/AppContext.tsx` / `src/lib/carePlan.ts` | `domain/care-plan` + `CarePlanRepository` | Tách state UI, nghiệp vụ và lưu trữ; bảo toàn backup v1 + kế hoạch v2. |
+| Mã + nhãn NANDA, NOC, NIC | `shared-data/nnn-catalog.json` → `dataHub` | **Không**; đây chính là 3 nhóm của 1 kho NNN |
+| Nhãn Việt, cờ dịch dự thảo | Thuộc tính theo `system:code` từ `nnn-catalog.json` | Không |
+| Lĩnh vực / phân lớp | Thuộc tính theo mã, `taxonomy.ts` là adapter | Không |
+| Định nghĩa và hoạt động NIC 8 | Nội dung mở rộng theo **mã NIC đã tồn tại**, Reader join với `dataHub` | Không |
+| Thang đo / chỉ số NOC | Chi tiết của kết quả NOC; phải đối chiếu nguồn | Không |
+| Mapping NANDA/NIC lịch sử | Chỉ dùng đọc/chuyển hồ sơ cũ, không thêm mã vào bộ chọn mới | Không |
+| Diễn giải mã, tài liệu nguồn | Metadata/giải thích có gắn mã và trạng thái kiểm duyệt | Không |
+| Kế hoạch, đánh giá người bệnh | Kho nghiệp vụ riêng, luôn tham chiếu mã chuẩn | Không |
 
-## 6. Lộ trình chuyển đổi không phá vỡ ứng dụng
+**Không cần chia `nnn-catalog.json` thành 3 tệp hoặc nhân bản thành nhiều `catalog`.** Bản thân trường `system` đã phân phối chính xác 3 bộ dữ liệu. Tách thành các tệp con chỉ hợp lý nếu đó là phân vùng vật lý của **cùng một nguồn chân lý**, không phải các bản được sửa độc lập.
 
-**P0 — Snapshot / kiểm tra an toàn**
-- Chốt mã, nhãn, ấn bản và số lượng `277 + 540 + 614 = 1431` trước refactor; snapshot bộ mã/composite keys và backup thử nghiệm (dùng hồ sơ giả, không dùng dữ liệu người bệnh thật).
-- Giữ key `clinicalnnn.plans.v2` và định dạng `clinicalnnn-backup`. Đảm bảo data source không lẫn patient data.
-- Rà soát quyền phân phối của các gói trích xuất có bản quyền **trước** khi build/deploy/public lại; di chuyển tệp không xóa khỏi lịch sử Git.
+## 4. API thống nhất
 
-**P1 — Schema và compiler**
-- Thêm `CatalogTerm`, `TermTranslation`, `SourceProvenance`, schema validator và `build-catalog.ts`.
-- Tách authoring data theo hệ + edition. Compiler xuất lại **chính xác** `shared-data/nnn-catalog.json` để ứng dụng chạy như cũ.
-- Checksum/snapshot diff trước–sau: code, nhãn gốc, nhãn Việt, edition, domain/class, review status không bị mất.
+~~~ts
+dataHub.systems;                             // ['nanda', 'noc', 'nic']
+dataHub.listLibrary('nanda');                 // 277 mục
+dataHub.listLibrary('noc');                   // 540 mục
+dataHub.listLibrary('nic');                   // 614 mục
+dataHub.getTerm('nanda', '00132');            // Thuật ngữ chung cho mọi trang
+dataHub.getTranslation('nic', '0140');        // Nhãn Việt cùng nguồn
+dataHub.getTranslationStatus('nic', '0140');  // Trạng thái thẩm định
+dataHub.search('nanda', 'đau');
+dataHub.searchClinical('nic', '0140');        // Cùng search, tên cũ tương thích
+dataHub.searchLibrary('noc', '', 'ALL');      // Cùng search + lọc domain
+dataHub.editionFor('noc');                    // Metadata phiên bản đang dùng
+~~~
 
-**P2 — Repository + ứng dụng**
-- Chuyển `src/data/dataHub.ts`, `taxonomy.ts`, `src/lib/search.ts`, `src/lib/translate.ts` sang API chung.
-- Đổi Library, Home, Term Picker và Plan Editor theo từng phân hệ; không sửa đồng loạt.
-- NIC 8 Reader nạp dữ liệu riêng theo nhu cầu; không import raw licensed bundle vào trang chủ.
+`src/lib/search.ts` chỉ chuyển tiếp đến `dataHub.search` vì vẫn có code cũ import `searchSystem`. Không xây thêm chỉ mục độc lập ở đó.
 
-**P3 — Domain care plan + persistence**
-- Tách `CarePlanRepository`, model, backup parser, migration; giữ hỗ trợ nhập backup cũ.
-- Version `catalogRevision` trong plan và rõ `labelSnapshot`.
-- Với dữ liệu người bệnh thật: cần thiết kế xác thực, phân quyền, mã hóa, kiểm toán truy cập và chính sách lưu trữ phù hợp trước khi triển khai nhiều người dùng; localStorage hiện tại không đủ làm kho hồ sơ bệnh án chính thức.
+NIC Reader lấy danh sách mã từ `dataHub.listLibrary('nic')`; tệp nguồn chỉ cung cấp chi tiết. Reader kiểm tra đủ số lượng và từng code, không lấy tên riêng hoặc tự sinh can thiệp mới. Nếu dữ liệu không khớp, phải báo lỗi và kiểm tra nguồn thay vì hiển thị hai tập NIC khác nhau.
 
-**P4 — Dọn và kiểm thử hồi quy**
-- Sau khi tất cả consumers đã đổi sang API chung và pass tests, mới xóa import/tệp cũ không dùng.
-- Thêm regression test cho search NANDA/NOC/NIC, từng edition, dịch/fallback, scale NOC, NIC 7 legacy, Reader, validation kế hoạch và round-trip backup.
+## 5. Một hướng dẫn chẩn đoán
 
-## 7. Tiêu chí nghiệm thu
+| Bước | Việc điều dưỡng thực hiện | Nguồn CNNN |
+|---|---|---|
+| 1. Nhận định | Thu thập dấu hiệu, yếu tố nguy cơ, bối cảnh người bệnh | Dữ liệu người bệnh trong kế hoạch |
+| 2. NANDA-I | Xác định chẩn đoán phù hợp bằng bằng chứng nhận định | Chỉ `dataHub.nanda` |
+| 3. NOC | Chọn kết quả, thang đo và mục tiêu cần đánh giá | Chỉ `dataHub.noc` |
+| 4. NIC | Chọn can thiệp theo tình trạng thực tế và phạm vi hành nghề | Chỉ `dataHub.nic` |
+| 5. Lượng giá | Ghi điểm NOC theo thời gian, điều chỉnh kế hoạch | Kế hoạch người bệnh |
 
-- Giữ nguyên **277 NANDA, 540 NOC, 614 NIC** và edition tương ứng; mọi code string giữ nguyên số 0 đầu.
-- Không có ID lặp `system:edition:code`; mọi `domainId/classId/sourceId` trỏ đến record hợp lệ hoặc được ghi chú là `unclassified`.
-- Bản dịch không tự đổi trạng thái kiểm duyệt; NIC8 English provisional vẫn rõ ràng.
-- Không mất nội dung khi import/export các kế hoạch và file backup cũ.
-- NOC indicator/scale không tự suy đoán khi thiếu bằng chứng. NIC7 alias không được xuất hiện như NIC8 active.
-- Không đưa văn bản sách có giấy phép hoặc thông tin bệnh nhân vào public build nếu chưa được phép; CI có kiểm tra phân phối.
-- Chạy các lệnh sẵn có: `npm run typecheck`, `npm run build`, `npm run check:shared-data`, `npm run check:editions`, `npm run check:care-plan`, `npm run check:nic8-reader`, `npm run check:search`; sau refactor phải thêm test cho schema/compiler.
-- Trước khi merge: chụp snapshot đầu ra catalog và so sánh với `main`. Chỉ thay đổi có chủ đích mới được chấp nhận.
+Ứng dụng hiện chưa có kho mapping NANDA–NOC–NIC được thẩm định cho tất cả trường hợp. Do đó **hướng dẫn là quy trình tư duy**, không phải công cụ tự chẩn đoán, không tự sinh hoạt động can thiệp từ mã.
 
-## 8. Quyết định cần tuân thủ
+## 6. Những tệp thay đổi trên nhánh này
 
-1. **Không tạo danh mục NANDA/NOC/NIC thứ hai trong UI**: compiled catalog chỉ đọc, tất cả phân hệ truy cập chung.
-2. **Không trộn nguồn hiện hành với nguồn lịch sử**: `nic:7` chỉ migration; `nic:8` là catalog active; NOC 6 không tự thay bằng NOC 7.
-3. **Không coi dịch tự động là bản dịch xác nhận**: mọi nhãn có provenance/review status.
-4. **Không đưa nội dung sách nguyên văn vào tệp phân phối công khai khi chưa có quyền**.
-5. **Không trộn dữ liệu patient/plan vào taxonomy**; một lớp repository riêng chịu trách nhiệm persistence và migration.
+- `src/data/dataHub.ts`: giữ toàn bộ tra cứu/lookup/nhãn/edition từ một catalog.
+- `src/lib/search.ts`: adapter trỏ vào dataHub, không index riêng.
+- `src/data/nic8Reader.ts`: danh sách NIC Reader sinh từ 614 mã canonical, nội dung chi tiết join bằng code, nhãn hiển thị lấy từ dataHub.
+- `src/lib/carePlanSafety.ts`: kiểm tra NANDA, NOC, NIC qua dataHub.
+- `src/components/Layout.tsx`: thay mục menu NIC Reader riêng bằng một mục `Hướng dẫn chẩn đoán`, NIC Reader còn là chi tiết của NIC.
+- `src/pages/PlanEditorPage.tsx`: sử dụng lại cùng component `NnnReasoningWorkflow` với trang hướng dẫn.
+- `scripts/check-unified-catalog.ts`, `npm run check:unified-catalog`: regression check đảm bảo ba danh mục duy nhất và NIC Reader khớp 614 mã.
 
----
+**Không có mã thuật ngữ nào bị xóa hoặc tự đổi; không thay đổi dữ liệu patient/backup; không có việc nhập bản NIC 7 hay NOC 7 như bộ thuật ngữ thứ tư.**
 
-### Phạm vi bản thay đổi thiết kế này
+## 7. Kiểm tra trước khi merge
 
-Tài liệu này là bản thiết kế triển khai trên nhánh riêng, **không di chuyển tệp, không sửa dữ liệu, không đổi hành vi ứng dụng trên `main`**. Việc refactor nên được triển khai thành các PR nhỏ theo P0–P4, có test/snapshot cho từng bước.
+~~~sh
+npm ci
+npm run typecheck
+npm run build
+npm run check:unified-catalog
+npm run check:shared-data
+npm run check:data-hub
+npm run check:search
+npm run check:nic8-reader
+npm run check:care-plan
+~~~
+
+Kiểm tra nhãn, code, phiên bản, bản dịch, legacy migration, backup và liên kết trong giao diện. Bởi vì repo này có tệp nguồn sách và dữ liệu điều dưỡng, phải rà soát **quyền sử dụng nội dung** trước khi deploy bản public. Kiến trúc thống nhất không tự giải quyết quyền phân phối hoặc yêu cầu bảo vệ dữ liệu người bệnh.
+
+> Tài liệu này diễn tả nguyên tắc một nguồn chung và thay đổi đã commit trên nhánh. Chưa khẳng định build/test chạy thành công cho đến khi có kết quả CI hoặc chạy tại máy phát triển.
