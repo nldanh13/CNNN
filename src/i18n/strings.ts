@@ -290,7 +290,7 @@ const vi = {
   },
   standards: {
     editionStatus: 'Tình trạng dữ liệu theo ấn bản',
-    olderDatasetWarning: 'NOC chưa theo ấn bản mới nhất; NIC dùng ấn bản 8 với bản dịch chờ kiểm duyệt.',
+    olderDatasetWarning: 'NOC hiện dùng ấn bản 6; NIC dùng ấn bản 8. Xác nhận kiểm duyệt của chủ dự án không thay thế xác minh chính thức từ nhà xuất bản.',
     publisherNotice: 'Số lượng và ấn bản mới nhất được đối chiếu trên trang nhà xuất bản ngày 15/10/2026. Chưa nhập danh mục mới vì cần sách/tệp được phép sử dụng và kiểm chứng.',
     installedDataset: 'Đang có:',
     latestPublished: 'Nhà xuất bản: ấn bản',
