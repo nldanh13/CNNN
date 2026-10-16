@@ -27,3 +27,4 @@ jobs:
       - run: npm run check:search
       - run: npm run check:nic8-reader
       - run: npm run check:care-plan
+      - run: npm run check:assistant
