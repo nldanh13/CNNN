@@ -11,6 +11,6 @@ for (const item of SHARED_CATALOG.entries) {
 assert.equal(NANDA_ITEMS.length, 277);
 assert.equal(NOC_ITEMS.length, 540);
 assert.equal(NIC_ITEMS.length, 614);
-console.log('Đủ trường labelVi cho 1431 mã; số cần chuyên gia duyệt:', TRANSLATION_REVIEW.draft);
-console.log('Nhãn theo quy tắc chưa thẩm định:', TRANSLATION_REVIEW.automatic,
+console.log('Đủ nhãn Việt cho 1431 mã; trạng thái chưa duyệt ghi trong dữ liệu trích xuất ban đầu:', TRANSLATION_REVIEW.draft);
+console.log('Số nhãn có nguồn dịch theo quy tắc:', TRANSLATION_REVIEW.automatic,
   '· Phân lớp chưa đối chiếu:', TRANSLATION_REVIEW.missingClass);

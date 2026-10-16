@@ -7,11 +7,11 @@ const unchanged = SHARED_CATALOG.entries.filter(entry =>
 const missingClass = SHARED_CATALOG.entries.filter(entry =>
   entry.system !== 'nic' && (entry.domainId?.includes('Unclassified') || entry.classKey?.includes('Unclassified')));
 console.log('Số thuật ngữ:', TRANSLATION_REVIEW.total);
-console.log('Chờ thẩm định:', TRANSLATION_REVIEW.draft);
-console.log('Dịch theo quy tắc:', TRANSLATION_REVIEW.automatic);
+console.log('Trạng thái chưa duyệt lưu trong dữ liệu nguồn:', TRANSLATION_REVIEW.draft);
+console.log('Nguồn dịch theo quy tắc:', TRANSLATION_REVIEW.automatic);
 console.log('Cụm tiếng Anh cần rà soát:', mixed.length);
 console.log('Giống nhãn nguồn:', unchanged.length);
-console.log('Chưa xác minh phân lớp:', missingClass.length);
+console.log('Chưa gán phân lớp trong dữ liệu hiện có:', missingClass.length);
 for (const row of mixed.slice(0, 30))
   console.log(row.system.toUpperCase(), row.code, row.labelVi);
 if (process.argv.includes('--strict') && (mixed.length || unchanged.length || missingClass.length || TRANSLATION_REVIEW.draft))
