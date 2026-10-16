@@ -108,3 +108,27 @@ npm run check:care-plan
 Kiểm tra nhãn, code, phiên bản, bản dịch, legacy migration, backup và liên kết trong giao diện. Bởi vì repo này có tệp nguồn sách và dữ liệu điều dưỡng, phải rà soát **quyền sử dụng nội dung** trước khi deploy bản public. Kiến trúc thống nhất không tự giải quyết quyền phân phối hoặc yêu cầu bảo vệ dữ liệu người bệnh.
 
 > Tài liệu này diễn tả nguyên tắc một nguồn chung và thay đổi đã commit trên nhánh. Chưa khẳng định build/test chạy thành công cho đến khi có kết quả CI hoặc chạy tại máy phát triển.
+
+
+## 8. Xác nhận kiểm duyệt của chủ dự án (17/10/2026)
+
+Chủ dự án đã xác nhận rằng dữ liệu danh mục hiện có đã được kiểm duyệt. Ghi nhận xác nhận này ở **chính tệp** `shared-data/nnn-catalog.json`, thuộc tính `ownerReview`, không tạo kho thuật ngữ thứ tư, không tạo lớp JSON phiên bản song song và không sửa mã.
+
+- `ownerReview.status = confirmed-by-project-owner`: xác nhận của chủ dự án, **không** đồng nghĩa thẩm định/xác thực chính thức bởi nhà xuất bản.
+- `ownerReview.recordedAt`: ngày ghi nhận xác nhận, không suy luận ngày từng thuật ngữ được hiệu đính.
+- `translationMethod`, `translationStatus`, `englishLabelStatus`: giữ nguyên **dấu vết lịch sử của quá trình tạo dữ liệu**. Trên giao diện, những cờ lịch sử không còn bị diễn giải thành việc toàn bộ danh mục đang chờ kiểm duyệt.
+- `translateVi` đánh dấu nhãn hiện có trong ba bộ danh mục đã được chủ dự án xác nhận, không hiện badge `dịch máy` cho chính những nhãn này. Kết quả dịch ngoài danh mục vẫn là fallback, còn mang cờ cảnh báo.
+- Tất cả 1.431 mục giữ nguyên mã và nhãn; 210 mục chưa có phân lớp rõ ràng trong dữ liệu vẫn là vấn đề **độ đầy đủ** chứ không tự biến thành phân lớp cụ thể.
+- NIC 8 có 614 can thiệp và nội dung nguồn tiếng Tây Ban Nha cho 614 mã; chỉ những mã thực sự có đầy đủ định nghĩa và hoạt động đã dịch mới hiển thị bản dịch. Hiện bảng dịch chi tiết có 1 mã. Ghi nhận kiểm duyệt không tự dịch 613 mã khác, không thay thế việc kiểm chứng nhãn tiếng Anh chính thức.
+- NANDA-I 13 và NOC 6 còn bộ dữ liệu chi tiết nguồn để tham khảo, nhưng muốn hiển thị nguyên văn ở ứng dụng public phải xác nhận quyền phân phối. Không nhập nội dung sách vào catalog công khai chỉ vì bản dịch hoặc danh mục đã được người dùng rà soát.
+
+### Bố cục dữ liệu cho ba nhóm (không có phiên bản bản sao)
+
+| Nhóm | Chi tiết cùng mã | Giao diện |
+|---|---|---|
+| NANDA-I | Mã, tên Việt/gốc, lĩnh vực, phân lớp; phần giải thích/nhận định gắn mã | 1 tab NANDA-I trong Thư viện |
+| NOC | Mã, tên Việt/gốc, lĩnh vực, phân lớp, thang đo và chỉ số khi được đối chiếu | 1 tab NOC trong Thư viện |
+| NIC | Mã, tên Việt/gốc, định nghĩa và hoạt động theo mã (kèm trạng thái ngôn ngữ) | 1 tab NIC; Reader chỉ là trang chi tiết của mã đó |
+| Hướng dẫn | Nhận định → NANDA → NOC → NIC → Lượng giá | Dùng **cùng một** `NnnReasoningWorkflow` ở hướng dẫn và khi lập kế hoạch |
+
+**Bài kiểm tra:** `npm run check:owner-review` kiểm tra xác nhận của chủ dự án, 3 tập thuật ngữ nhất quán, dịch Việt có sẵn, dấu vết provenance không mất và NIC Reader không nhận trạng thái dịch đầy đủ nếu nội dung chưa có.
