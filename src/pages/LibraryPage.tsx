@@ -70,7 +70,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
       <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
         Danh mục chưa có xác nhận kiểm duyệt của chủ dự án.
       </p>
-    )
+    )}
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
         options={(['nanda','noc','nic'] as const).map(s=>({
