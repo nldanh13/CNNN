@@ -21,6 +21,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
       - run: npm run check:unified-catalog
+      - run: npm run check:owner-review
       - run: npm run check:shared-data
       - run: npm run check:data-hub
       - run: npm run check:search
