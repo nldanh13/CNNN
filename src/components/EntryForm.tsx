@@ -2,7 +2,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import type { CareEntry } from '../types';
 import { NOC_SCALES } from '../data/reference';
-import { findNanda, findNoc, nandaDomain, nocDomain } from '../data/taxonomy';
+import { nandaDomain, nocDomain } from '../data/taxonomy';
+import { dataHub } from '../data/dataHub';
 import { useApp } from '../store/AppContext';
 import { signed, uid } from '../lib/utils';
 import { Button, CodeBadge, Drawer, Field, IconButton, Input, Select, TagInput, Term, Textarea } from './ui';
@@ -42,8 +43,8 @@ export function EntryForm({
   const set = (patch: Partial<CareEntry>) => setEntry((e) => ({ ...e, ...patch }));
   const setNoc = (patch: Partial<CareEntry['noc']>) => setEntry((e) => ({ ...e, noc: { ...e.noc, ...patch } }));
 
-  const nandaItem = entry.nanda.code ? findNanda(entry.nanda.code, entry.nanda.label) : undefined;
-  const nocItem = entry.noc.code ? findNoc(entry.noc.code) : undefined;
+  const nandaItem = entry.nanda.code ? dataHub.getTerm('nanda', entry.nanda.code, entry.nanda.label) : undefined;
+  const nocItem = entry.noc.code ? dataHub.getTerm('noc', entry.noc.code) : undefined;
   const scale = NOC_SCALES.find((s) => s.code === entry.noc.scaleCode);
 
   const save = () => {
