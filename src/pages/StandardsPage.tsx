@@ -6,6 +6,7 @@ import { cx } from '../lib/utils';
 import { Card, CardHeader, PageHeader } from '../components/ui';
 import { LikertInput } from '../components/Likert';
 import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
+import { dataHub } from '../data/dataHub';
 
 export function StandardsPage() {
   const { t, lang } = useApp();
@@ -46,7 +47,7 @@ export function StandardsPage() {
       edition: editionLabel(NIC_EDITION, lang),
       bar: 'bg-emerald-500',
       text: 'text-emerald-700 dark:text-emerald-300',
-      stats: `${NIC_ITEMS.length} can thiệp trong danh mục NIC 8 (bản dịch đang rà soát)`,
+      stats: `${NIC_ITEMS.length} can thiệp trong danh mục NIC 8 · ${dataHub.ownerReview ? 'chủ dự án đã xác nhận kiểm duyệt' : 'chưa có xác nhận kiểm duyệt'}`,
       desc: t.standards.nicSchema,
       example: [['3330', 'Hỗ trợ thay đổi tư thế: nằm sấp']],
     },
