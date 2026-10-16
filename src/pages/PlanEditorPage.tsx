@@ -20,7 +20,8 @@ import type { CareEntry, CarePlan, Patient } from '../types';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { goalState, newEntry, planProgress } from '../lib/carePlan';
-import { findNanda, findNoc, nandaDomain, nocDomain } from '../data/taxonomy';
+import { nandaDomain, nocDomain } from '../data/taxonomy';
+import { dataHub } from '../data/dataHub';
 import { NOC_SCALES } from '../data/reference';
 import { bmiCategory, computeBmi, cx, formatDate, signed } from '../lib/utils';
 import { Badge, Button, Card, CardHeader, CodeBadge, EmptyState, Field, IconButton, Input, PageHeader, ProgressBar, Select, SYSTEM_DOT, TagInput, Term } from '../components/ui';
@@ -50,7 +51,7 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
   useEffect(() => {
     const code = query.get('code');
     if (query.get('add') === 'nanda' && code) {
-      const item = findNanda(code, query.get('label') ?? undefined);
+      const item = dataHub.getTerm('nanda', code, query.get('label') ?? undefined);
       if (item) setEditing({ entry: { ...newEntry(), nanda: { code: item.code, label: item.label } }, isNew: true });
       history.replaceState(null, '', `#/plans/${id}`);
     }
@@ -398,8 +399,8 @@ function EntryCard({
   onDelete: () => void;
 }) {
   const { t, lang } = useApp();
-  const nanda = findNanda(entry.nanda.code, entry.nanda.label);
-  const noc = findNoc(entry.noc.code);
+  const nanda = dataHub.getTerm('nanda', entry.nanda.code, entry.nanda.label);
+  const noc = dataHub.getTerm('noc', entry.noc.code);
   const scale = NOC_SCALES.find((s) => s.code === entry.noc.scaleCode);
   const state = goalState(entry);
   const resolved = entry.status === 'resolved';
