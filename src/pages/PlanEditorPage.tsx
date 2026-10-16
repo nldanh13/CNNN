@@ -29,6 +29,7 @@ import { scaleLabel } from '../components/Likert';
 import { NocAssessmentPanel } from '../components/NocAssessmentPanel';
 import { PrintView } from '../components/PrintView';
 import { RETIRED_NIC7 } from '../data/nicMigration';
+import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
 
 export function PlanEditorPage({ id, query }: { id: string; query: URLSearchParams }) {
   const { t, lang, plans, updatePlan, deletePlan, toast } = useApp();
@@ -113,6 +114,13 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
             </>
           }
         />
+
+        <details className="mb-5 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+          <summary className="cursor-pointer text-sm font-semibold text-slate-900 dark:text-white">
+            Hướng dẫn chẩn đoán thống nhất: Nhận định → NANDA-I → NOC → NIC → Lượng giá
+          </summary>
+          <div className="pt-4"><NnnReasoningWorkflow /></div>
+        </details>
 
         <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
           <div className="min-w-0 space-y-6 xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:self-start xl:overflow-y-auto xl:p-0.5">
