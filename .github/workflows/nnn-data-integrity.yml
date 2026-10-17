@@ -18,6 +18,14 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      # Block new high/critical vulnerabilities in code shipped to users.
+      # Development-only advisories are reported without hiding them.
+      - name: Audit production dependencies (high severity)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Report development dependency advisories
+        run: |
+          npm audit --audit-level=high || echo "::warning::Development dependencies have high-severity advisories; review Dependabot PRs and the npm audit output."
+
       - run: npm run typecheck
       - run: npm run build
       - run: npm run check:ui
