@@ -16,6 +16,8 @@ const NOT_COLOR = new Set([
   'xs', 'sm', 'base', 'lg', 'xl', 'left', 'right', 'center', 'justify', 'start', 'end', 'wrap', 'nowrap', 'balance', 'pretty', 'ellipsis', 'clip',
   'none', 'solid', 'dashed', 'dotted', 'double', 'hidden', 'collapse', 'separate', 'inset', 'card', 'raised', 'button', 'md', 'inner',
   'cover', 'contain', 'auto', 'fixed', 'local', 'scroll', 'repeat', 'top', 'bottom', 'opacity', 'offset', 'y', 'x', 't', 'b', 'l', 'r', 'gradient',
+  // CSS declarations (not Tailwind colors) that the broad regex can encounter.
+  'box', 'radius', 'align',
 ]);
 
 function walk(dir: string, out: string[] = []) {
