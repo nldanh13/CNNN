@@ -14,6 +14,8 @@ export interface Toast {
   id: number;
   message: string;
   tone: 'success' | 'error' | 'info';
+  /** Nút hành động kèm theo, ví dụ “Hoàn tác” sau khi xóa. */
+  action?: { label: string; run: () => void };
 }
 
 interface AppState {
@@ -32,7 +34,8 @@ interface AppState {
   /** Thêm hoặc thay kế hoạch theo id, dùng khi khôi phục từ tệp sao lưu. */
   mergePlans: (incoming: CarePlan[]) => void;
   toasts: Toast[];
-  toast: (message: string, tone?: Toast['tone']) => void;
+  toast: (message: string, tone?: Toast['tone'], action?: Toast['action']) => void;
+  dismissToast: (id: number) => void;
   paletteOpen: boolean;
   setPaletteOpen: (open: boolean) => void;
 }
@@ -90,12 +93,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     save(KEYS.theme, theme);
   }, [theme]);
 
-  const toast = useCallback((message: string, tone: Toast['tone'] = 'success') => {
+  const dismissToast = useCallback((id: number) => setToasts((ts) => ts.filter((x) => x.id !== id)), []);
+  const toast = useCallback((message: string, tone: Toast['tone'] = 'success', action?: Toast['action']) => {
     const id = ++toastId.current;
-    // Cùng một thông báo lặp lại thì thay thế, không xếp chồng.
-    setToasts((ts) => [...ts.filter((x) => x.message !== message), { id, message, tone }]);
-    setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== id)), 3200);
-  }, []);
+    // Như snackbar của các app lớn: chỉ hiện một thông báo, thông báo mới thay thông báo cũ.
+    setToasts([{ id, message, tone, action }]);
+    // Thông báo có nút Hoàn tác cần ở lâu hơn để kịp bấm.
+    setTimeout(() => dismissToast(id), action ? 6000 : 3200);
+  }, [dismissToast]);
 
   const term = useCallback(
     (code: string | null, en: string) => {
@@ -128,10 +133,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }),
       toasts,
       toast,
+      dismissToast,
       paletteOpen,
       setPaletteOpen,
     }),
-    [lang, theme, term, plans, storageError, retryStorage, toasts, toast, paletteOpen],
+    [lang, theme, term, plans, storageError, retryStorage, toasts, toast, dismissToast, paletteOpen],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

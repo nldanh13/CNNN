@@ -13,6 +13,7 @@ import { AssistantPage } from './pages/AssistantPage';
 import { UiKitPage } from './pages/UiKitPage';
 import { useAuth } from './auth/AuthContext';
 import { AccountGate, RecoveryGate } from './pages/AccountPage';
+import { PageSkeleton } from './ui';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
 
@@ -40,7 +41,7 @@ export function App() {
       page = <LibraryPage query={query} />;
       break;
     case 'nic-reader':
-      page = <Suspense fallback={<div role="status" className="p-5 text-sm text-ink-500">Đang tải nội dung NIC 8…</div>}><NicReaderPage query={query}/></Suspense>;
+      page = <Suspense fallback={<PageSkeleton label="Đang tải nội dung NIC 8…" />}><NicReaderPage query={query}/></Suspense>;
       break;
     case 'standards':
       page = <StandardsPage />;

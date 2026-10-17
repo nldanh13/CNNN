@@ -47,9 +47,9 @@ function takeAssistantPrefill(): CareEntry | null {
 }
 
 export function PlanEditorPage({ id, query }: { id: string; query: URLSearchParams }) {
-  const { t, lang, plans, updatePlan, deletePlan, toast } = useApp();
+  const { t, lang, plans, updatePlan, upsertPlan, deletePlan, toast } = useApp();
   const plan = plans.find((p) => p.id === id);
-  const [editing, setEditing] = useState<{ entry: CareEntry; isNew: boolean } | null>(null);
+  const [editing, setEditing] = useState<{ entry: CareEntry; isNew: boolean; fromAssistant?: boolean } | null>(null);
   // Mặc định chỉ mở vấn đề ưu tiên đầu tiên để danh sách dài vẫn gọn.
   const [openIds, setOpenIds] = useState<Set<string>>(() => new Set(plan?.entries[0] ? [plan.entries[0].id] : []));
   const toggleOpen = (entryId: string) =>
@@ -66,7 +66,7 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
   useEffect(() => {
     if (query.get('add') === 'assistant') {
       const entry = takeAssistantPrefill();
-      if (entry) setEditing({ entry, isNew: true });
+      if (entry) setEditing({ entry, isNew: true, fromAssistant: true });
       history.replaceState(null, '', `#/plans/${id}`);
       return;
     }
@@ -124,11 +124,9 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
                 label={t.app.delete}
                 tone="danger"
                 onClick={() => {
-                  if (window.confirm(t.app.confirmDelete)) {
-                    deletePlan(plan.id);
-                    toast(t.plans.deleted);
-                    navigate('/plans');
-                  }
+                  deletePlan(plan.id);
+                  toast(t.plans.deleted, 'success', { label: t.app.undo, run: () => { upsertPlan(plan); navigate(`/plans/${plan.id}`); } });
+                  navigate('/plans');
                 }}
               >
                 <Trash2 className="h-4 w-4" />
@@ -204,10 +202,11 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
                       })
                     }
                     onDelete={() => {
-                      if (window.confirm(t.app.confirmDelete)) {
-                        setEntries((es) => es.filter((x) => x.id !== entry.id));
-                        toast(t.editor.deleted);
-                      }
+                      setEntries((es) => es.filter((x) => x.id !== entry.id));
+                      toast(t.editor.deleted, 'success', {
+                        label: t.app.undo,
+                        run: () => setEntries((es) => (es.some((x) => x.id === entry.id) ? es : [...es.slice(0, i), entry, ...es.slice(i)])),
+                      });
                     }}
                   />
                 ))}
@@ -224,7 +223,15 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
           open
           initial={editing.entry}
           isNew={editing.isNew}
-          onClose={() => setEditing(null)}
+          onClose={() => {
+            // Hủy ngay khi vừa từ Trợ lý sang: không để lại kế hoạch trống, quay về kết quả cũ.
+            if (editing.fromAssistant && plan.entries.length === 0 && !plan.patient.name.trim()) {
+              deletePlan(plan.id);
+              navigate('/assistant');
+              return;
+            }
+            setEditing(null);
+          }}
           onSave={(e) => {
             setEntries((es) => (editing.isNew ? [...es, e] : es.map((x) => (x.id === e.id ? e : x))));
             setOpenIds((prev) => new Set(prev).add(e.id));

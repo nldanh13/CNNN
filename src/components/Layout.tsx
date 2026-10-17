@@ -31,7 +31,7 @@ const NAV_OF_SECTION: Record<string, string> = {
 };
 
 export function Layout({ section, children }: { section: string; children: ReactNode }) {
-  const { t, toasts, storageError, retryStorage, setPaletteOpen } = useApp();
+  const { t, toasts, dismissToast, storageError, retryStorage, setPaletteOpen } = useApp();
   const { user, enabled } = useAuth();
   const activeKey = NAV_OF_SECTION[section] ?? 'home';
 
@@ -181,6 +181,15 @@ export function Layout({ section, children }: { section: string; children: React
               <CheckCircle2 className="h-4 w-4 shrink-0 text-primary-300" />
             )}
             {toast.message}
+            {toast.action && (
+              <button
+                type="button"
+                onClick={() => { toast.action!.run(); dismissToast(toast.id); }}
+                className="-my-1 ml-2 rounded px-2 py-1 font-semibold text-primary-300 hover:bg-white/10"
+              >
+                {toast.action.label}
+              </button>
+            )}
           </div>
         ))}
       </div>
