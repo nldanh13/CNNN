@@ -22,7 +22,7 @@ export function App() {
   if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-ink-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
   if (auth.enabled && !auth.user) return <AccountGate />;
   if (auth.enabled && auth.session?.recovery) return <RecoveryGate />;
-  const [section = 'library', id] = path;
+  const [section = 'home', id] = path;
 
   let page;
   switch (section) {
@@ -58,7 +58,7 @@ export function App() {
       page = <QualityPage />;
       break;
     default:
-      page = <LibraryPage query={query} />;
+      page = <HomePage />;
   }
 
   return <Layout section={section}>{page}</Layout>;
