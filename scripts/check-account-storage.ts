@@ -44,7 +44,8 @@ assert.ok(app.includes('<PatientCloudGate />'), 'Prevent plan edits before the a
 assert.ok(plans.includes('MAX_PATIENTS') && assistant.includes('MAX_PATIENTS'));
 assert.ok(!plans.includes('PlanBackupButtons') && !settings.includes('PlanBackupButtons') &&
           !settings.includes('CloudBackupPanel'), 'No backup/restore UI remains');
-assert.ok(deploy.includes('vars.VITE_PATIENT_CLOUD_ENABLED'));
+assert.ok(deploy.includes("vars.VITE_PATIENT_CLOUD_ENABLED || 'true'"),
+  'Post-migration deploy must turn on autosave by default while allowing explicit false rollback');
 assert.ok(!deploy.includes('vars.VITE_TOTP_MFA_ENABLED'),
   'Do not enable MFA contrary to owner decision');
 
