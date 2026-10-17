@@ -54,7 +54,7 @@ export function StandardsPage() {
 
   return (
     <>
-      <PageHeader title={t.standards.title} />
+      <PageHeader title="Hướng dẫn chẩn đoán" subtitle="Quy trình lập kế hoạch, cấu trúc mã NANDA-I, NOC, NIC và thang đo Likert của NOC." />
       <NnnReasoningWorkflow />
 
       <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">{t.standards.schema}</h2>
