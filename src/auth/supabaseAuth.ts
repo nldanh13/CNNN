@@ -1,4 +1,5 @@
 import { captchaMetadata } from './captchaMetadata';
+import type { MfaFactor, MfaEnrolledFactor } from './mfa';
 
 /**
  * Supabase GoTrue authentication over its documented HTTP API.
@@ -11,6 +12,7 @@ export interface AccountUser {
   id: string;
   email: string;
   user_metadata?: { full_name?: string };
+  factors?: MfaFactor[];
 }
 export interface AccountSession {
   access_token: string;
@@ -137,7 +139,11 @@ export async function bootstrapSession(): Promise<AccountSession | null> {
 export async function signIn(email: string, password: string, captchaToken?: string): Promise<AccountSession> {
   const token = await request<TokenResponse>('token?grant_type=password', 'POST',
     { email, password, ...captchaMetadata(captchaToken) });
-  return toSession(token);
+  const next = toSession(token);
+  // Always fetch canonical factors: password sign-in can succeed at AAL1
+  // even for users who have enrolled MFA in another browser.
+  const user = await request<AccountUser>('user', 'GET', undefined, next.access_token);
+  return { ...next, user };
 }
 
 /**
@@ -176,4 +182,35 @@ export async function changeFullName(session: AccountSession, fullName: string):
 
 export async function revokeSession(session: AccountSession): Promise<void> {
   await request('logout', 'POST', undefined, session.access_token);
+}
+
+/** Begin OPTIONAL TOTP enrollment: secret exists only in caller's memory. */
+export async function enrollTotp(session: AccountSession): Promise<MfaEnrolledFactor> {
+  const result = await request<MfaEnrolledFactor>('factors', 'POST', {
+    factor_type: 'totp', friendly_name: 'CNNN Authenticator',
+  }, session.access_token);
+  if (!result?.id || result.type !== 'totp' || !result.totp?.qr_code || !result.totp?.secret) {
+    throw new Error('Không nhận được mã QR từ Supabase.');
+  }
+  return result;
+}
+
+/** Challenge and verify a factor, rotating the AAL1 session into an AAL2 session. */
+export async function verifyTotp(session: AccountSession, factorId: string, code: string): Promise<AccountSession> {
+  if (!/^\d{6}$/.test(code)) throw new Error('Nhập chính xác mã 6 chữ số từ ứng dụng Authenticator.');
+  const id = encodeURIComponent(factorId);
+  const challenge = await request<{ id: string }>('factors/' + id + '/challenge', 'POST', {}, session.access_token);
+  if (!challenge?.id) throw new Error('Không tạo được yêu cầu xác minh MFA.');
+  const verified = await request<TokenResponse>('factors/' + id + '/verify', 'POST', {
+    challenge_id: challenge.id, code,
+  }, session.access_token);
+  const next = toSession(verified, session.recovery);
+  // Server is authoritative; always fetch verified factor state from GoTrue.
+  const user = await request<AccountUser>('user', 'GET', undefined, next.access_token);
+  return { ...next, user };
+}
+
+/** Cancel an unverified enrollment only; never silently remove a verified factor. */
+export async function cancelUnverifiedTotp(session: AccountSession, factorId: string): Promise<void> {
+  await request('factors/' + encodeURIComponent(factorId), 'DELETE', undefined, session.access_token);
 }
