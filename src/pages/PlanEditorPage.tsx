@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import {
   ArrowDown,
   ArrowLeft,
@@ -107,9 +108,9 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
     setPrintReviewOpen(true);
   };
   const continuePrint = () => {
-    setPrintReviewOpen(false);
-    // The review dialog must leave the DOM before the browser captures print.
-    window.setTimeout(() => window.print(), 0);
+    // Remove the overlay synchronously while retaining the original user print gesture.
+    flushSync(() => setPrintReviewOpen(false));
+    window.print();
   };
 
   const update = (fn: (p: CarePlan) => CarePlan) => updatePlan(plan.id, fn);
