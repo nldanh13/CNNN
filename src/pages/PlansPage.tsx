@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { ClipboardList, Copy, Plus, ShieldCheck, Trash2 } from 'lucide-react';
+import { ClipboardList, Copy, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { newPlan, nextPlanCode, planProgress } from '../lib/carePlan';
@@ -39,15 +39,6 @@ export function PlansPage() {
 
       {planSyncMessage && <div role="status" className="mb-3 flex flex-wrap items-center gap-2 text-xs text-fg-muted">{planSyncMessage}{(planSyncMessage.includes('Không') || planSyncMessage.includes('thay đổi trên thiết bị khác') || planSyncMessage.includes('hết hạn')) && <button type="button" onClick={retryStorage} className="underline">Thử lưu lại</button>}</div>}
       <p className="mb-3 text-xs text-fg-muted">{plans.length}/{MAX_PATIENTS} người bệnh</p>
-      <details className="mb-4 text-xs text-fg-muted">
-        <summary className="inline-flex cursor-pointer items-center gap-1.5 hover:text-fg">
-          <ShieldCheck className="h-3.5 w-3.5" /> Lưu trữ & quyền riêng tư
-        </summary>
-        <div className="mt-2 max-w-3xl rounded-control bg-surface-muted px-3 py-2 leading-relaxed">
-          {t.backup.notice}
-        </div>
-      </details>
-
       <Card className="overflow-hidden">
         <div className="border-b border-line-soft p-4">
           <SearchInput value={q} onChange={setQ} placeholder={t.plans.searchPlaceholder} className="max-w-sm" />
