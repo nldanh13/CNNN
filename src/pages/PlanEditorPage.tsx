@@ -30,6 +30,7 @@ import { scaleLabel } from '../components/Likert';
 import { NocAssessmentPanel } from '../components/NocAssessmentPanel';
 import { PrintView } from '../components/PrintView';
 import { RETIRED_NIC7 } from '../data/nicMigration';
+import { AGE_RULE, HEIGHT_RULE, WEIGHT_RULE, parseMeasure, validateName, type MeasureError } from '../lib/patientValidation';
 import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
 import { PREFILL_KEY } from '../lib/diagnosisAssistant';
 
@@ -141,7 +142,7 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
 
         <div className="grid gap-6 xl:grid-cols-[22rem_1fr]">
           <div className="min-w-0 space-y-6 xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:self-start xl:overflow-y-auto xl:p-0.5">
-            <PatientCard plan={plan} setPatient={setPatient} setNurse={(nurse) => update((p) => ({ ...p, nurse }))} />
+            <PatientCard key={plan.id} plan={plan} setPatient={setPatient} setNurse={(nurse) => update((p) => ({ ...p, nurse }))} />
             <SummaryCard plan={plan} />
           </div>
 
@@ -249,16 +250,52 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
 function PatientCard({ plan, setPatient, setNurse }: { plan: CarePlan; setPatient: (p: Partial<Patient>) => void; setNurse: (n: string) => void }) {
   const { t } = useApp();
   const p = plan.patient;
-  const bmi = computeBmi(p.heightCm, p.weightKg);
+  // Giữ nguyên chuỗi người dùng gõ để báo lỗi tại chỗ; chỉ lưu số khi hợp lệ.
+  const [draft, setDraft] = useState(() => ({
+    name: p.name,
+    age: p.age == null ? '' : String(p.age),
+    height: p.heightCm == null ? '' : String(p.heightCm),
+    weight: p.weightKg == null ? '' : String(p.weightKg),
+  }));
+  const age = parseMeasure(draft.age, AGE_RULE);
+  const height = parseMeasure(draft.height, HEIGHT_RULE);
+  const weight = parseMeasure(draft.weight, WEIGHT_RULE);
+  const nameError = validateName(draft.name);
+  const bmi = computeBmi(height.value, weight.value);
   const cat = bmi != null ? bmiCategory(bmi) : null;
-  const numOrNull = (v: string) => (v === '' ? null : Number(v));
+
+  const msg = (e: MeasureError | null, range: string) => (e === 'outOfRange' ? range : e ? t.editor.invalid[e] : undefined);
+  const ageMsg = msg(age.error, t.editor.invalid.ageRange);
+  const heightMsg = msg(height.error, t.editor.invalid.heightRange);
+  const weightMsg = msg(weight.error, t.editor.invalid.weightRange);
+  const nameMsg = nameError ? t.editor.invalid[nameError] : undefined;
+
+  const setMeasure = (key: 'age' | 'height' | 'weight', raw: string) => {
+    setDraft((d) => ({ ...d, [key]: raw }));
+    const rule = key === 'age' ? AGE_RULE : key === 'height' ? HEIGHT_RULE : WEIGHT_RULE;
+    const value = parseMeasure(raw, rule).value;
+    setPatient(key === 'age' ? { age: value } : key === 'height' ? { heightCm: value } : { weightKg: value });
+  };
+  // Khi rời ô, chuẩn hóa số hợp lệ (vd "020" → "20", "65,5" → "65.5").
+  const tidy = (key: 'age' | 'height' | 'weight', value: number | null) => {
+    if (value != null) setDraft((d) => ({ ...d, [key]: String(value) }));
+  };
 
   return (
     <Card>
       <CardHeader title={t.editor.patient} />
       <CardBody className="grid grid-cols-2 gap-3">
-        <Field label={t.editor.name} className="col-span-2">
-          <Input value={p.name} onChange={(e) => setPatient({ name: e.target.value })} />
+        <Field label={t.editor.name} className="col-span-2" error={nameMsg}>
+          <Input
+            value={draft.name}
+            aria-invalid={!!nameMsg}
+            className={nameMsg ? INVALID : undefined}
+            onChange={(e) => {
+              const name = e.target.value;
+              setDraft((d) => ({ ...d, name }));
+              setPatient({ name });
+            }}
+          />
         </Field>
         <Field label={t.editor.mrn}>
           <Input value={p.mrn} onChange={(e) => setPatient({ mrn: e.target.value })} className="font-mono" />
@@ -266,8 +303,15 @@ function PatientCard({ plan, setPatient, setNurse }: { plan: CarePlan; setPatien
         <Field label={t.editor.admission}>
           <Input type="date" value={p.admissionDate} onChange={(e) => setPatient({ admissionDate: e.target.value })} />
         </Field>
-        <Field label={t.editor.age}>
-          <Input type="number" min={0} max={130} value={p.age ?? ''} onChange={(e) => setPatient({ age: numOrNull(e.target.value) })} />
+        <Field label={t.editor.age} error={ageMsg}>
+          <Input
+            inputMode="numeric"
+            value={draft.age}
+            aria-invalid={!!ageMsg}
+            className={ageMsg ? INVALID : undefined}
+            onChange={(e) => setMeasure('age', e.target.value)}
+            onBlur={() => tidy('age', age.value)}
+          />
         </Field>
         <Field label={t.editor.gender}>
           <Select value={p.gender} onChange={(e) => setPatient({ gender: e.target.value as Patient['gender'] })}>
@@ -276,16 +320,34 @@ function PatientCard({ plan, setPatient, setNurse }: { plan: CarePlan; setPatien
             <option value="other">{t.editor.other}</option>
           </Select>
         </Field>
-        <Field label={t.editor.height}>
-          <Input type="number" min={0} value={p.heightCm ?? ''} onChange={(e) => setPatient({ heightCm: numOrNull(e.target.value) })} />
+        <Field label={t.editor.height} error={heightMsg}>
+          <Input
+            inputMode="decimal"
+            value={draft.height}
+            aria-invalid={!!heightMsg}
+            className={heightMsg ? INVALID : undefined}
+            onChange={(e) => setMeasure('height', e.target.value)}
+            onBlur={() => tidy('height', height.value)}
+          />
         </Field>
-        <Field label={t.editor.weight}>
-          <Input type="number" min={0} step="0.1" value={p.weightKg ?? ''} onChange={(e) => setPatient({ weightKg: numOrNull(e.target.value) })} />
+        <Field label={t.editor.weight} error={weightMsg}>
+          <Input
+            inputMode="decimal"
+            value={draft.weight}
+            aria-invalid={!!weightMsg}
+            className={weightMsg ? INVALID : undefined}
+            onChange={(e) => setMeasure('weight', e.target.value)}
+            onBlur={() => tidy('weight', weight.value)}
+          />
         </Field>
         <div className="col-span-2 flex items-center justify-between rounded-control bg-surface-muted px-3 py-2 text-sm">
           <span className="text-xs font-medium text-fg-muted">{t.editor.bmi}</span>
           <span className="flex items-center gap-2">
-            <strong className="tabular-nums text-fg">{bmi ?? '—'}</strong>
+            {bmi != null ? (
+              <strong className="tabular-nums text-fg">{bmi}</strong>
+            ) : (
+              <span className="text-right text-xs text-fg-subtle">{t.editor.bmiNeedsData}</span>
+            )}
             {cat && <Badge tone={cat === 'normal' ? 'success' : cat === 'underweight' ? 'warning' : 'danger'}>{t.editor.bmiCat[cat]}</Badge>}
           </span>
         </div>
@@ -313,6 +375,8 @@ function PatientCard({ plan, setPatient, setNurse }: { plan: CarePlan; setPatien
     </Card>
   );
 }
+
+const INVALID = 'border-danger-400 focus:border-danger-500';
 
 function SummaryCard({ plan }: { plan: CarePlan }) {
   const { t } = useApp();

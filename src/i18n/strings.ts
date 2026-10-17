@@ -151,6 +151,16 @@ const vi = {
     height: 'Chiều cao (cm)',
     weight: 'Cân nặng (kg)',
     bmi: 'BMI',
+    bmiNeedsData: 'Nhập chiều cao và cân nặng hợp lệ để tính BMI',
+    invalid: {
+      nameRequired: 'Nhập họ tên hoặc tên viết tắt của người bệnh.',
+      nameInvalid: 'Họ tên chỉ gồm chữ cái, khoảng trắng và dấu . \' -',
+      notNumber: 'Chỉ nhập số dương, ví dụ 65 hoặc 65,5.',
+      notInteger: 'Tuổi phải là số nguyên.',
+      ageRange: 'Tuổi phải từ 0 đến 130.',
+      heightRange: 'Chiều cao phải từ 30 đến 250 cm.',
+      weightRange: 'Cân nặng phải từ 0,5 đến 350 kg.',
+    },
     bmiCat: {
       underweight: 'Thiếu cân',
       normal: 'Bình thường',
@@ -505,6 +515,16 @@ const en: Strings = {
     height: 'Height (cm)',
     weight: 'Weight (kg)',
     bmi: 'BMI',
+    bmiNeedsData: 'Enter a valid height and weight to calculate BMI',
+    invalid: {
+      nameRequired: 'Enter the patient name or initials.',
+      nameInvalid: 'Use only letters, spaces and . \' -',
+      notNumber: 'Enter a positive number, e.g. 65 or 65.5.',
+      notInteger: 'Age must be a whole number.',
+      ageRange: 'Age must be between 0 and 130.',
+      heightRange: 'Height must be between 30 and 250 cm.',
+      weightRange: 'Weight must be between 0.5 and 350 kg.',
+    },
     bmiCat: {
       underweight: 'Underweight',
       normal: 'Normal',
