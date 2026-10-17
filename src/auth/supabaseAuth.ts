@@ -137,8 +137,17 @@ export async function signIn(email: string, password: string): Promise<AccountSe
   return toSession(token);
 }
 
+/**
+ * Keep the GitHub Pages repository path (/CNNN/) on links from Supabase emails.
+ * Do not include #/ routes or query strings, which are used by the SPA router.
+ */
+function authRedirectUrl(): string {
+  return window.location.origin + window.location.pathname;
+}
+
 export async function signUp(email: string, password: string, fullName: string): Promise<AccountSession | null> {
-  const response = await request<Partial<TokenResponse>>('signup', 'POST', {
+  const redirect = authRedirectUrl();
+  const response = await request<Partial<TokenResponse>>('signup?redirect_to=' + encodeURIComponent(redirect), 'POST', {
     email, password, data: { full_name: fullName.trim() },
   });
   return response.access_token && response.refresh_token && response.user
@@ -147,7 +156,7 @@ export async function signUp(email: string, password: string, fullName: string):
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {
-  const redirect = window.location.origin + window.location.pathname;
+  const redirect = authRedirectUrl();
   await request('recover?redirect_to=' + encodeURIComponent(redirect), 'POST', { email });
 }
 

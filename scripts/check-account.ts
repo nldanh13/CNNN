@@ -21,4 +21,12 @@ assert.ok(!context.includes('save(KEYS.plans, plans)'), 'Global plan write is no
 assert.ok(app.includes('auth.enabled && !auth.user'), 'Login guard missing');
 assert.ok(page.includes('Đăng ký tài khoản') && page.includes('Quên mật khẩu'), 'Missing account actions');
 assert.ok(settings.includes('<AccountSettings />'), 'Settings must include account management');
+assert.ok(auth.includes("window.location.origin + window.location.pathname"),
+  'Auth email callbacks should preserve the GitHub Pages /CNNN/ base path');
+assert.ok(auth.includes("'signup?redirect_to=' + encodeURIComponent(redirect)"),
+  'Signup emails must specify a redirect URL instead of relying on Supabase default Site URL');
+assert.ok(auth.includes("'recover?redirect_to=' + encodeURIComponent(redirect)"),
+  'Password recovery emails must return to the same project path');
+assert.ok(auth.includes("window.history.replaceState(null, ''"),
+  'Auth callback fragment should be removed from the browser URL');
 console.log('OK: auth screens/guard and per-account local draft isolation.');
