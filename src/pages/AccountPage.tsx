@@ -170,8 +170,8 @@ export function AccountSettings() {
           <ShieldCheck className="h-4 w-4" /> Lưu trữ & quyền riêng tư
         </summary>
         <p className="mt-2 rounded-control bg-surface-muted p-3 leading-relaxed">
-          Kế hoạch lưu riêng theo tài khoản trong trình duyệt hiện tại, không đồng bộ giữa các thiết bị.
-          Bộ nhớ trình duyệt không mã hóa hồ sơ bệnh án. Không nhập dữ liệu nhận dạng người bệnh thật.
+          {patientCloudEnabled ? 'Kế hoạch được lưu tự động trên tài khoản Supabase, tối đa 3 người bệnh.' : 'Kế hoạch hiện vẫn lưu riêng theo tài khoản trên thiết bị này. Tính năng lưu tự động đang chờ cấu hình.'}
+          {' '}Không nhập dữ liệu nhận dạng người bệnh thật khi chưa có hệ thống bảo vệ hồ sơ lâm sàng được kiểm duyệt.
         </p>
       </details>
       <form className="space-y-3" onSubmit={e => {
