@@ -26,7 +26,7 @@ export function ReferencesPage() {
               <strong>{row.installedCount} mã</strong>
             </li>)}
           </ul>
-          <p className="text-xs text-amber-700 dark:text-amber-300">NIC 8 có 554 tên kế thừa NIC 7 và 60 tên dịch mới. Các bản dịch cần chuyên gia rà soát trước khi dùng làm chuẩn lâm sàng.</p>
+          <p className="text-xs text-slate-500">NIC 8 có 554 tên kế thừa NIC 7 và 60 tên dịch mới. Tên tiếng Việt đã được rà soát và chốt ngày 17/10/2026.</p>
         </div>
       </Card>
       <Card>

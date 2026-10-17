@@ -100,7 +100,7 @@ export function NicReaderPage({ query }: { query: URLSearchParams }) {
       </div>
       <p className="mb-5 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-        Văn bản tiếng Tây Ban Nha là nguồn gốc đã trích xuất. Nhãn tiếng Anh hiện là bản dự thảo;
+        Văn bản tiếng Tây Ban Nha là nguồn gốc đã trích xuất;
         những định nghĩa/hoạt động chưa dịch sẽ hiển thị tiếng Tây Ban Nha cùng cảnh báo rõ ràng.
         Nội dung hỗ trợ tra cứu, không thay thế thẩm định lâm sàng.
       </p>

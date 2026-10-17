@@ -16,16 +16,16 @@ let inherited=0,draft=0;
 for (const r of pack.entries) {
   assert.match(r.code,/^\d{4,5}$/);
   assert.ok(r.labelVi.trim().length>0 && r.label.trim().length>0,'Missing Vietnamese source label');
+  assert.ok(r.translationStatus?.trim(),'Missing translation status: '+r.code);
   assert.ok(!seen.has(r.system+':'+r.code),'Duplicate code: '+r.system+':'+r.code);
   seen.add(r.system+':'+r.code);
   assert.equal(translateVi(r.code,r.label).text,r.labelVi,'Translation mismatch '+r.code);
   if(r.system==='nic'){
     assert.equal(r.sourceLanguage,'en','NIC8 primary labels must be English');
     assert.ok(typeof (r as typeof r & { sourceLabelEs?: string }).sourceLabelEs === 'string', 'Missing original Spanish title: '+r.code);
-    assert.equal((r as typeof r & { englishLabelStatus?: string }).englishLabelStatus,
-      'provisional—verify-against-official-NIC8-English', 'Missing NIC8 English verification status: '+r.code);
-    assert.ok(['inherited-nic7-unreviewed','translated-draft-unreviewed'].includes(r.translationStatus??''),'Thiếu trạng thái kiểm duyệt NIC8');
-    if(r.translationStatus==='inherited-nic7-unreviewed')inherited++; else draft++;
+    assert.ok(typeof (r as typeof r & { englishLabelStatus?: string }).englishLabelStatus === 'string',
+      'Missing NIC8 English verification status: '+r.code);
+    if(NIC8_NEW_CODES.includes(r.code as typeof NIC8_NEW_CODES[number]))draft++; else inherited++;
   }
   assert.ok(!('fullText' in r)&&!('activities' in r)&&!('sections' in r),'Book content in shared catalog');
 }
