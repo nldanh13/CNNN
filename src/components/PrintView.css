@@ -5,7 +5,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 15mm 16mm 16mm;
+    margin: 12mm 14mm 13mm;
   }
 
   .cnnn-print-document {
@@ -18,8 +18,8 @@
     color: #1d2933 !important;
     background: #fff !important;
     font-family: "Be Vietnam Pro", Arial, sans-serif;
-    font-size: 9.2pt;
-    line-height: 1.48;
+    font-size: 9pt;
+    line-height: 1.42;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -44,8 +44,8 @@
 
   .cnnn-print-header {
     border-bottom: 2px solid #1d6155;
-    padding: 0 0 11pt;
-    margin-bottom: 14pt;
+    padding: 0 0 9pt;
+    margin-bottom: 11pt;
   }
   .cnnn-print-eyebrow {
     font-size: 7.5pt;
@@ -75,8 +75,8 @@
   .cnnn-print-patient {
     border: 1px solid #cbd8d4;
     border-radius: 4pt;
-    padding: 10pt 12pt 8pt;
-    margin-bottom: 15pt;
+    padding: 8pt 10pt 7pt;
+    margin-bottom: 11pt;
   }
   .cnnn-print-patient h2,
   .cnnn-print-plan-heading h2 {
@@ -89,8 +89,8 @@
   .cnnn-print-patient-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 15pt;
-    row-gap: 8pt;
+    column-gap: 13pt;
+    row-gap: 6pt;
   }
   .cnnn-print-patient-grid > div {
     display: grid;
@@ -127,7 +127,7 @@
     gap: 10pt;
     background: #f0f7f4;
     border-bottom: 1px solid #d2dbdc;
-    padding: 8pt 11pt;
+    padding: 7pt 10pt;
     break-after: avoid;
     page-break-after: avoid;
   }
@@ -146,7 +146,7 @@
     white-space: nowrap;
   }
   .cnnn-print-section {
-    padding: 10pt 11pt;
+    padding: 7pt 10pt;
     border-bottom: 1px solid #e2e8e7;
     break-inside: auto;
   }
@@ -203,7 +203,7 @@
     break-inside: avoid;
   }
   .cnnn-print-scores > div {
-    padding: 6pt 9pt;
+    padding: 5pt 8pt;
     display: flex;
     flex-direction: column;
     gap: 2pt;
@@ -291,7 +291,7 @@
     gap: 16pt;
     border-top: 1px solid #cfdbd7;
     padding-top: 11pt;
-    margin-top: 19pt;
+    margin-top: 11pt;
     break-inside: avoid;
     page-break-inside: avoid;
   }
@@ -307,5 +307,5 @@
     font-size: 8.5pt;
   }
   .cnnn-print-signature strong { font-weight: 750; }
-  .cnnn-print-signature-space { height: 37pt; }
+  .cnnn-print-signature-space { height: 27pt; }
 }
