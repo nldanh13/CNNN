@@ -9771,7 +9771,7 @@
     {
       "system": "nic",
       "code": "8272",
-      "label": "Developmental enhancement: Adolescent",
+      "label": "Adolescent care",
       "labelVi": "Chăm sóc thanh thiếu niên",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -9951,7 +9951,7 @@
     {
       "system": "nic",
       "code": "8274",
-      "label": "Developmental enhancement: Child",
+      "label": "Child care",
       "labelVi": "Chăm sóc trẻ em",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -10551,7 +10551,7 @@
     {
       "system": "nic",
       "code": "5655",
-      "label": "Teaching: Infant stimulation 0-4 months",
+      "label": "Teaching: Infant development 0-3 months",
       "labelVi": "Giáo dục sức khỏe: phát triển trẻ nhũ nhi (0–3 tháng)",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -10575,7 +10575,7 @@
     {
       "system": "nic",
       "code": "5656",
-      "label": "Teaching: Infant stimulation 5-8 months",
+      "label": "Teaching: Infant development 7-9 months",
       "labelVi": "Giáo dục sức khỏe: phát triển trẻ nhũ nhi (7–9 tháng)",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -10587,7 +10587,7 @@
     {
       "system": "nic",
       "code": "5657",
-      "label": "Teaching: Infant stimulation 9-12 months",
+      "label": "Teaching: Infant development 10-12 months",
       "labelVi": "Giáo dục sức khỏe: phát triển trẻ nhũ nhi (10–12 tháng)",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -11319,7 +11319,7 @@
     {
       "system": "nic",
       "code": "8740",
-      "label": "Public health preparedness",
+      "label": "Social justice facilitation",
       "labelVi": "Thúc đẩy công bằng xã hội",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -11559,7 +11559,7 @@
     {
       "system": "nic",
       "code": "8720",
-      "label": "Community resource coordination",
+      "label": "Resilience promotion: Community",
       "labelVi": "Tăng cường khả năng phục hồi của cộng đồng",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -11763,7 +11763,7 @@
     {
       "system": "nic",
       "code": "7850",
-      "label": "Staff development",
+      "label": "Competency management",
       "labelVi": "Quản lý năng lực nhân viên",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -11787,7 +11787,7 @@
     {
       "system": "nic",
       "code": "8130",
-      "label": "Care transition coordination",
+      "label": "Research protocol management",
       "labelVi": "Quản lý đề cương nghiên cứu",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -13971,7 +13971,7 @@
     {
       "system": "nic",
       "code": "7300",
-      "label": "Health record access assistance",
+      "label": "Advance care planning",
       "labelVi": "Lập kế hoạch chăm sóc trước",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -14031,7 +14031,7 @@
     {
       "system": "nic",
       "code": "6485",
-      "label": "Environmental management: Home preparation",
+      "label": "Discharge planning: Home preparation",
       "labelVi": "Lập kế hoạch xuất viện: chuẩn bị nhà ở",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -14403,7 +14403,7 @@
     {
       "system": "nic",
       "code": "7470",
-      "label": "Patient advocacy",
+      "label": "Readmission prevention",
       "labelVi": "Phòng ngừa tái nhập viện",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -14739,7 +14739,7 @@
     {
       "system": "nic",
       "code": "7810",
-      "label": "Quality improvement facilitation",
+      "label": "Safety huddle",
       "labelVi": "Họp về an toàn người bệnh",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -14787,7 +14787,7 @@
     {
       "system": "nic",
       "code": "8190",
-      "label": "Telephone follow-up",
+      "label": "Post-discharge follow-up",
       "labelVi": "Theo dõi sau xuất viện",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -15147,7 +15147,7 @@
     {
       "system": "nic",
       "code": "5422",
-      "label": "Religious addiction prevention",
+      "label": "Religious addiction therapy",
       "labelVi": "Liệu pháp nghiện tôn giáo",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
@@ -15507,7 +15507,7 @@
     {
       "system": "nic",
       "code": "5328",
-      "label": "Listening visits",
+      "label": "Supportive home visits",
       "labelVi": "Thăm hỏi hỗ trợ tại nhà",
       "translationMethod": "source-draft",
       "sourceLanguage": "en",
