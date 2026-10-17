@@ -216,7 +216,7 @@ export function HomePage() {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-fg">Kế hoạch chăm sóc</span>
-                <span className="block text-xs text-fg-muted">{plans.length} kế hoạch trên thiết bị này</span>
+                <span className="block text-xs text-fg-muted">{plans.length}/3 người bệnh trong tài khoản</span>
               </span>
               <ArrowRight className="h-4 w-4 shrink-0 text-fg-subtle group-hover:text-primary-600" />
             </a>
