@@ -3,6 +3,7 @@ import { useApp } from '../store/AppContext';
 import { computeBmi, formatDate, signed } from '../lib/utils';
 import { scaleLabel } from './Likert';
 import { optionalPrintMetric, splitClinicalPrintNotes } from './printNotes';
+import './PrintView.css';
 
 type PatientField = { label: string; value: string };
 
