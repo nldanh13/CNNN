@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import {
   ArrowDown,
   ArrowLeft,
@@ -24,7 +25,7 @@ import { nandaDomain, nocDomain } from '../data/taxonomy';
 import { dataHub } from '../data/dataHub';
 import { NOC_SCALES } from '../data/reference';
 import { bmiCategory, computeBmi, cx, formatDate, signed, uid } from '../lib/utils';
-import { CardBody, SYSTEM_TEXT, Disclosure, Badge, Button, Card, CardHeader, CodeBadge, EmptyState, Field, IconButton, Input, PageHeader, ProgressBar, Select, SYSTEM_DOT, TagInput, Term } from '../ui';
+import { CardBody, SYSTEM_TEXT, Disclosure, Badge, Button, Card, CardHeader, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, Select, SYSTEM_DOT, TagInput, Term } from '../ui';
 import { EntryForm } from '../components/EntryForm';
 import { scaleLabel } from '../components/Likert';
 import { NocAssessmentPanel } from '../components/NocAssessmentPanel';
@@ -33,6 +34,7 @@ import { RETIRED_NIC7 } from '../data/nicMigration';
 import { AGE_RULE, HEIGHT_RULE, WEIGHT_RULE, parseMeasure, validateName, type MeasureError } from '../lib/patientValidation';
 import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
 import { PREFILL_KEY } from '../lib/diagnosisAssistant';
+import { getPrintReadinessIssues, getPrintSyncWarning } from '../lib/printReadiness';
 
 /** Đọc một lần mục kế hoạch do Trợ lý chẩn đoán chuẩn bị. */
 function takeAssistantPrefill(): CareEntry | null {
@@ -48,9 +50,10 @@ function takeAssistantPrefill(): CareEntry | null {
 }
 
 export function PlanEditorPage({ id, query }: { id: string; query: URLSearchParams }) {
-  const { t, lang, plans, updatePlan, upsertPlan, deletePlan, toast } = useApp();
+  const { t, lang, plans, updatePlan, upsertPlan, deletePlan, toast, planStatus, planSyncState } = useApp();
   const plan = plans.find((p) => p.id === id);
   const [editing, setEditing] = useState<{ entry: CareEntry; isNew: boolean; fromAssistant?: boolean } | null>(null);
+  const [printReviewOpen, setPrintReviewOpen] = useState(false);
   // Mặc định chỉ mở vấn đề ưu tiên đầu tiên để danh sách dài vẫn gọn.
   const [openIds, setOpenIds] = useState<Set<string>>(() => new Set(plan?.entries[0] ? [plan.entries[0].id] : []));
   const toggleOpen = (entryId: string) =>
@@ -95,6 +98,21 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
     );
   }
 
+  const printIssues = getPrintReadinessIssues(plan);
+  const syncWarning = getPrintSyncWarning(planStatus, planSyncState);
+  const requestPrint = () => {
+    if (!printIssues.length && !syncWarning) {
+      window.print();
+      return;
+    }
+    setPrintReviewOpen(true);
+  };
+  const continuePrint = () => {
+    // Remove the overlay synchronously while retaining the original user print gesture.
+    flushSync(() => setPrintReviewOpen(false));
+    window.print();
+  };
+
   const update = (fn: (p: CarePlan) => CarePlan) => updatePlan(plan.id, fn);
   const setPatient = (patch: Partial<Patient>) => update((p) => ({ ...p, patient: { ...p.patient, ...patch } }));
   const setEntries = (fn: (entries: CareEntry[]) => CareEntry[]) => update((p) => ({ ...p, entries: fn(p.entries) }));
@@ -118,7 +136,7 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
           subtitle={`${t.editor.updated}: ${formatDate(plan.updatedAt, lang, true)}`}
           actions={
             <>
-              <Button icon={<Printer className="h-4 w-4" />} onClick={() => window.print()}>
+              <Button icon={<Printer className="h-4 w-4" />} onClick={requestPrint}>
                 {t.editor.print}
               </Button>
               <IconButton
@@ -218,6 +236,44 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
       </div>
 
       <PrintView plan={plan} />
+
+      <Modal open={printReviewOpen} onClose={() => setPrintReviewOpen(false)}>
+        <ModalHeader
+          title="Rà soát trước khi in"
+          subtitle="Các lưu ý dưới đây dựa trên dữ liệu đã nhập và kiểm tra kỹ thuật; không thay thế thẩm định lâm sàng."
+          onClose={() => setPrintReviewOpen(false)}
+        />
+        <div className="max-h-[55vh] space-y-4 overflow-y-auto px-5 py-4 text-sm">
+          {syncWarning && (
+            <div role="alert" className="rounded-card border border-warning-300 bg-warning-50 p-3 text-warning-900 dark:border-warning-500/40 dark:bg-warning-500/10 dark:text-warning-200">
+              <p className="font-semibold">Trạng thái lưu dữ liệu</p>
+              <p className="mt-1">{syncWarning}</p>
+            </div>
+          )}
+          {printIssues.length > 0 && (
+            <div>
+              <p className="mb-2 font-semibold text-fg">Cần rà soát ({printIssues.length})</p>
+              <ul className="space-y-2">
+                {printIssues.map((issue) => (
+                  <li key={issue.id} className="rounded-control border border-line-soft px-3 py-2">
+                    <strong className="block text-xs text-fg-muted">{issue.section}</strong>
+                    <span className="text-fg-body">{issue.message}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <p className="text-xs text-fg-muted">
+            Tiếp tục in sẽ giữ nguyên nội dung hiện có, không tự điền dữ liệu còn thiếu và không xác nhận rằng dữ liệu đã đồng bộ.
+          </p>
+        </div>
+        <ModalFooter>
+          <Button variant="ghost" onClick={() => setPrintReviewOpen(false)}>{t.app.cancel}</Button>
+          <Button variant="primary" icon={<Printer className="h-4 w-4" />} onClick={continuePrint}>
+            Vẫn in bản hiện tại
+          </Button>
+        </ModalFooter>
+      </Modal>
 
       {editing && (
         <EntryForm
