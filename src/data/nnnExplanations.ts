@@ -307,7 +307,7 @@ function genericVi(system: TaxonomySystem, code: string, label: string): CodeExp
     summary: `NIC “${labelVi}” là tên nhóm CAN THIỆP điều dưỡng được chuẩn hóa, không phải một y lệnh hay một hành động duy nhất.`,
     reasoning: 'Logic: xác định vấn đề và mục tiêu → cân nhắc tình trạng và nguy cơ của người bệnh → chọn các hoạt động phù hợp trong phạm vi hành nghề → thực hiện và lượng giá đáp ứng.',
     assessment: ['Chỉ định, chống chỉ định và điều kiện an toàn liên quan.', 'Mức độ hỗ trợ người bệnh cần và năng lực thực hiện tại cơ sở.', 'Kết quả theo dõi cần ghi sau can thiệp.'],
-    use: 'Nhãn NIC 8 đang ở dạng chuyển ngữ chưa thẩm định; phải xác minh chỉ định, chống chỉ định và quy trình chuyên môn trước khi áp dụng. Mã không mặc nhiên cho phép thủ thuật hoặc thuốc.',
+    use: 'Xác minh chỉ định, chống chỉ định và quy trình chuyên môn trước khi áp dụng. Mã không mặc nhiên cho phép thủ thuật hoặc thuốc.',
     level: 'editorial',
   };
 }

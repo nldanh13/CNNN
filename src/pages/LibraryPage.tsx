@@ -55,14 +55,11 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
   const detail=selectedItem?<ItemDetail system={system} item={selectedItem} edition={edition}/>:null;
 
   return <>
-    <PageHeader title={t.library.title} subtitle="Tìm theo mã, tên tiếng Việt có dấu hoặc không dấu. Nhãn chưa thẩm định được đánh dấu để đối chiếu." />
+    <PageHeader title={t.library.title} subtitle="Tìm theo mã, tên tiếng Việt có dấu hoặc không dấu." />
     <p className="mb-4 max-w-3xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
       Danh mục NANDA-I, NOC và NIC bằng tiếng Việt. Tra cứu theo mã hoặc tên thuật ngữ;
       định nghĩa và hoạt động của từng mã NIC 8 được mở từ mục NIC tương ứng, không có danh mục NIC riêng.
       Mỗi mục đều có nút báo cáo sai sót để bổ sung dữ liệu sau khi được duyệt.
-    </p>
-    <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
-      {dataHub.translationReview.draft} nhãn tiếng Việt là bản dịch dự thảo, phân lớp NOC đã được bổ sung nhưng chưa đối chiếu sách. Cần chuyên gia thẩm định trước khi dùng làm chuẩn lâm sàng.
     </p>
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
@@ -106,10 +103,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
                     active?'border-brand-500 bg-brand-50/70 dark:bg-brand-500/10':'border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/40')}>
                   <CodeBadge system={system} code={item.code} className="w-14 justify-center"/>
                   <span className="min-w-0 flex-1"><Term code={item.code} en={item.label}
-                    className="block truncate text-sm text-slate-800 dark:text-slate-200"/>
-                    {dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
-                      <span className="mt-0.5 block text-[10px] text-amber-600">Bản dịch dự thảo</span>
-                    )}</span>
+                    className="block truncate text-sm text-slate-800 dark:text-slate-200"/></span>
                   {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<AlertTriangle className="h-4 w-4 text-amber-500"/>}
                 </button>
               </li>;
