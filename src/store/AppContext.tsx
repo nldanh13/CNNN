@@ -9,7 +9,7 @@ import { carePlanStorageKey } from './planScope';
 
 const KEYS = { plans: 'clinicalnnn.plans.v2', lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'system';
 export interface Toast {
   id: number;
   message: string;
@@ -55,7 +55,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const planKey = carePlanStorageKey(auth.enabled, auth.user?.id ?? null);
   // Giao diện Việt hóa cố định; vẫn giữ khóa cũ để phục hồi cấu hình người dùng.
   const lang:Lang = 'vi';
-  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.classList.contains('dark') ? 'dark' : 'light'));
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      const stored = localStorage.getItem(KEYS.theme);
+      return stored === 'light' || stored === 'dark' ? stored : 'system';
+    } catch { return 'system'; }
+  });
   const [planState, setPlanState] = useState<{ key: string | null; plans: CarePlan[] }>(
     () => ({ key: planKey, plans: planKey ? readPlans(planKey) : [] }),
   );
@@ -86,8 +91,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang;
   }, [lang]);
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
     save(KEYS.theme, theme);
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && media.matches));
+    apply();
+    if (theme !== 'system') return;
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
   }, [theme]);
 
   const toast = useCallback((message: string, tone: Toast['tone'] = 'success') => {

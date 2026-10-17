@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { cx } from '../lib/utils';
+import { accountName, cx, initials } from '../lib/utils';
 import { Alert, Button, Kbd } from '../ui';
 import { CommandPalette } from './CommandPalette';
 import { useAuth } from '../auth/AuthContext';
@@ -87,21 +87,23 @@ export function Layout({ section, children }: { section: string; children: React
   );
 
   return (
-    <div className="min-h-screen bg-canvas text-fg-body print:bg-white">
-      {/* Thanh bên cố định trên màn hình lớn */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface lg:flex print:hidden">
-        <div className="px-5 py-5">{logo(false)}</div>
-        <nav aria-label={t.app.name} className="flex-1 overflow-y-auto px-3 pb-6">
-          <ul className="space-y-1">
-            {items.map((item) => (
-              <li key={item.key}>{sideLink(item)}</li>
-            ))}
-          </ul>
-        </nav>
-        <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>
+    <div className="min-h-screen bg-canvas text-fg-body lg:flex print:block print:bg-white">
+      {/* Thanh bên trên màn hình lớn: nền kéo dài theo trang, nội dung luôn bám đỉnh màn hình */}
+      <aside className="hidden w-64 shrink-0 border-r border-line bg-surface lg:block print:hidden">
+        <div className="sticky top-0 flex h-screen flex-col">
+          <div className="px-5 py-5">{logo(false)}</div>
+          <nav aria-label={t.app.name} className="flex-1 overflow-y-auto px-3 pb-6">
+            <ul className="space-y-1">
+              {items.map((item) => (
+                <li key={item.key}>{sideLink(item)}</li>
+              ))}
+            </ul>
+          </nav>
+          <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>
+        </div>
       </aside>
 
-      <div className="pb-20 lg:pb-0 lg:pl-64 print:p-0">
+      <div className="min-w-0 flex-1 pb-20 lg:pb-0 print:p-0">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line-soft bg-canvas/80 px-4 backdrop-blur-md sm:px-6 print:hidden">
           <span className="min-w-0 lg:hidden">{logo(true)}</span>
           <button
@@ -117,18 +119,29 @@ export function Layout({ section, children }: { section: string; children: React
               <Kbd>K</Kbd>
             </span>
           </button>
-          <a
-            href={settingsItem.href}
-            aria-label={settingsItem.label}
-            aria-current={activeKey === 'settings' ? 'page' : undefined}
-            className={cx(
-              'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
-              activeKey === 'settings' ? 'border-primary-600 bg-primary-600 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
-            )}
-          >
-            <Settings className="h-5 w-5" />
-          </a>
-          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-48 truncate text-xs font-medium text-fg-body hover:underline md:block">{user.email}</a>}
+          {!user && (
+            <a
+              href={settingsItem.href}
+              aria-label={settingsItem.label}
+              aria-current={activeKey === 'settings' ? 'page' : undefined}
+              className={cx(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
+                activeKey === 'settings' ? 'border-primary-600 bg-primary-600 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
+              )}
+            >
+              <Settings className="h-5 w-5" />
+            </a>
+          )}
+          {user && (
+            <a href="#/settings" title={`${accountName(user)} · ${user.email}`} aria-label="Cài đặt tài khoản"
+              aria-current={activeKey === 'settings' ? 'page' : undefined}
+              className={cx(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white ring-offset-2 ring-offset-surface transition hover:ring-2 hover:ring-primary-500/50 lg:ml-auto',
+                activeKey === 'settings' && 'ring-2 ring-primary-500/50',
+              )}>
+              {initials(accountName(user))}
+            </a>
+          )}
         </header>
 
         {storageError && (
