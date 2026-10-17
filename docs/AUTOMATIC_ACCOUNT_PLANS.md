@@ -32,11 +32,13 @@ where table_schema = 'public' and table_name = 'cnnn_patient_workspaces';
 
 RLS và FORCE RLS phải `true`; có chính sách SELECT owner-only; role `authenticated` chỉ có SELECT trực tiếp (ghi qua RPC đã giới hạn). Không dùng SQL Editor admin để thử phân quyền hai tài khoản.
 
-## Bước 2. Bật kho tài khoản
-GitHub CNNN → Settings → Secrets and variables → Actions → Variables:
-- `VITE_PATIENT_CLOUD_ENABLED` = `true`.
+## Bước 2. Kích hoạt kho tài khoản
 
-Deploy lại `main` bằng workflow **Deploy CNNN to GitHub Pages** → Run workflow. Khi SQL chưa được chạy hoặc chưa kiểm tra xong, giữ cờ `false` / không tạo biến: ứng dụng tiếp tục dùng bộ nhớ cục bộ và sẽ không giả vờ đã đồng bộ.
+Chủ dự án đã xác nhận chạy SQL tổng hợp ngày 17/10/2026. Workflow GitHub Pages trên nhánh `main` mặc định build `VITE_PATIENT_CLOUD_ENABLED=true`. Khi thay đổi này được gộp và triển khai thành công, tính năng tự lưu được bật mà **không cần thêm biến GitHub**.
+
+Để tạm dừng tính năng nếu xảy ra sự cố, vào GitHub CNNN → Settings → Secrets and variables → Actions → Variables và tạo/sửa biến **`VITE_PATIENT_CLOUD_ENABLED` = `false`** (chữ thường). Sau đó deploy lại GitHub Pages bằng workflow hoặc commit. Dữ liệu cloud và dữ liệu cũ trên thiết bị **không bị xóa** khi chuyển trạng thái. Đổi lại `true` để bật sau khi khắc phục lỗi.
+
+**Không áp dụng ngay cho người bệnh thật** cho đến khi hoàn tất kiểm thử tách tài khoản và phê duyệt lưu trữ dữ liệu y tế.
 
 Biến cũ `VITE_CLOUD_BACKUP_ENABLED` có thể xóa khỏi GitHub Variables khi không còn dùng; chương trình mới không đọc biến này. **Không xóa bảng `cnnn_backup_snapshots`** vì có dữ liệu cũ có thể cần chuyển.
 
