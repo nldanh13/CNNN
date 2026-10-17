@@ -33,7 +33,8 @@
     "check:account-storage": "tsx scripts/check-account-storage.ts",
     "check:consolidated-sql": "tsx scripts/check-consolidated-sql.ts",
     "check:print-layout": "tsx scripts/check-print-layout.ts",
-    "check:autosave-reliability": "tsx scripts/check-autosave-reliability.ts"
+    "check:autosave-reliability": "tsx scripts/check-autosave-reliability.ts",
+    "check:catalog-provenance": "tsx scripts/check-catalog-provenance.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",
