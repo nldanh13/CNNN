@@ -374,6 +374,12 @@ export function usePatientPlans(auth: {
 
   const retryStorage = useCallback(() => {
     if (!planKey) return;
+    if (cloud && status !== 'ready') {
+      // In a conflict/migration the visible plans are the remote copy.
+      // Never replace an unsynced local journal with that remote copy.
+      setSyncMessage('Hãy giải quyết bản nháp chưa đồng bộ trước khi thử lưu lại.');
+      return;
+    }
     const ok = save(planKey, plansRef.current);
     if (cloud && draftKey && pendingKey && load<boolean>(pendingKey, false)) {
       if (!writePlanDraft(draftKey, plansRef.current, revisionRef.current)) setStorageError(true);
