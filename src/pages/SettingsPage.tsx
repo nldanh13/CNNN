@@ -16,6 +16,7 @@ export function SettingsPage() {
 
       <div className="space-y-6">
         <AccountSettings />
+        <MfaSettings />
         <Card>
           <CardHeader title={t.settings.display} />
           <div className="divide-y divide-line-soft">
