@@ -27,6 +27,7 @@ jobs:
       - run: npm run check:search
       - run: npm run check:nic8-reader
       - run: npm run check:care-plan
+      - run: npm run check:print-layout
       - run: npm run check:account
       - run: npm run check:security
       - run: npm run check:account-storage
