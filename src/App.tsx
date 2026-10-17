@@ -27,6 +27,8 @@ export function App() {
   if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-ink-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
   if (auth.enabled && !auth.user) return <AccountGate />;
   if (auth.enabled && auth.session?.recovery) return <RecoveryGate />;
+  if (import.meta.env.VITE_TOTP_MFA_ENABLED === 'true' && auth.session &&
+      requiresTotp(auth.user, auth.session.access_token)) return <MfaGate />;
   const [section = 'home', id] = path;
 
   let page;
