@@ -46,7 +46,14 @@ Trong Supabase Dashboard, chọn project CNNN:
 
 4. Thiết lập dịch vụ SMTP riêng khi nhiều người dùng cần nhận email xác nhận/khôi phục. Supabase email mặc định có hạn chế gửi.
 
-Email xác nhận không dùng route `/account` của server. Supabase trả token qua URL hash, ứng dụng đọc token và xóa URL fragment trước khi hiển thị nội dung.
+Email xác nhận không dùng route `/account` của server. Supabase trả token qua URL hash, ứng dụng đọc token và xóa URL fragment trước khi hiển thị nội dung. Khi đăng ký, CNNN chủ động gửi `redirect_to=https://nldanh13.github.io/CNNN/` (theo URL thực tế) để tránh trở về `https://nldanh13.github.io/` và gặp 404.
+
+**Nếu liên kết trong Gmail mở ra trang 404 `nldanh13.github.io/`:**
+- Kiểm tra **Site URL** trong Supabase phải có **`/CNNN/`** và nhấn Save.
+- Kiểm tra **Redirect URLs** có chính xác `https://nldanh13.github.io/CNNN/`.
+- Nếu dùng **Authentication → Email Templates → Confirm signup** mẫu tùy chỉnh, giữ biến `{{ .ConfirmationURL }}` cho liên kết xác nhận Supabase; không tự đưa người dùng tới domain gốc hoặc trỏ tới `/auth/confirm` nếu website tĩnh không có handler đó.
+- Mở lại website đúng đường dẫn `/CNNN/` và thử **Đăng nhập** bằng email vừa xác nhận. Nếu còn báo chưa xác nhận, yêu cầu gửi lại thư xác nhận theo cách hỗ trợ của Supabase.
+- Không chia sẻ đường dẫn email xác nhận có token với người khác vì token có thể đăng nhập tài khoản.
 
 ## 4. Kích hoạt workflow
 
