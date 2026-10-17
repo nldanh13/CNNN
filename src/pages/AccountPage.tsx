@@ -99,7 +99,7 @@ export function AccountGate() {
           </div>
         </Card>
         <p className="mt-4 text-center text-xs text-fg-muted">
-          Kế hoạch chăm sóc lưu trên thiết bị này.
+          Mỗi tài khoản được lưu tối đa 3 người bệnh.
         </p>
       </div>
     </div>
