@@ -3,6 +3,7 @@ import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucid
 import { useAuth } from '../auth/AuthContext';
 import { TurnstileChallenge, turnstileSiteKey } from '../auth/TurnstileChallenge';
 import { navigate } from '../store/router';
+import { patientCloudEnabled } from '../cloud/patientWorkspace';
 import { Alert, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
