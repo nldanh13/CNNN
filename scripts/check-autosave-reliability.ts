@@ -37,6 +37,10 @@ assert.ok(writePlanDraft(draftKey, [dummy], 5));
 assert.equal(parkPlanDraft(draftKey, parkedKey, { version: 1, plans: [], baseRevision: 5, savedAt: '' }), false,
   'Existing parked edits must never be silently overwritten');
 assert.deepEqual(readPlanDraft(parkedKey)?.plans, []);
+memory.set(parkedKey, '{corrupt-archive');
+assert.equal(parkPlanDraft(draftKey, parkedKey, { version: 1, plans: [], baseRevision: 5, savedAt: '' }), false,
+  'Even a corrupted parked archive must never be silently overwritten');
+assert.equal(memory.get(parkedKey), '{corrupt-archive');
 assert.ok(removePlanDraft(draftKey));
 assert.equal(readPlanDraft(draftKey), null);
 assert.ok(readPlanDraft(parkedKey), 'Parking must not delete a pending copy');
@@ -57,6 +61,8 @@ assert.ok(hook.includes('legacyRevision !== revisionRef.current'),
   'Do not blindly replay pending writes against a newer server version');
 assert.ok(hook.includes('statusRef.current !== \'ready\''),
   'Queued writes must stop when a conflict is detected');
+assert.ok(hook.includes("if (cloud && status !== 'ready')"),
+  'Retry must not erase pending drafts while resolving a conflict');
 assert.ok(hook.includes('window.setTimeout(submit, 650)'), 'Rapid keystrokes must be debounced');
 assert.ok(hook.includes('window.addEventListener(\'online\', retry)'),
   'Retry pending changes when connectivity returns');
