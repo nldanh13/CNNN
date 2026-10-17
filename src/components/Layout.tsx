@@ -31,7 +31,7 @@ const NAV_OF_SECTION: Record<string, string> = {
 };
 
 export function Layout({ section, children }: { section: string; children: ReactNode }) {
-  const { t, toasts, storageError, retryStorage, setPaletteOpen } = useApp();
+  const { t, toasts, dismissToast, storageError, retryStorage, setPaletteOpen } = useApp();
   const { user, enabled } = useAuth();
   const activeKey = NAV_OF_SECTION[section] ?? 'home';
 
@@ -169,8 +169,8 @@ export function Layout({ section, children }: { section: string; children: React
 
       <CommandPalette />
 
-      {/* Thông báo */}
-      <div className="pointer-events-none fixed bottom-20 right-4 z-[60] flex flex-col items-end gap-2 lg:bottom-4 print:hidden" aria-live="polite">
+      {/* Thông báo: điện thoại hiện ở trên, máy tính hiện góc dưới trái, để không che nút Lưu / Đóng của hộp thoại. */}
+      <div className="pointer-events-none fixed inset-x-4 top-3 z-[60] flex flex-col items-center gap-2 lg:inset-x-auto lg:bottom-4 lg:left-4 lg:top-auto lg:items-start print:hidden" aria-live="polite">
         {toasts.map((toast) => (
           <div key={toast.id} className="pointer-events-auto flex max-w-sm animate-rise items-center gap-2.5 rounded-control bg-ink-900 px-4 py-3 text-sm text-white shadow-raised ring-1 ring-white/10 dark:bg-ink-800">
             {toast.tone === 'error' ? (
@@ -181,6 +181,15 @@ export function Layout({ section, children }: { section: string; children: React
               <CheckCircle2 className="h-4 w-4 shrink-0 text-primary-300" />
             )}
             {toast.message}
+            {toast.action && (
+              <button
+                type="button"
+                onClick={() => { toast.action!.run(); dismissToast(toast.id); }}
+                className="-my-1 ml-2 rounded px-2 py-1 font-semibold text-primary-300 hover:bg-white/10"
+              >
+                {toast.action.label}
+              </button>
+            )}
           </div>
         ))}
       </div>

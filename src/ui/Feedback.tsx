@@ -94,3 +94,22 @@ export function Chip({
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
   return <p className={cx('mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-700 dark:text-accent-300', className)}>{children}</p>;
 }
+
+/** Khung chờ mô phỏng bố cục trang trong lúc tải, thay cho dòng chữ “Đang tải…”. */
+export function PageSkeleton({ label, rows = 6 }: { label: string; rows?: number }) {
+  return (
+    <div role="status" aria-label={label} className="animate-pulse space-y-5">
+      <span className="sr-only">{label}</span>
+      <div className="h-8 w-56 rounded-control bg-surface-muted" />
+      <div className="h-11 w-full max-w-xl rounded-control bg-surface-muted" />
+      <div className="space-y-3 rounded-card border border-line bg-surface p-5">
+        {Array.from({ length: rows }, (_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <div className="h-5 w-14 shrink-0 rounded bg-surface-muted" />
+            <div className="h-4 rounded bg-surface-muted" style={{ width: `${55 + ((i * 17) % 35)}%` }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -30,7 +30,7 @@ export function PlansPage() {
         actions={
           <>
             <PlanBackupButtons />
-            <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={create}>
+            <Button variant="primary" className="order-first w-full sm:w-auto lg:order-none" icon={<Plus className="h-4 w-4" />} onClick={create}>
               {t.plans.newTitle}
             </Button>
           </>
@@ -185,10 +185,8 @@ function RowActions({ plan: p }: { plan: CarePlan }) {
         label={t.app.delete}
         tone="danger"
         onClick={() => {
-          if (window.confirm(t.app.confirmDelete)) {
-            deletePlan(p.id);
-            toast(t.plans.deleted);
-          }
+          deletePlan(p.id);
+          toast(t.plans.deleted, 'success', { label: t.app.undo, run: () => upsertPlan(p) });
         }}
       >
         <Trash2 className="h-4 w-4" />

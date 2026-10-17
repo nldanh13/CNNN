@@ -39,6 +39,11 @@ export function EntryForm({
   const { t, lang, toast } = useApp();
   const [entry, setEntry] = useState<CareEntry>(initial);
   useEffect(() => setEntry(initial), [initial]);
+  // Đóng nhầm (bấm ra ngoài, Esc, Hủy) không được làm mất phần đã nhập.
+  const close = () => {
+    if (JSON.stringify(entry) !== JSON.stringify(initial) && !window.confirm(t.entryForm.confirmDiscard)) return;
+    onClose();
+  };
 
   const set = (patch: Partial<CareEntry>) => setEntry((e) => ({ ...e, ...patch }));
   const setNoc = (patch: Partial<CareEntry['noc']>) => setEntry((e) => ({ ...e, noc: { ...e.noc, ...patch } }));
@@ -46,10 +51,21 @@ export function EntryForm({
   const nandaItem = entry.nanda.code ? dataHub.getTerm('nanda', entry.nanda.code, entry.nanda.label) : undefined;
   const nocItem = entry.noc.code ? dataHub.getTerm('noc', entry.noc.code) : undefined;
   const scale = NOC_SCALES.find((s) => s.code === entry.noc.scaleCode);
+  const [scaleError, setScaleError] = useState(false);
 
   const save = () => {
     const issues = validateCareEntry(entry, lang);
-    if (issues.length) { toast(issues[0], 'error'); return; }
+    if (issues.length) {
+      toast(issues[0], 'error');
+      // Lỗi hay gặp nhất là chưa chọn thang đo: đưa người dùng tới đúng ô cần sửa.
+      if (!scale) {
+        setScaleError(true);
+        const el = document.getElementById('entry-noc-scale');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.focus({ preventScroll: true });
+      }
+      return;
+    }
     onSave(entry);
   };
   const chooseNanda = (item: { code: string; label: string }) => {
@@ -68,12 +84,12 @@ export function EntryForm({
   return (
     <Drawer
       open={open}
-      onClose={onClose}
+      onClose={close}
       title={isNew ? t.entryForm.titleNew : t.entryForm.titleEdit}
       subtitle="NANDA-I → NOC → NIC"
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={close}>
             {t.app.cancel}
           </Button>
           <Button variant="primary" onClick={save}>
@@ -120,8 +136,8 @@ export function EntryForm({
               {t.library.class} {nocItem.classLetter}: <Term code={null} en={nocItem.className} showOriginal={false} />
             </p>
           )}
-          <Field label={t.editor.scale}>
-            <Select value={entry.noc.scaleCode} onChange={(e) => setNoc({ scaleCode: e.target.value, current: null, indicators: entry.noc.indicators.map((i) => ({ ...i, score: null })) })}>
+          <Field label={t.editor.scale} error={scaleError && !scale ? t.entryForm.selectScale : undefined}>
+            <Select id="entry-noc-scale" className={scaleError && !scale ? '!border-danger-500' : undefined} value={entry.noc.scaleCode} onChange={(e) => setNoc({ scaleCode: e.target.value, current: null, indicators: entry.noc.indicators.map((i) => ({ ...i, score: null })) })}>
               <option value="">{t.entryForm.selectScale}</option>
               {NOC_SCALES.map((s) => (
                 <option key={s.code} value={s.code}>

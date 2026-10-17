@@ -144,6 +144,31 @@ export function HomePage() {
         </section>
       ) : (
         <>
+          {recent.length > 0 && (
+            <section aria-labelledby="recent-plans-heading">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h2 id="recent-plans-heading" className="text-base font-semibold text-fg">Tiếp tục làm việc</h2>
+                <a href="#/plans" className="text-xs font-semibold text-primary-700 hover:underline dark:text-primary-300">Xem tất cả</a>
+              </div>
+              <Card className="overflow-hidden">
+                <ul className="divide-y divide-line-soft">
+                  {recent.map(plan => (
+                    <li key={plan.id}>
+                      <a href={`#/plans/${plan.id}`}
+                        className="flex items-center gap-3 px-4 py-3 transition hover:bg-surface-muted sm:px-5">
+                        <ClipboardList className="h-4 w-4 shrink-0 text-fg-muted" />
+                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-fg">
+                          {plan.patient.name || t.plans.untitled}
+                        </span>
+                        <span className="shrink-0 text-xs text-fg-muted">{formatDate(plan.updatedAt, lang)}</span>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-fg-subtle" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </section>
+          )}
           <section aria-labelledby="home-catalog-heading">
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 id="home-catalog-heading" className="font-display text-lg font-medium text-fg sm:text-xl">Thư viện NNN</h2>
@@ -197,31 +222,6 @@ export function HomePage() {
             </a>
           </section>
 
-          {recent.length > 0 && (
-            <section aria-labelledby="recent-plans-heading">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h2 id="recent-plans-heading" className="text-base font-semibold text-fg">Kế hoạch gần đây</h2>
-                <a href="#/plans" className="text-xs font-semibold text-primary-700 hover:underline dark:text-primary-300">Xem tất cả</a>
-              </div>
-              <Card className="overflow-hidden">
-                <ul className="divide-y divide-line-soft">
-                  {recent.map(plan => (
-                    <li key={plan.id}>
-                      <a href={`#/plans/${plan.id}`}
-                        className="flex items-center gap-3 px-4 py-3 transition hover:bg-surface-muted sm:px-5">
-                        <ClipboardList className="h-4 w-4 shrink-0 text-fg-muted" />
-                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-fg">
-                          {plan.patient.name || t.plans.untitled}
-                        </span>
-                        <span className="shrink-0 text-xs text-fg-muted">{formatDate(plan.updatedAt, lang)}</span>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-fg-subtle" />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            </section>
-          )}
         </>
       )}
     </div>

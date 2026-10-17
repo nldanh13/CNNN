@@ -3,7 +3,7 @@ import { useApp } from '../store/AppContext';
 import { NOC_NIC_DOMAIN_MAP, NOC_SCALES } from '../data/reference';
 import { editionLabel, NANDA_DOMAINS, NANDA_EDITION, NANDA_ITEMS, NIC_EDITION, NIC_ITEMS, NOC_DOMAINS, NOC_EDITION, NOC_ITEMS } from '../data/taxonomy';
 import { cx } from '../lib/utils';
-import { Card, CardHeader, Eyebrow, PageHeader, SectionTitle, SYSTEM_DOT, SYSTEM_TEXT, Table, TBody, Td, Th, THead, Tr } from '../ui';
+import { Card, CardHeader, Eyebrow, PageHeader, SectionTitle, Select, SYSTEM_DOT, SYSTEM_TEXT, Table, TBody, Td, Th, THead, Tr } from '../ui';
 import { LikertInput } from '../components/Likert';
 import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
 
@@ -80,7 +80,8 @@ export function StandardsPage() {
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_22rem]">
-        <Card className="overflow-hidden">
+        {/* Bảng 7 cột quá chật trên điện thoại: ở đó dùng thẻ thử thang đo bên dưới. */}
+        <Card className="hidden overflow-hidden md:block">
           <CardHeader title={t.standards.scales} subtitle={t.standards.scalesHint} />
           <Table>
             <THead>
@@ -105,8 +106,15 @@ export function StandardsPage() {
         </Card>
 
         <Card className="self-start p-5 xl:sticky xl:top-20">
-          <Eyebrow className="mb-0">{t.standards.simulator}</Eyebrow>
-          <p className="mt-2 text-sm font-medium text-fg">
+          <Eyebrow className="mb-0 hidden md:block">{t.standards.simulator}</Eyebrow>
+          <div className="md:hidden">
+            <h2 className="text-sm font-semibold text-fg">{t.standards.scales}</h2>
+            <p className="mt-1 text-xs leading-relaxed text-fg-muted">{t.standards.scalesHint}</p>
+            <Select className="mt-3" value={scaleCode} onChange={(e) => setScaleCode(e.target.value)} aria-label={t.standards.scales}>
+              {NOC_SCALES.map((s) => <option key={s.code} value={s.code}>{s.code} · {lang === 'vi' ? s.meaningVi : s.meaningEn}</option>)}
+            </Select>
+          </div>
+          <p className="mt-2 hidden text-sm font-medium text-fg md:block">
             {scale.code} · {lang === 'vi' ? scale.meaningVi : scale.meaningEn}
           </p>
           <div className="mt-4">
@@ -122,11 +130,28 @@ export function StandardsPage() {
           <p className="mt-4 rounded-control bg-surface-muted p-3 text-center text-sm font-semibold text-fg">
             {score != null ? `${score} = ${(lang === 'vi' ? scale.pointsVi : scale.points)[score - 1]}` : '—'}
           </p>
+          <ol className="mt-3 space-y-1 text-sm md:hidden">
+            {(lang === 'vi' ? scale.pointsVi : scale.points).map((p, i) => (
+              <li key={i} className={cx('flex gap-3 rounded-control px-3 py-1.5', score === i + 1 ? 'bg-primary-50 font-medium text-fg dark:bg-primary-500/10' : 'text-fg-muted')}>
+                <span className="w-3 font-mono text-xs leading-5">{i + 1}</span>{p}
+              </li>
+            ))}
+          </ol>
         </Card>
       </div>
 
       <Card className="mt-8 overflow-hidden">
         <CardHeader title={t.standards.domainMap} />
+        <ul className="divide-y divide-line-soft md:hidden">
+          {NOC_NIC_DOMAIN_MAP.map((r) => (
+            <li key={r.num} className="space-y-2 px-5 py-4 text-sm">
+              <p className="font-mono text-xs font-semibold text-fg-muted">{r.num}</p>
+              <p><span className={cx('mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle', SYSTEM_DOT.noc)} /><span className="font-medium text-fg">{lang === 'vi' ? r.nocDomainVi : r.nocDomain}</span></p>
+              <p><span className={cx('mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle', SYSTEM_DOT.nic)} /><span className="font-medium text-fg">{lang === 'vi' ? r.nicDomainVi : r.nicDomain}</span></p>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden md:block">
         <Table>
           <THead>
             <Th>{t.standards.colNum}</Th>
@@ -149,6 +174,7 @@ export function StandardsPage() {
             ))}
           </TBody>
         </Table>
+        </div>
       </Card>
     </>
   );
