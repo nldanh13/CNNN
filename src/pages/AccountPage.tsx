@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
+import { navigate } from '../store/router';
 import { Alert, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
@@ -28,9 +29,11 @@ export function AccountGate() {
       } else if (mode === 'signup') {
         if (password.length < 12) throw new Error('Mật khẩu phải có ít nhất 12 ký tự.');
         const signedIn = await auth.signUp(email, password, name);
-        if (!signedIn) setFeedback('Đã gửi hướng dẫn xác nhận tài khoản đến email (nếu dịch vụ cho phép đăng ký).');
+        if (signedIn) navigate('/home');
+        else setFeedback('Đã gửi hướng dẫn xác nhận tài khoản đến email (nếu dịch vụ cho phép đăng ký).');
       } else {
         await auth.signIn(email, password);
+        navigate('/home');
       }
     } catch (error) {
       setFailure(errorText(error));
