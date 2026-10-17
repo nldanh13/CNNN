@@ -4,6 +4,7 @@ import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { newPlan, nextPlanCode, planProgress } from '../lib/carePlan';
 import { formatDate, matches, uid } from '../lib/utils';
+import { validateName, type NameError } from '../lib/patientValidation';
 import { Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Table, TBody, Td, Th, THead, Tr } from '../ui';
 import type { CarePlan } from '../types';
 import { MAX_PATIENTS } from '../cloud/patientWorkspace';
@@ -197,19 +198,20 @@ function NewPatientDialog({ open, onClose, onCreate }: { open: boolean; onClose:
   const [name, setName] = useState('');
   const [ward, setWard] = useState('');
   const [bed, setBed] = useState('');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<NameError | null>(null);
 
   const close = () => {
     setName('');
     setWard('');
     setBed('');
-    setError(false);
+    setError(null);
     onClose();
   };
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setError(true);
+    const nameError = validateName(name);
+    if (nameError) {
+      setError(nameError);
       document.getElementById('new-patient-name')?.focus();
       return;
     }
@@ -222,15 +224,15 @@ function NewPatientDialog({ open, onClose, onCreate }: { open: boolean; onClose:
       <form onSubmit={submit}>
         <ModalHeader title={t.plans.newTitle} subtitle="Chỉ cần tên; các thông tin khác bổ sung sau." onClose={close} />
         <div className="space-y-4 p-5">
-          <Field label={t.editor.name} error={error ? t.plans.nameRequired : undefined}>
+          <Field label={t.editor.name} error={error ? t.editor.invalid[error] : undefined}>
             <Input
               id="new-patient-name"
               autoFocus
               value={name}
-              aria-invalid={error}
+              aria-invalid={!!error}
               onChange={(e) => {
                 setName(e.target.value);
-                if (error) setError(false);
+                if (error) setError(null);
               }}
               className={error ? 'border-danger-400 focus:border-danger-500' : undefined}
             />
