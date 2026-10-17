@@ -5,7 +5,7 @@ import { migrateCarePlans } from '../lib/nandaCodeMigration';
 import { carePlanStorageKey } from './planScope';
 import { load, save } from './storage';
 import {
-  MAX_PATIENTS, patientCloudEnabled, loadPatientWorkspace, savePatientWorkspace,
+  MAX_PATIENTS, patientCloudEnabled, loadPatientWorkspace, savePatientWorkspace, findPreviousAccountPlans,
 } from '../cloud/patientWorkspace';
 
 type Status = 'local' | 'loading' | 'ready' | 'migration' | 'error';
@@ -99,13 +99,21 @@ export function usePatientPlans(auth: {
     const uid = userId;
     setStatus('loading');
     setStatusError('');
-    void loadPatientWorkspace(session).then(workspace => {
+    void loadPatientWorkspace(session).then(async workspace => {
       if (!active || identityRef.current !== uid) return;
       revisionRef.current = workspace.revision;
       const remote = workspace.plans;
       const cached = readPlans(cacheKey);
       const dirtyCache = load<boolean>(pendingKey, false);
       const oldPlans = readPlans(carePlanStorageKey(true, uid));
+      // Account A may have saved a manual snapshot from another device.
+      // Discover it once, but NEVER import/upload until the owner confirms.
+      if (!oldPlans.length && !dirtyCache && remote.length === 0 &&
+          !load<boolean>(migratedKey, false)) {
+        try { oldPlans.push(...await findPreviousAccountPlans(session)); }
+        catch { /* Old snapshots may not exist; this must not block normal sign-in. */ }
+      }
+      if (!active || identityRef.current !== uid) return;
       const oldUnreviewed = !load<boolean>(migratedKey, false) &&
         oldPlans.some(p => !remote.some(r => r.id === p.id));
       // Never overwrite unsynchronized edits or pre-cloud plans silently.
