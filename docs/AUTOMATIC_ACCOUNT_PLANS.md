@@ -9,8 +9,10 @@
 - Không xóa bất kỳ localStorage kế hoạch nào hoặc bảng snapshot cũ.
 
 ## Bước 1. Chạy SQL mới (bắt buộc trước khi bật cờ GitHub)
-Supabase Dashboard → dự án CNNN → SQL Editor → New query; chạy nguyên văn:
-`supabase/migrations/20261017000300_account_patient_workspaces.sql`
+Supabase Dashboard → dự án CNNN → SQL Editor → New query; mở tệp **SQL tổng hợp**:
+`supabase/CNNN_DATABASE_ALL_IN_ONE.sql`
+
+Đặt tên Query trong Supabase SQL Editor là **CNNN - Quan ly du lieu va tai khoan** và chạy nguyên văn một lần. File tổng hợp chứa cả 3 migration đã thực hiện trước đây và có thể chạy lại mà không xóa bảng, tài khoản hoặc hồ sơ cũ. Bảng và quyền được cập nhật trong một giao dịch. Bạn có thể xóa những **Query đã lưu trong SQL Editor** sau khi xác nhận Query tổng hợp chạy thành công; không xóa các bảng, chính sách RLS, hàm, trigger hoặc tệp SQL migrations trong GitHub.
 
 Tạo `public.cnnn_patient_workspaces` và hàm `public.cnnn_save_patient_workspace`. Hàm xác định tài khoản qua `auth.uid()`, chặn quá 3 kế hoạch và yêu cầu `revision` phù hợp. Cả dữ liệu và quyền ghi đều ở server, không tin client về user ID hoặc giới hạn 3 người.
 
