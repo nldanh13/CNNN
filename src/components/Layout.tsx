@@ -4,6 +4,7 @@ import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
 import { Kbd } from './ui';
 import { CommandPalette } from './CommandPalette';
+import { useAuth } from '../auth/AuthContext';
 
 interface NavItem {
   href: string;
@@ -29,6 +30,7 @@ const NAV_OF_SECTION: Record<string, string> = {
 
 export function Layout({ section, children }: { section: string; children: ReactNode }) {
   const { t, toasts, storageError, retryStorage, setPaletteOpen } = useApp();
+  const { user, enabled } = useAuth();
   const activeKey = NAV_OF_SECTION[section] ?? 'home';
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export function Layout({ section, children }: { section: string; children: React
     { href: '#/plans', key: 'plans', label: t.nav.plansShort, icon: <ClipboardList className="h-5 w-5" /> },
     { href: '#/references', key: 'references', label: t.nav.referencesShort, icon: <Library className="h-5 w-5" /> },
   ];
-  const settingsItem: NavItem = { href: '#/settings', key: 'settings', label: t.nav.settings, icon: <Settings className="h-5 w-5" /> };
+  const settingsItem: NavItem = { href: '#/settings', key: 'settings', label: enabled ? 'Cài đặt & tài khoản' : t.nav.settings, short: 'Tài khoản', icon: <Settings className="h-5 w-5" /> };
 
   const sideLink = (item: NavItem) => {
     const active = activeKey === item.key;
@@ -114,6 +116,7 @@ export function Layout({ section, children }: { section: string; children: React
               <Kbd>K</Kbd>
             </span>
           </button>
+          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-48 truncate text-xs font-medium text-slate-600 hover:underline md:block dark:text-slate-300">{user.email}</a>}
         </header>
 
         {storageError && (
