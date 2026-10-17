@@ -3,6 +3,7 @@ import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
 import { Badge, Card, CardBody, CardHeader, PageHeader, Segmented, SettingRow } from '../ui';
 import { PlanBackupButtons } from '../components/PlanBackup';
+import { CloudBackupPanel } from '../components/CloudBackupPanel';
 import { AccountSettings } from './AccountPage';
 
 export function SettingsPage() {
@@ -32,6 +33,8 @@ export function SettingsPage() {
             </SettingRow>
           </div>
         </Card>
+
+        <CloudBackupPanel />
 
         <Card>
           <CardHeader title={t.settings.data} subtitle={`${plans.length} ${t.settings.planCount}`} />

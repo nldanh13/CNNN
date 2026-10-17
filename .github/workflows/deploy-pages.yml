@@ -49,6 +49,8 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          # OFF by default: enable only AFTER creating and verifying RLS tables.
+          VITE_CLOUD_BACKUP_ENABLED: ${{ vars.VITE_CLOUD_BACKUP_ENABLED }}
         run: npm run build
 
       - name: Configure GitHub Pages
