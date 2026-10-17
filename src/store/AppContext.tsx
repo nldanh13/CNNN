@@ -4,7 +4,7 @@ import { STRINGS, type Strings } from '../i18n/strings';
 import { translateVi } from '../lib/translate';
 import { save } from './storage';
 import { useAuth } from '../auth/AuthContext';
-import { usePatientPlans } from './usePatientPlans';
+import { usePatientPlans, type PlanSyncState } from './usePatientPlans';
 
 const KEYS = { lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
 
@@ -30,6 +30,9 @@ interface AppState {
   planStatus: 'local' | 'loading' | 'ready' | 'migration' | 'error';
   planError: string;
   planSyncMessage: string;
+  planSyncState: PlanSyncState;
+  hasParkedDraft: boolean;
+  reviewParkedDraft: () => void;
   oldPlansCount: number;
   retryCloudPlans: () => void;
   importOldPlans: () => Promise<void>;
@@ -57,7 +60,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   });
   const {
     plans, status: planStatus, statusError: planError,
-    syncMessage: planSyncMessage, legacyCount: oldPlansCount,
+    syncMessage: planSyncMessage, syncState: planSyncState,
+    hasParkedDraft, reviewParkedDraft, legacyCount: oldPlansCount,
     storageError, retryStorage, retryLoad: retryCloudPlans,
     importOldPlans, skipOldPlans, upsertPlan, updatePlan, deletePlan, mergePlans,
   } = usePatientPlans(auth);
@@ -108,7 +112,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       plans,
       storageError,
       retryStorage,
-      planStatus, planError, planSyncMessage, oldPlansCount,
+      planStatus, planError, planSyncMessage, planSyncState, hasParkedDraft, reviewParkedDraft, oldPlansCount,
       retryCloudPlans, importOldPlans, skipOldPlans,
       upsertPlan, updatePlan, deletePlan, mergePlans,
       toasts,
@@ -117,7 +121,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       paletteOpen,
       setPaletteOpen,
     }),
-    [lang, theme, term, plans, storageError, retryStorage, planStatus, planError, planSyncMessage, oldPlansCount, retryCloudPlans, importOldPlans, skipOldPlans, upsertPlan, updatePlan, deletePlan, mergePlans, toasts, toast, dismissToast, paletteOpen],
+    [lang, theme, term, plans, storageError, retryStorage, planStatus, planError, planSyncMessage, planSyncState, hasParkedDraft, reviewParkedDraft, oldPlansCount, retryCloudPlans, importOldPlans, skipOldPlans, upsertPlan, updatePlan, deletePlan, mergePlans, toasts, toast, dismissToast, paletteOpen],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
