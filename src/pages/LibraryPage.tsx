@@ -5,6 +5,7 @@ import { useApp } from '../store/AppContext';
 import { editionLabel, NANDA_DOMAINS, NOC_DOMAINS, nandaDomain, nocDomain } from '../data/taxonomy';
 import { DUPLICATE_NANDA_CODES } from '../lib/dataQuality';
 import { dataHub } from '../data/dataHub';
+import { CATALOG_QUALITY_SUMMARY, termTranslationProvenance } from '../data/catalogProvenance';
 import type { AnyItem } from '../lib/search';
 import { copyText, cx } from '../lib/utils';
 import { DataIssueReport } from '../components/DataIssueReport';
@@ -49,6 +50,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
       ??list.find(i=>i.code===code)??null;
   },[system,selected]);
   const edition=editionLabel(dataHub.editionFor(system),lang);
+  const quality=CATALOG_QUALITY_SUMMARY.find(row=>row.system===system);
   const placeholder=system==='nanda'?t.library.searchNanda:system==='noc'?t.library.searchNoc:t.library.searchNic;
   const grouped=system!=='nic'&&!q.trim();
   let lastGroup='';
@@ -56,6 +58,13 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
 
   return <>
     <PageHeader title={t.library.title} subtitle="Tra cứu NANDA-I, NOC và NIC." />
+    {quality && <div className="mb-4 flex flex-wrap items-center gap-2 rounded-control border border-line bg-surface-muted px-3 py-2.5 text-xs leading-relaxed text-fg-muted">
+      <AlertTriangle className="h-4 w-4 shrink-0 text-warning-600" aria-hidden="true" />
+      <span className="flex-1">{quality.unreviewed} / {quality.count} nhãn tiếng Việt của {system === 'nanda' ? 'NANDA-I' : system.toUpperCase()} đang ở trạng thái dự thảo chưa thẩm định.
+        {quality.editionStatus === 'older' && <> Đang dùng {edition}; metadata dự án ghi nhận ấn bản {quality.latestPublisherEdition} mới hơn.</>}
+      </span>
+      <a href="#/references" className="font-medium text-primary-700 underline-offset-2 hover:underline dark:text-primary-300">Nguồn và ấn bản</a>
+    </div>}
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
         options={(['nanda','noc','nic'] as const).map(s=>({
@@ -130,6 +139,7 @@ function GroupHeader({system,item}:{system:TaxonomySystem;item:AnyItem}) {
 function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;edition:string}) {
   const {t,term,toast}=useApp();
   const tr=term(item.code,item.label);
+  const translationAudit=termTranslationProvenance(system,item.code);
   const rows: [string,ReactNode][]=[];
   if(system==='nanda'){
     const n=item as NandaItem;
@@ -149,6 +159,7 @@ function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;ed
     <h2 className="mt-3 text-lg font-semibold leading-snug text-fg">{tr.text}</h2>
     <p className="mt-2 text-xs text-fg-muted">{item.label}</p>
     {tr.machine&&<p className="mt-1 text-xs text-warning-600">{t.app.machineTranslatedHint}</p>}
+    {translationAudit?.unreviewed && <p className="mt-2 text-xs leading-relaxed text-fg-muted">Bản dịch tiếng Việt chưa được thẩm định độc lập. Đối chiếu tên gốc và ấn bản trước khi sử dụng chuyên môn.</p>}
     {rows.length>0&&<DescriptionList className="mt-5" items={rows}/>}
     <CodeExplanationPanel system={system} code={item.code} label={item.label}/>
     {system==='nic'&&<LinkButton variant="primary" className="mt-3" href={'#/nic-reader?code='+encodeURIComponent(item.code)}>
