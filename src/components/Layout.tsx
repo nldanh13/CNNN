@@ -1,10 +1,11 @@
-import { useEffect, type ReactNode } from 'react';
-import { AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { AlertTriangle, CheckCircle2, Info, Library, LogOut, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
 import { Alert, BrandLogo, Button, Kbd } from '../ui';
 import { CommandPalette } from './CommandPalette';
 import { useAuth } from '../auth/AuthContext';
+import { navigate } from '../store/router';
 
 interface NavItem {
   href: string;
@@ -90,27 +91,8 @@ export function Layout({ section, children }: { section: string; children: React
             ))}
           </ul>
         </nav>
-        {/* Một lối vào duy nhất cho tài khoản và cài đặt: thẻ tài khoản cuối thanh bên. */}
-        <div className="border-t border-line p-3">
-          {user ? (
-            <a
-              href={settingsItem.href}
-              aria-current={activeKey === 'settings' ? 'page' : undefined}
-              title={settingsItem.label}
-              className={cx(
-                'flex items-center gap-3 rounded-control px-2 py-2 transition-colors',
-                activeKey === 'settings' ? 'bg-primary-50 dark:bg-primary-500/15' : 'hover:bg-surface-muted',
-              )}
-            >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">{initials}</span>
-              <span className="min-w-0 flex-1 leading-tight">
-                <span className="block truncate text-sm font-semibold text-fg">{displayName}</span>
-                <span className="block truncate text-xs text-fg-muted">{settingsItem.label}</span>
-              </span>
-              <Settings className="h-4 w-4 shrink-0 text-fg-subtle" />
-            </a>
-          ) : sideLink(settingsItem)}
-        </div>
+        {/* Có tài khoản: Cài đặt nằm trong menu ảnh đại diện ở đầu trang. Chế độ khách vẫn giữ mục Cài đặt. */}
+        {!user && <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>}
       </aside>
 
       <div className="pb-20 lg:pb-0 lg:pl-64 print:p-0">
@@ -129,17 +111,21 @@ export function Layout({ section, children }: { section: string; children: React
               <Kbd>K</Kbd>
             </span>
           </button>
-          <a
-            href={settingsItem.href}
-            aria-label={settingsItem.label}
-            aria-current={activeKey === 'settings' ? 'page' : undefined}
-            className={cx(
-              'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
-              activeKey === 'settings' ? 'border-primary-700 bg-primary-700 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
-            )}
-          >
-            <Settings className="h-5 w-5" />
-          </a>
+          {user ? (
+            <AccountMenu name={displayName} email={user.email} initials={initials} settingsLabel={settingsItem.label} />
+          ) : (
+            <a
+              href={settingsItem.href}
+              aria-label={settingsItem.label}
+              aria-current={activeKey === 'settings' ? 'page' : undefined}
+              className={cx(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
+                activeKey === 'settings' ? 'border-primary-700 bg-primary-700 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
+              )}
+            >
+              <Settings className="h-5 w-5" />
+            </a>
+          )}
         </header>
 
         {storageError && (
@@ -204,6 +190,53 @@ export function Layout({ section, children }: { section: string; children: React
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+/** Ảnh đại diện góc trên phải: bấm để mở menu tài khoản (Cài đặt, Đăng xuất). */
+function AccountMenu({ name, email, initials, settingsLabel }: { name: string; email: string; initials: string; settingsLabel: string }) {
+  const { signOut } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+  const item = 'flex w-full items-center gap-2.5 rounded-control px-3 py-2 text-left text-sm transition-colors';
+  return (
+    <div ref={ref} className="relative shrink-0 lg:ml-auto">
+      <button
+        type="button"
+        aria-label="Tài khoản"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen(o => !o)}
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-700 text-sm font-bold text-white ring-offset-2 ring-offset-canvas transition hover:bg-primary-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      >
+        {initials}
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-12 z-40 w-64 animate-pop rounded-card border border-line bg-surface p-1.5 shadow-raised">
+          <div className="border-b border-line-soft px-3 pb-2.5 pt-1.5">
+            <p className="truncate text-sm font-semibold text-fg">{name}</p>
+            <p className="truncate text-xs text-fg-muted">{email}</p>
+          </div>
+          <div className="pt-1.5">
+            <a role="menuitem" href="#/settings" onClick={() => setOpen(false)} className={cx(item, 'text-fg-body hover:bg-surface-muted hover:text-fg')}>
+              <Settings className="h-4 w-4 text-fg-subtle" /> {settingsLabel}
+            </a>
+            <button role="menuitem" type="button" onClick={() => { setOpen(false); void signOut(); navigate('/'); }}
+              className={cx(item, 'text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-500/10')}>
+              <LogOut className="h-4 w-4" /> Đăng xuất
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
