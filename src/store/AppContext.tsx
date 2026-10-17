@@ -1,13 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { CarePlan, Lang } from '../types';
 import { STRINGS, type Strings } from '../i18n/strings';
-import { migrateCarePlans } from '../lib/nandaCodeMigration';
 import { translateVi } from '../lib/translate';
-import { load, save } from './storage';
+import { save } from './storage';
 import { useAuth } from '../auth/AuthContext';
-import { carePlanStorageKey } from './planScope';
+import { usePatientPlans } from './usePatientPlans';
 
-const KEYS = { plans: 'clinicalnnn.plans.v2', lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
+const KEYS = { lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
 
 export type Theme = 'light' | 'dark';
 export interface Toast {
@@ -28,6 +27,13 @@ interface AppState {
   plans: CarePlan[];
   storageError: boolean;
   retryStorage: () => void;
+  planStatus: 'local' | 'loading' | 'ready' | 'migration' | 'error';
+  planError: string;
+  planSyncMessage: string;
+  oldPlansCount: number;
+  retryCloudPlans: () => void;
+  importOldPlans: () => Promise<void>;
+  skipOldPlans: () => void;
   upsertPlan: (plan: CarePlan) => void;
   updatePlan: (id: string, fn: (p: CarePlan) => CarePlan) => void;
   deletePlan: (id: string) => void;
@@ -42,48 +48,20 @@ interface AppState {
 
 const Ctx = createContext<AppState | null>(null);
 
-/** Bản cũ tự tạo một kế hoạch mẫu; gỡ nó nếu vẫn là người bệnh mẫu ban đầu. */
-function withoutSamplePlan(plans: CarePlan[]): CarePlan[] {
-  return plans.filter((p) => !(p.id === 'plan-sample-1' && p.patient?.mrn === 'BN-240176'));
-}
-
-function readPlans(key: string): CarePlan[] {
-  return migrateCarePlans(withoutSamplePlan(load<CarePlan[] | null>(key, null) ?? []));
-}
-
 export function AppProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
-  // In account mode, never attach the old unscoped plans to a newly logged-in user.
-  // Users must explicitly import their legacy backup into their own account.
-  const planKey = carePlanStorageKey(auth.enabled, auth.user?.id ?? null);
-  // Giao diện Việt hóa cố định; vẫn giữ khóa cũ để phục hồi cấu hình người dùng.
-  const lang:Lang = 'vi';
-  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.classList.contains('dark') ? 'dark' : 'light'));
-  const [planState, setPlanState] = useState<{ key: string | null; plans: CarePlan[] }>(
-    () => ({ key: planKey, plans: planKey ? readPlans(planKey) : [] }),
-  );
-  const plans = planState.key === planKey ? planState.plans : [];
-  const setPlans = (change: (current: CarePlan[]) => CarePlan[]) => {
-    setPlanState(previous => previous.key === planKey
-      ? { ...previous, plans: change(previous.plans) } : previous);
-  };
-  const [storageError, setStorageError] = useState(false);
+  const lang: Lang = 'vi';
+  const [theme, setTheme] = useState<Theme>(() => document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  const {
+    plans, status: planStatus, statusError: planError,
+    syncMessage: planSyncMessage, legacyCount: oldPlansCount,
+    storageError, retryStorage, retryLoad: retryCloudPlans,
+    importOldPlans, skipOldPlans, upsertPlan, updatePlan, deletePlan, mergePlans,
+  } = usePatientPlans(auth);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const toastId = useRef(0);
 
-  useEffect(() => {
-    setPlanState({ key: planKey, plans: planKey ? readPlans(planKey) : [] });
-    setStorageError(false);
-  }, [planKey]);
-  useEffect(() => {
-    if (!auth.ready || !planKey || planState.key !== planKey) return;
-    setStorageError(!save(planKey, planState.plans));
-  }, [auth.ready, planKey, planState]);
-  const retryStorage = useCallback(() => {
-    if (!planKey || planState.key !== planKey) return;
-    setStorageError(!save(planKey, planState.plans));
-  }, [planKey, planState]);
   useEffect(() => {
     save(KEYS.lang, lang);
     document.documentElement.lang = lang;
@@ -121,23 +99,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       plans,
       storageError,
       retryStorage,
-      upsertPlan: (plan) =>
-        setPlans((ps) => (ps.some((p) => p.id === plan.id) ? ps.map((p) => (p.id === plan.id ? plan : p)) : [plan, ...ps])),
-      updatePlan: (id, fn) =>
-        setPlans((ps) => ps.map((p) => (p.id === id ? { ...fn(p), updatedAt: new Date().toISOString() } : p))),
-      deletePlan: (id) => setPlans((ps) => ps.filter((p) => p.id !== id)),
-      mergePlans: (incoming) =>
-        setPlans((ps) => {
-          const ids = new Set(incoming.map((p) => p.id));
-          return [...incoming, ...ps.filter((p) => !ids.has(p.id))];
-        }),
+      planStatus, planError, planSyncMessage, oldPlansCount,
+      retryCloudPlans, importOldPlans, skipOldPlans,
+      upsertPlan, updatePlan, deletePlan, mergePlans,
       toasts,
       toast,
       dismissToast,
       paletteOpen,
       setPaletteOpen,
     }),
-    [lang, theme, term, plans, storageError, retryStorage, toasts, toast, dismissToast, paletteOpen],
+    [lang, theme, term, plans, storageError, retryStorage, planStatus, planError, planSyncMessage, oldPlansCount, retryCloudPlans, importOldPlans, skipOldPlans, upsertPlan, updatePlan, deletePlan, mergePlans, toasts, toast, dismissToast, paletteOpen],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
