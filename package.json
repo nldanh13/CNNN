@@ -32,7 +32,8 @@
     "check:security": "tsx scripts/check-security-baseline.ts",
     "check:account-storage": "tsx scripts/check-account-storage.ts",
     "check:consolidated-sql": "tsx scripts/check-consolidated-sql.ts",
-    "check:print-layout": "tsx scripts/check-print-layout.ts"
+    "check:print-layout": "tsx scripts/check-print-layout.ts",
+    "check:autosave-reliability": "tsx scripts/check-autosave-reliability.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",

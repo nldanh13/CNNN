@@ -10,7 +10,7 @@ import type { CarePlan } from '../types';
 import { MAX_PATIENTS } from '../cloud/patientWorkspace';
 
 export function PlansPage() {
-  const { t, lang, plans, upsertPlan, planSyncMessage, retryStorage } = useApp();
+  const { t, lang, plans, upsertPlan } = useApp();
   const [q, setQ] = useState('');
 
   const filtered = useMemo(
@@ -38,7 +38,7 @@ export function PlansPage() {
         }
       />
 
-      {planSyncMessage && <div role="status" className="mb-3 flex flex-wrap items-center gap-2 text-xs text-fg-muted">{planSyncMessage}{(planSyncMessage.includes('Không') || planSyncMessage.includes('thay đổi trên thiết bị khác') || planSyncMessage.includes('hết hạn')) && <button type="button" onClick={retryStorage} className="underline">Thử lưu lại</button>}</div>}
+
       <p className="mb-3 text-xs text-fg-muted">{plans.length}/{MAX_PATIENTS} người bệnh</p>
       <Card className="overflow-hidden">
         <div className="border-b border-line-soft p-4">
