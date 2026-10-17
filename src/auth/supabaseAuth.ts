@@ -132,8 +132,9 @@ export async function bootstrapSession(): Promise<AccountSession | null> {
   }
 }
 
-export async function signIn(email: string, password: string): Promise<AccountSession> {
-  const token = await request<TokenResponse>('token?grant_type=password', 'POST', { email, password });
+export async function signIn(email: string, password: string, captchaToken?: string): Promise<AccountSession> {
+  const token = await request<TokenResponse>('token?grant_type=password', 'POST',
+    { email, password, ...(captchaToken ? { captcha_token: captchaToken } : {}) });
   return toSession(token);
 }
 
@@ -145,19 +146,22 @@ function authRedirectUrl(): string {
   return window.location.origin + window.location.pathname;
 }
 
-export async function signUp(email: string, password: string, fullName: string): Promise<AccountSession | null> {
+export async function signUp(email: string, password: string, fullName: string, captchaToken?: string): Promise<AccountSession | null> {
   const redirect = authRedirectUrl();
   const response = await request<Partial<TokenResponse>>('signup?redirect_to=' + encodeURIComponent(redirect), 'POST', {
     email, password, data: { full_name: fullName.trim() },
+    ...(captchaToken ? { captcha_token: captchaToken } : {}),
   });
   return response.access_token && response.refresh_token && response.user
     ? toSession(response as TokenResponse)
     : null; // Email confirmation enabled: user must open the confirmation email.
 }
 
-export async function requestPasswordReset(email: string): Promise<void> {
+export async function requestPasswordReset(email: string, captchaToken?: string): Promise<void> {
   const redirect = authRedirectUrl();
-  await request('recover?redirect_to=' + encodeURIComponent(redirect), 'POST', { email });
+  await request('recover?redirect_to=' + encodeURIComponent(redirect), 'POST', {
+    email, ...(captchaToken ? { captcha_token: captchaToken } : {}),
+  });
 }
 
 export async function changePassword(session: AccountSession, password: string): Promise<void> {
