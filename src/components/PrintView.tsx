@@ -1,157 +1,225 @@
-import type { CarePlan } from '../types';
+import type { CareEntry, CarePlan } from '../types';
 import { useApp } from '../store/AppContext';
 import { computeBmi, formatDate, signed } from '../lib/utils';
 import { scaleLabel } from './Likert';
+import { optionalPrintMetric, splitClinicalPrintNotes } from './printNotes';
 
-/** Bản in A4 của kế hoạch chăm sóc; chỉ hiển thị khi in. */
+type PatientField = { label: string; value: string };
+
+function PrintDiagnosis({ entry, tr }: {
+  entry: CareEntry; tr: (code: string | null, label: string) => string;
+}) {
+  const notes = splitClinicalPrintNotes(entry.notes);
+  const name = tr(entry.nanda.code, entry.nanda.label);
+  const isRisk = /^nguy cơ\b/iu.test(name);
+  return (
+    <section className="cnnn-print-section">
+      <h3 className="cnnn-print-section-title"><span>01</span> Chẩn đoán điều dưỡng <small>NANDA-I</small></h3>
+      <p className="cnnn-print-term"><strong>[{entry.nanda.code}]</strong> {name || 'Chưa chọn chẩn đoán'}</p>
+      {notes.diagnosticStatement && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">Diễn giải chẩn đoán đã lưu</div>
+          <div>{notes.diagnosticStatement}</div>
+        </div>
+      )}
+      {entry.definingCharacteristics.length > 0 && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">Đặc điểm xác định</div>
+          <ul>{entry.definingCharacteristics.map((v, i) => <li key={i}>{tr(null, v)}</li>)}</ul>
+        </div>
+      )}
+      {entry.relatedFactors.length > 0 && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">{isRisk ? 'Yếu tố nguy cơ' : 'Yếu tố liên quan / nguy cơ'}</div>
+          <ul>{entry.relatedFactors.map((v, i) => <li key={i}>{tr(null, v)}</li>)}</ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function PrintOutcome({ entry, tr, lang }: {
+  entry: CareEntry; tr: (code: string | null, label: string) => string; lang: 'vi' | 'en';
+}) {
+  const notes = splitClinicalPrintNotes(entry.notes);
+  const noc = entry.noc;
+  return (
+    <section className="cnnn-print-section">
+      <h3 className="cnnn-print-section-title"><span>02</span> Mục tiêu và kết quả mong đợi <small>NOC</small></h3>
+      <p className="cnnn-print-term"><strong>[{noc.code}]</strong> {tr(noc.code, noc.label)}</p>
+      {notes.goal && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">Mục tiêu chăm sóc đã ghi</div>
+          <p>{notes.goal}</p>
+        </div>
+      )}
+      <div className="cnnn-print-scores" aria-label="Điểm lượng giá kết quả NOC">
+        <div><span>Ban đầu</span><strong>{noc.baseline}/5</strong></div>
+        <div><span>Mục tiêu</span><strong>{noc.target}/5</strong></div>
+        <div><span>Hiện tại</span><strong>{noc.current == null ? 'Chưa lượng giá' : `${noc.current}/5`}</strong></div>
+      </div>
+      {noc.scaleCode && <p className="cnnn-print-small">Thang đo NOC: {noc.scaleCode}{noc.current != null ? ` · ${scaleLabel(noc.scaleCode, noc.current, lang)}` : ''}</p>}
+      {noc.indicators.length > 0 && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">Chỉ số kết quả được theo dõi</div>
+          <ul className="cnnn-print-indicators">
+            {noc.indicators.map(ind => (
+              <li key={ind.id}>
+                <span>{ind.code && <strong>[{ind.code}] </strong>}{tr(null, ind.name)}</span>
+                <span className="cnnn-print-indicator-score">{ind.score == null ? 'Chưa chấm' : `${ind.score}/5`}{ind.scaleCode && ind.scaleCode !== noc.scaleCode ? ` · Thang ${ind.scaleCode}` : ''}{ind.sourcePage ? ` · Tr. ${ind.sourcePage}` : ''}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function PrintInterventions({ entry, tr }: {
+  entry: CareEntry; tr: (code: string | null, label: string) => string;
+}) {
+  return (
+    <section className="cnnn-print-section">
+      <h3 className="cnnn-print-section-title"><span>03</span> Can thiệp và hoạt động chăm sóc <small>NIC</small></h3>
+      {entry.nic.length ? (
+        <ol className="cnnn-print-interventions">
+          {entry.nic.map((n, i) => (
+            <li key={n.code} className="cnnn-print-intervention">
+              <div className="cnnn-print-intervention-heading">
+                <span className="cnnn-print-intervention-no">{String(i + 1).padStart(2, '0')}</span>
+                <span><strong>[{n.code}]</strong> {tr(n.code, n.label)}</span>
+              </div>
+              {n.activities.length > 0 && (
+                <ul className="cnnn-print-activities">
+                  {n.activities.map((activity, index) => <li key={index}>{tr(null, activity)}</li>)}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ol>
+      ) : <p className="cnnn-print-small">Chưa ghi nhận can thiệp NIC.</p>}
+    </section>
+  );
+}
+
+function PrintEvaluation({ entry, tr, lang }: {
+  entry: CareEntry; tr: (code: string | null, label: string) => string; lang: 'vi' | 'en';
+}) {
+  const assessments = entry.noc.assessments ?? [];
+  const notes = splitClinicalPrintNotes(entry.notes);
+  return (
+    <section className="cnnn-print-section">
+      <h3 className="cnnn-print-section-title"><span>04</span> Lượng giá và ghi chú</h3>
+      {entry.noc.current != null ? (
+        <p className="cnnn-print-evaluation-summary">
+          Điểm NOC hiện tại: <strong>{entry.noc.current}/5</strong>
+          {' · '}Thay đổi so với ban đầu: <strong>{signed(entry.noc.current - entry.noc.baseline)}</strong>
+          {entry.noc.current >= entry.noc.target ? ' · Đạt mức điểm mục tiêu' : ' · Chưa đạt mức điểm mục tiêu'}
+        </p>
+      ) : (
+        <p className="cnnn-print-small">Chưa ghi nhận điểm lượng giá hiện tại.</p>
+      )}
+      {assessments.length > 0 && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">Lịch sử lượng giá NOC</div>
+          <ol className="cnnn-print-assessment-list">
+            {assessments.map(a => (
+              <li key={a.id}>
+                <div><strong>{formatDate(a.assessedAt, lang, true)}</strong> · {a.score}/5 · Thang {a.scaleCode}{a.assessor ? ` · ${a.assessor}` : ''}</div>
+                {a.notes && <p>{tr(null, a.notes)}</p>}
+                {a.indicatorRatings.length > 0 && <p>Chỉ số: {a.indicatorRatings.map(r => `${r.code} ${r.score == null ? 'chưa chấm' : r.score + '/5'}`).join('; ')}</p>}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+      {notes.other.length > 0 && (
+        <div className="cnnn-print-field">
+          <div className="cnnn-print-field-label">Ghi chú bổ sung</div>
+          {notes.other.map((line, i) => <p key={i} className="cnnn-print-note">{line}</p>)}
+        </div>
+      )}
+      {notes.provenance.map((line, i) => <p key={i} className="cnnn-print-provenance">{line}</p>)}
+    </section>
+  );
+}
+
+/** A4 clinical record: one care problem per structured block, not three cramped columns. */
 export function PrintView({ plan }: { plan: CarePlan }) {
-  const { t, lang, term } = useApp();
+  const { lang, term } = useApp();
   const p = plan.patient;
   const tr = (code: string | null, en: string) => term(code, en).text;
+  const fields: PatientField[] = [];
+  const append = (label: string, value: string | number | null | undefined) => {
+    if (value !== null && value !== undefined && String(value).trim()) fields.push({ label, value: String(value) });
+  };
+  append('Họ và tên', p.name.trim());
+  append('Mã người bệnh', p.mrn.trim());
+  if (p.age != null && Number.isFinite(p.age)) append('Tuổi', p.age);
+  if (p.name.trim() || p.mrn.trim() || p.age != null) append('Giới tính', p.gender === 'male' ? 'Nam' : p.gender === 'female' ? 'Nữ' : 'Khác');
+  append('Khoa', p.ward.trim());
+  append('Giường', p.bed.trim());
+  if (p.admissionDate) append('Ngày nhập viện', formatDate(p.admissionDate, lang));
+  append('Chiều cao', optionalPrintMetric(p.heightCm, 'cm'));
+  append('Cân nặng', optionalPrintMetric(p.weightKg, 'kg'));
   const bmi = computeBmi(p.heightCm, p.weightKg);
-  const gender = p.gender === 'male' ? t.editor.male : p.gender === 'female' ? t.editor.female : t.editor.other;
-
-  const cell = 'border border-ink-400 px-2 py-1.5 align-top';
+  if (bmi != null && Number.isFinite(bmi)) append('BMI', bmi.toLocaleString('vi-VN'));
+  append('Chẩn đoán y khoa', p.medicalDiagnoses.filter(Boolean).map(d => tr(null, d)).join('; '));
+  append('Dị ứng đã ghi', p.allergies.filter(Boolean).join('; '));
 
   return (
-    <div className="hidden text-[11px] leading-snug text-black print:block">
-      <div className="mb-4 flex items-start justify-between border-b-2 border-black pb-2">
-        <div>
-          <p className="text-[10px] uppercase tracking-wide">Thư viện Điều dưỡng NNN · NANDA-I · NOC · NIC</p>
-          <h1 className="mt-1 text-lg font-bold">{t.print.title}</h1>
+    <div className="cnnn-print-document hidden print:block" aria-label="Kế hoạch chăm sóc điều dưỡng để in">
+      <header className="cnnn-print-header">
+        <p className="cnnn-print-eyebrow">THƯ VIỆN ĐIỀU DƯỠNG NNN <span>•</span> NANDA-I / NOC / NIC</p>
+        <h1>KẾ HOẠCH CHĂM SÓC ĐIỀU DƯỠNG</h1>
+        <div className="cnnn-print-document-meta">
+          <span>Mã kế hoạch: <strong>{plan.code}</strong></span>
+          <span>Ngày lập: <strong>{formatDate(plan.createdAt, lang)}</strong></span>
         </div>
-        <div className="text-right">
-          <p>
-            {t.editor.planCode}: <strong>{plan.code}</strong>
-          </p>
-          <p>
-            {t.editor.created}: {formatDate(plan.createdAt, lang)}
-          </p>
-        </div>
+      </header>
+
+      <section className="cnnn-print-patient" aria-labelledby="cnnn-print-patient-title">
+        <h2 id="cnnn-print-patient-title">THÔNG TIN NGƯỜI BỆNH</h2>
+        {fields.length ? (
+          <dl className="cnnn-print-patient-grid">
+            {fields.map(({ label, value }) => (
+              <div key={label}>
+                <dt>{label}</dt><dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : <p className="cnnn-print-small">Chưa nhập thông tin người bệnh.</p>}
+      </section>
+
+      <div className="cnnn-print-plan-heading">
+        <h2>NỘI DUNG KẾ HOẠCH CHĂM SÓC</h2>
+        <span>{plan.entries.length} vấn đề</span>
       </div>
+      {plan.entries.length > 0 ? plan.entries.map((entry, index) => (
+        <article className="cnnn-print-entry" key={entry.id}>
+          <div className="cnnn-print-entry-heading">
+            <h2>VẤN ĐỀ CHĂM SÓC {String(index + 1).padStart(2, '0')}</h2>
+            <span>{entry.status === 'resolved' ? 'Đã giải quyết' : 'Đang theo dõi'}</span>
+          </div>
+          <PrintDiagnosis entry={entry} tr={tr} />
+          <PrintOutcome entry={entry} tr={tr} lang={lang} />
+          <PrintInterventions entry={entry} tr={tr} />
+          <PrintEvaluation entry={entry} tr={tr} lang={lang} />
+        </article>
+      )) : <p className="cnnn-print-small">Chưa có vấn đề chăm sóc nào được ghi nhận.</p>}
 
-      <table className="mb-4 w-full border-collapse">
-        <tbody>
-          <tr>
-            <td className={cell}>
-              {t.editor.name}: <strong>{p.name}</strong>
-            </td>
-            <td className={cell}>
-              {t.editor.mrn}: {p.mrn}
-            </td>
-            <td className={cell}>
-              {t.editor.age}: {p.age ?? ''} · {gender}
-            </td>
-          </tr>
-          <tr>
-            <td className={cell}>
-              {t.editor.ward}: {p.ward} · {t.editor.bed}: {p.bed}
-            </td>
-            <td className={cell}>
-              {t.editor.admission}: {formatDate(p.admissionDate, lang)}
-            </td>
-            <td className={cell}>
-              {p.heightCm ?? ''} cm · {p.weightKg ?? ''} kg · BMI {bmi ?? ''}
-            </td>
-          </tr>
-          <tr>
-            <td className={cell} colSpan={2}>
-              {t.editor.medicalDx}: {p.medicalDiagnoses.map((d) => tr(null, d)).join('; ')}
-            </td>
-            <td className={cell}>
-              {t.editor.allergies}: {p.allergies.join(', ') || '—'}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-ink-100">
-            <th className={`${cell} w-6`}>#</th>
-            <th className={`${cell} w-[30%] text-left`}>{t.editor.diagnosis} (NANDA-I)</th>
-            <th className={`${cell} w-[30%] text-left`}>{t.editor.outcome} (NOC)</th>
-            <th className={`${cell} text-left`}>{t.editor.interventions} (NIC)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {plan.entries.map((e, i) => (
-            <tr key={e.id} className="break-inside-avoid">
-              <td className={`${cell} text-center font-bold`}>{i + 1}</td>
-              <td className={cell}>
-                <p className="font-bold">
-                  [{e.nanda.code}] {tr(e.nanda.code, e.nanda.label)}
-                </p>
-                {e.definingCharacteristics.length > 0 && (
-                  <p className="mt-1">
-                    <em>{t.editor.definingChars}:</em> {e.definingCharacteristics.map((x) => tr(null, x)).join('; ')}
-                  </p>
-                )}
-                {e.relatedFactors.length > 0 && (
-                  <p className="mt-1">
-                    <em>{t.editor.relatedFactors}:</em> {e.relatedFactors.map((x) => tr(null, x)).join('; ')}
-                  </p>
-                )}
-                {e.status === 'resolved' && <p className="mt-1 font-semibold">✓ {t.editor.resolved}</p>}
-              </td>
-              <td className={cell}>
-                <p className="font-bold">
-                  [{e.noc.code}] {tr(e.noc.code, e.noc.label)}
-                </p>
-                <p className="mt-1">
-                  {t.editor.baseline}: {e.noc.baseline} · {t.editor.target}: {e.noc.target} · {t.editor.current}: {e.noc.current ?? '—'}
-                  {e.noc.current != null && ` (${signed(e.noc.current - e.noc.baseline)})`}
-                </p>
-                {e.noc.current != null && <p className="text-[10px] italic">{scaleLabel(e.noc.scaleCode, e.noc.current, lang)}</p>}
-                {e.noc.indicators.length > 0 && (
-                  <ul className="mt-1 list-disc pl-4">
-                    {e.noc.indicators.map((ind) => (
-                      <li key={ind.id}>
-                        {ind.code} {tr(null, ind.name)}: {ind.score ?? '—'} · {t.editor.scale} {ind.scaleCode || e.noc.scaleCode}{ind.sourcePage ? ` · ${ind.sourcePage}` : ''}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {(e.noc.assessments ?? []).length > 0 && (
-                  <div className="mt-2">
-                    <strong>{t.entryForm.assessmentHistory}</strong>
-                    <ul className="list-disc pl-4">
-                      {e.noc.assessments!.map((a) => (
-                        <li key={a.id}>{formatDate(a.assessedAt, lang, true)} · {a.score}/5 · {t.editor.scale} {a.scaleCode} · {a.assessor || '—'}{a.notes ? ` — ${a.notes}` : ''}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </td>
-              <td className={cell}>
-                {e.nic.map((n) => (
-                  <div key={n.code} className="mb-1">
-                    <p className="font-bold">
-                      [{n.code}] {tr(n.code, n.label)}
-                    </p>
-                    {n.activities.length > 0 && (
-                      <ul className="list-disc pl-4">
-                        {n.activities.map((a, j) => (
-                          <li key={j}>{tr(null, a)}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-                {e.notes && <p className="mt-1 italic">{e.notes}</p>}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="mt-10 flex justify-end">
-        <div className="w-60 text-center">
-          <p>{formatDate(new Date().toISOString(), lang)}</p>
-          <p className="font-bold">{t.print.signature}</p>
-          <p className="mt-14">{plan.nurse}</p>
+      <footer className="cnnn-print-footer">
+        <div className="cnnn-print-footer-note">
+          Tài liệu được lập từ dữ liệu đã nhập trong CNNN. Các nội dung chưa được ghi nhận không được tự bổ sung.
         </div>
-      </div>
+        <div className="cnnn-print-signature">
+          <p>Ngày in: {formatDate(new Date().toISOString(), lang)}</p>
+          <strong>Điều dưỡng lập kế hoạch</strong>
+          <div className="cnnn-print-signature-space" />
+          <p>{plan.nurse.trim() || '(Ký và ghi rõ họ tên)'}</p>
+        </div>
+      </footer>
     </div>
   );
 }
