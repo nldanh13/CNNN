@@ -45,6 +45,23 @@ jobs:
             exit 1
           fi
 
+      - name: Verify cloud backup rollout flag
+        env:
+          VITE_CLOUD_BACKUP_ENABLED: ${{ vars.VITE_CLOUD_BACKUP_ENABLED }}
+        run: |
+          if [[ -n "$VITE_CLOUD_BACKUP_ENABLED" && "$VITE_CLOUD_BACKUP_ENABLED" != "true" && "$VITE_CLOUD_BACKUP_ENABLED" != "false" ]]; then
+            echo "::error::VITE_CLOUD_BACKUP_ENABLED must be exactly true or false (lowercase)."
+            exit 1
+          fi
+          if [[ "$VITE_CLOUD_BACKUP_ENABLED" == "true" ]]; then
+            echo "Cloud backup UI: ENABLED for test data only"
+            echo "### Cloud backup: enabled (testing only)" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Verify Supabase RLS with two test accounts before storing any real data."
+          else
+            echo "Cloud backup UI: DISABLED"
+            echo "### Cloud backup: disabled" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Build application
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
