@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, ClipboardList, ArrowRight } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
 import { Badge, Card, CardBody, CardHeader, PageHeader, Segmented, SettingRow } from '../ui';
@@ -14,6 +14,14 @@ export function SettingsPage() {
 
       <div className="space-y-6">
         <AccountSettings />
+        <Card>
+          <CardHeader title="Báo cáo dữ liệu" subtitle="Theo dõi góp ý của bạn và phản hồi của quản trị viên." />
+          <div className="px-5 py-4">
+            <a href="#/reports" className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 text-sm font-semibold text-primary-700 hover:bg-surface-muted dark:text-primary-300">
+              <ClipboardList className="h-4 w-4" /> Xem các báo cáo <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+        </Card>
         <Card>
           <CardHeader title={t.settings.display} />
           <div className="divide-y divide-line-soft">
