@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Copy, Languages, ListOrdered } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { copyText, cx } from '../lib/utils';
-import { Alert, Badge, Button, Card, CodeBadge, EmptyState, Eyebrow, PageHeader, SearchInput, Select, Stat, TextLink } from '../ui';
-import { NIC8_SOURCE, NIC8_TOTAL_ACTIVITIES, findNic8, nic8Text, nic8Titles, translationCoverage, type Nic8SourceEntry, type ReaderLanguage } from '../data/nic8Reader';
+import { Badge, Button, Card, CodeBadge, EmptyState, Eyebrow, PageHeader, SearchInput, Select, TextLink } from '../ui';
+import { NIC8_SOURCE, findNic8, nic8Text, nic8Titles, type Nic8SourceEntry, type ReaderLanguage } from '../data/nic8Reader';
 
 const LANGUAGES: { value: ReaderLanguage; label: string }[] = [
   { value: 'en', label: 'English' },
@@ -11,7 +11,6 @@ const LANGUAGES: { value: ReaderLanguage; label: string }[] = [
   { value: 'both', label: 'Song ngữ Anh – Việt' },
   { value: 'es', label: 'Español (gốc)' },
 ];
-const COVERAGE = translationCoverage();
 
 function TextSection({ item, language }: { item: Nic8SourceEntry; language: 'en' | 'vi' | 'es' }) {
   const text = nic8Text(item, language);
@@ -19,10 +18,9 @@ function TextSection({ item, language }: { item: Nic8SourceEntry; language: 'en'
   return (
     <section aria-label={'Nội dung ' + name} className="min-w-0 space-y-5">
       {text.fallback && (
-        <Alert role="status" tone="warning">
-          Chưa có bản dịch {name} đầy đủ đã căn chỉnh. Đang hiển thị nguyên văn tiếng Tây Ban Nha,
-          không phải bản dịch {name}. Vui lòng đối chiếu tài liệu gốc khi sử dụng.
-        </Alert>
+        <p role="status" className="border-l-2 border-warning-400 pl-3 text-xs text-fg-muted">
+          Chưa có bản {name}; đang hiển thị nội dung tiếng Tây Ban Nha.
+        </p>
       )}
       <div>
         <Eyebrow>{language === 'en' ? 'Definition' : language === 'vi' ? 'Định nghĩa' : 'Definición'}</Eyebrow>
@@ -57,7 +55,7 @@ export function NicReaderPage({ query }: { query: URLSearchParams }) {
   const { toast } = useApp();
   const [textQuery, setTextQuery] = useState(query.get('q') ?? '');
   const [selectedCode, setSelectedCode] = useState(query.get('code') ?? NIC8_SOURCE[0]?.code ?? '');
-  const [language, setLanguage] = useState<ReaderLanguage>('both');
+  const [language, setLanguage] = useState<ReaderLanguage>('vi');
   const [showSource, setShowSource] = useState(false);
   const [limit, setLimit] = useState(80);
 
@@ -83,26 +81,14 @@ export function NicReaderPage({ query }: { query: URLSearchParams }) {
 
   return (
     <>
-      <PageHeader title="NIC 8 · Chi tiết can thiệp"
-        subtitle="Đọc toàn bộ 614 định nghĩa và 16.051 hoạt động đã trích xuất từ NIC 8, có liên kết đến mã can thiệp và nguồn EPUB."
+      <PageHeader title="Chi tiết can thiệp NIC 8"
         breadcrumb={<a href="#/library" className="text-xs font-medium text-fg-muted hover:text-fg">← Thư viện</a>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
-        <Stat label="Mã can thiệp" value={NIC8_SOURCE.length} />
-        <Stat label="Hoạt động nguồn" value={NIC8_TOTAL_ACTIVITIES.toLocaleString('vi-VN')} />
-        <Stat label="Đã dịch đầy đủ (định nghĩa + hoạt động)" value={`VI ${COVERAGE.vi} · EN ${COVERAGE.en}`} hint={`trên ${NIC8_SOURCE.length} can thiệp`} />
-      </div>
-      <Alert tone="warning" className="mb-5">
-        Văn bản tiếng Tây Ban Nha là nguồn gốc đã trích xuất. Nhãn tiếng Anh hiện là bản dự thảo;
-        những định nghĩa/hoạt động chưa dịch sẽ hiển thị tiếng Tây Ban Nha cùng cảnh báo rõ ràng.
-        Nội dung hỗ trợ tra cứu, không thay thế thẩm định lâm sàng.
-      </Alert>
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,1.8fr)]">
         <Card className="overflow-hidden lg:sticky lg:top-20">
           <div className="border-b border-line-soft p-4">
             <label htmlFor="nic8-search" className="mb-2 block text-sm font-medium text-fg">Tìm can thiệp và hoạt động</label>
             <SearchInput id="nic8-search" value={textQuery} onChange={v => { setTextQuery(v); setLimit(80); }}
               placeholder="Mã, Anh, Việt hoặc nội dung Tây Ban Nha" />
-            <p className="mt-2 text-xs text-fg-muted">Hiển thị tối đa {results.length} kết quả; tìm trong cả nội dung hoạt động.</p>
           </div>
           <nav aria-label="Danh mục can thiệp NIC 8" className="max-h-[65vh] overflow-y-auto">
             {results.length ? results.map(item => {

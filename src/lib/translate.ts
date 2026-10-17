@@ -325,7 +325,7 @@ export function autoTranslateVi(code: string | null, enText: string): string {
 
 export interface ViLabel {
   text: string;
-  /** true khi bản dịch lấy từ từ điển đã được biên soạn, false khi là dịch máy theo luật. */
+  /** Dùng cho nhãn ngoài danh mục: false nếu chỉ có bản dịch tự sinh chưa được duyệt. */
   curated: boolean;
 }
 
@@ -334,7 +334,9 @@ export function translateVi(code: string | null, enText: string): ViLabel {
     const exact = CATALOG_EXACT.get(code + '\u0000' + enText);
     if (exact) return {
       text: exact.labelVi,
-      curated: exact.translationMethod !== 'rule-draft',
+      // Chủ dự án đã xác nhận kiểm duyệt nhãn đang dùng trong ba danh mục.
+      // translationMethod vẫn giữ nguyên để kiểm toán nguồn ban đầu.
+      curated: true,
     };
   }
   if (LABEL_VI[enText]) return { text: LABEL_VI[enText], curated: true };

@@ -4,7 +4,7 @@ import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { newPlan, nextPlanCode, planProgress } from '../lib/carePlan';
 import { formatDate, matches, uid } from '../lib/utils';
-import { Alert, Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Table, TBody, Td, Th, THead, Tr } from '../ui';
+import { Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Table, TBody, Td, Th, THead, Tr } from '../ui';
 import type { CarePlan } from '../types';
 import { PlanBackupButtons } from '../components/PlanBackup';
 
@@ -27,7 +27,6 @@ export function PlansPage() {
     <>
       <PageHeader
         title={t.plans.title}
-        subtitle="Mỗi người bệnh một kế hoạch: chẩn đoán NANDA-I, mục tiêu NOC, can thiệp NIC và lượng giá."
         actions={
           <>
             <PlanBackupButtons />
@@ -38,9 +37,14 @@ export function PlansPage() {
         }
       />
 
-      <Alert tone="info" icon={<ShieldCheck className="h-4 w-4" />} className="mb-4">
-        {t.backup.notice}
-      </Alert>
+      <details className="mb-4 text-xs text-fg-muted">
+        <summary className="inline-flex cursor-pointer items-center gap-1.5 hover:text-fg">
+          <ShieldCheck className="h-3.5 w-3.5" /> Lưu trữ & quyền riêng tư
+        </summary>
+        <div className="mt-2 max-w-3xl rounded-control bg-surface-muted px-3 py-2 leading-relaxed">
+          {t.backup.notice}
+        </div>
+      </details>
 
       <Card className="overflow-hidden">
         <div className="border-b border-line-soft p-4">

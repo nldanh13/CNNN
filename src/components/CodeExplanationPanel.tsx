@@ -1,4 +1,4 @@
-import { Info, ClipboardList } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import type { TaxonomySystem } from '../types';
 import { explainNnnCode } from '../data/nnnExplanations';
 import { useApp } from '../store/AppContext';
@@ -39,12 +39,16 @@ export function CodeExplanationPanel({
           </div>
         </>
       )}
-      <div className="flex flex-wrap items-center gap-2 border-t border-line pt-2 text-[11px] text-fg-muted">
-        <Info className="h-3.5 w-3.5 shrink-0" />
-        <span>{guide.level === 'source-reviewed' ? t.guide.sourceReviewed : t.guide.editorial}</span>
-        {compact && <a href={`#/library?sys=${system}&code=${code}&label=${encodeURIComponent(label)}`} className="font-medium text-primary-700 underline-offset-2 hover:underline dark:text-primary-300">{t.guide.openDetail}</a>}
-      </div>
-      {!compact && <p className="text-[11px] leading-relaxed text-warning-800 dark:text-warning-300">{t.guide.copyrightNotice}</p>}
+      {compact ? (
+        <a href={`#/library?sys=${system}&code=${code}&label=${encodeURIComponent(label)}`}
+          className="text-xs font-medium text-primary-700 hover:underline dark:text-primary-300">{t.guide.openDetail}</a>
+      ) : (
+        <details className="border-t border-line pt-2 text-xs text-fg-muted">
+          <summary className="cursor-pointer">Thông tin nội dung</summary>
+          <p className="mt-2">{guide.level === 'source-reviewed' ? t.guide.sourceReviewed : t.guide.editorial}</p>
+          <p className="mt-1 leading-relaxed">{t.guide.copyrightNotice}</p>
+        </details>
+      )}
     </section>
   );
 }

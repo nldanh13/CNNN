@@ -77,7 +77,7 @@ export function AssistantPage() {
     <>
       <PageHeader
         title={<span className="flex items-center gap-2"><Sparkles className="h-6 w-6 text-primary-600" />Trợ lý chẩn đoán điều dưỡng</span>}
-        subtitle="Nhập dữ liệu nhận định, trợ lý xếp hạng chẩn đoán NANDA-I phù hợp kèm lý do, rồi gợi ý mục tiêu NOC và can thiệp NIC để đưa thẳng vào kế hoạch chăm sóc."
+        subtitle="Từ nhận định đến chẩn đoán NANDA-I, mục tiêu NOC và can thiệp NIC."
         actions={selected.length > 0 && <Button icon={<Eraser className="h-4 w-4" />} onClick={clearAll}>Làm mới</Button>}
       />
 
@@ -132,9 +132,13 @@ export function AssistantPage() {
             </Disclosure>
           )}
 
-          <Alert tone="warning" size="sm">
-            Công cụ hỗ trợ suy luận, không thay thế phán đoán lâm sàng. Dấu hiệu, trọng số và liên kết NANDA-I → NOC → NIC là nội dung biên soạn của ứng dụng (không chép từ sách), cần đối chiếu NANDA-I 2024–2026, NOC 6, NIC 8 và quy trình của đơn vị. Tình huống khẩn cấp xử trí theo quy trình cấp cứu trước.
-          </Alert>
+          <details className="text-xs text-fg-muted">
+            <summary className="cursor-pointer hover:text-fg">Lưu ý sử dụng trợ lý</summary>
+            <p className="mt-2 leading-relaxed">
+              Gợi ý không thay thế đánh giá lâm sàng. Liên kết NANDA-I, NOC và NIC cần được đối chiếu;
+              dấu hiệu khẩn cấp phải xử trí theo quy trình cấp cứu.
+            </p>
+          </details>
         </div>
       </div>
 
