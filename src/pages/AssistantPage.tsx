@@ -6,6 +6,7 @@ import { navigate } from '../store/router';
 import { CUE_BY_ID, CUE_GROUPS, CUES, SAMPLE_NOTES, type Cue } from '../data/diagnosisKnowledge';
 import { PREFILL_KEY, analyzeNote, pesStatement, rankDiagnoses, ruleVi, type Confidence, type DiagnosisSuggestion, type NoteAnalysis } from '../lib/diagnosisAssistant';
 import { newEntry, newPlan } from '../lib/carePlan';
+import { MAX_PATIENTS } from '../cloud/patientWorkspace';
 import { copyText, cx, matches, uid } from '../lib/utils';
 import { ModalFooter, ModalHeader, CardBody, Chip, Eyebrow, Alert, Badge, Button, Card, CardHeader, CodeBadge, Disclosure, EmptyState, Modal, PageHeader, ProgressBar, SearchInput, Textarea } from '../ui';
 
@@ -49,6 +50,7 @@ export function AssistantPage() {
   // Chưa có kế hoạch nào thì tạo luôn kế hoạch mới, không cần hỏi chọn.
   const push = (entry: CareEntry) => {
     if (plans.length > 0) return setPushing(entry);
+    if (plans.length >= MAX_PATIENTS) { toast('Đã đạt giới hạn 3 người bệnh.', 'info'); return; }
     const plan = newPlan(plans);
     upsertPlan(plan);
     openEntryInPlan(entry, plan.id);
@@ -426,6 +428,7 @@ function PushToPlanModal({ entry, onClose }: { entry: CareEntry; onClose: () => 
     openEntryInPlan(entry, planId);
   };
   const createAndGo = () => {
+    if (plans.length >= MAX_PATIENTS) return;
     const plan = newPlan(plans);
     upsertPlan(plan);
     go(plan.id);
@@ -438,7 +441,7 @@ function PushToPlanModal({ entry, onClose }: { entry: CareEntry; onClose: () => 
         subtitle={<><CodeBadge system="nanda" code={entry.nanda.code} className="mr-1.5" />{ruleVi(entry.nanda.code)}, kèm {entry.nic.length} can thiệp NIC. Biểu mẫu sẽ mở để bạn chọn thang NOC và điểm ban đầu.</>}
       />
       <div className="max-h-[50vh] overflow-y-auto p-2">
-        <button type="button" onClick={createAndGo} className="flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-left text-sm font-medium text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-500/10">
+        <button type="button" onClick={createAndGo} disabled={plans.length >= MAX_PATIENTS} className="flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-left text-sm font-medium text-primary-700 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-primary-300 dark:hover:bg-primary-500/10">
           <Plus className="h-4 w-4" />Tạo kế hoạch mới
         </button>
         {sorted.map((p) => (
