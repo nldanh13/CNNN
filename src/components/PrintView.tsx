@@ -128,8 +128,8 @@ function PrintEvaluation({ entry, tr, lang }: {
             {assessments.map(a => (
               <li key={a.id}>
                 <div><strong>{formatDate(a.assessedAt, lang, true)}</strong> · {a.score}/5 · Thang {a.scaleCode}{a.assessor ? ` · ${a.assessor}` : ''}</div>
-                {a.notes && <p>{tr(null, a.notes)}</p>}
-                {a.indicatorRatings.length > 0 && <p>Chỉ số: {a.indicatorRatings.map(r => `${r.code} ${r.score == null ? 'chưa chấm' : r.score + '/5'}`).join('; ')}</p>}
+                {a.notes && <p>{a.notes}</p>}
+                {(a.indicatorRatings ?? []).length > 0 && <p>Chỉ số: {(a.indicatorRatings ?? []).map(r => `${r.code} ${r.score == null ? 'chưa chấm' : r.score + '/5'}`).join('; ')}</p>}
               </li>
             ))}
           </ol>
