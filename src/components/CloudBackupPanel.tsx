@@ -23,7 +23,7 @@ export function CloudBackupPanel() {
   const session = auth.session;
 
   const reload = useCallback(async () => {
-    if (!session) return;
+    if (!cloudBackupEnabled || !session) { setLoading(false); return; }
     setError('');
     try {
       setBackups(await listCloudBackups(session));
