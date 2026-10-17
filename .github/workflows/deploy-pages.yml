@@ -62,6 +62,21 @@ jobs:
             echo "### Cloud backup: disabled" >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Check Turnstile deployment configuration
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+        run: |
+          # Do not print the public key itself; only confirm whether it is set.
+          if [[ -n "${VITE_TURNSTILE_SITE_KEY//[[:space:]]/}" ]]; then
+            echo "Turnstile site key: configured"
+            echo "### Cloudflare Turnstile: site key configured" >> "$GITHUB_STEP_SUMMARY"
+            echo "Supabase CAPTCHA must remain disabled until interactive login is verified."
+          else
+            echo "Turnstile site key: not configured"
+            echo "### Cloudflare Turnstile: site key missing (feature inactive)" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Cloudflare Turnstile is not yet configured; do not enable Supabase CAPTCHA."
+          fi
+
       - name: Build application
         env:
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
