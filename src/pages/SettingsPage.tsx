@@ -3,6 +3,7 @@ import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
 import { Card, CardHeader, LinkButton, PageHeader, Segmented } from '../ui';
 import { PlanBackupButtons } from '../components/PlanBackup';
+import { AccountSettings } from './AccountPage';
 
 export function SettingsPage() {
   const { t, theme, setTheme, plans } = useApp();
@@ -12,6 +13,7 @@ export function SettingsPage() {
       <PageHeader title={t.settings.title} />
 
       <div className="space-y-6">
+        <AccountSettings />
         <Card>
           <CardHeader title={t.settings.display} />
           <div className="divide-y divide-line-soft">
