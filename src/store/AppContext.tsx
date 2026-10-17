@@ -5,6 +5,7 @@ import { migrateCarePlans } from '../lib/nandaCodeMigration';
 import { translateVi } from '../lib/translate';
 import { load, save } from './storage';
 import { useAuth } from '../auth/AuthContext';
+import { carePlanStorageKey } from './planScope';
 
 const KEYS = { plans: 'clinicalnnn.plans.v2', lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
 
@@ -51,9 +52,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
   // In account mode, never attach the old unscoped plans to a newly logged-in user.
   // Users must explicitly import their legacy backup into their own account.
-  const planKey = auth.enabled
-    ? (auth.user ? KEYS.plans + '.user.' + auth.user.id : null)
-    : KEYS.plans;
+  const planKey = carePlanStorageKey(auth.enabled, auth.user?.id ?? null);
   // Giao diện Việt hóa cố định; vẫn giữ khóa cũ để phục hồi cấu hình người dùng.
   const lang:Lang = 'vi';
   const [theme, setTheme] = useState<Theme>(() => (document.documentElement.classList.contains('dark') ? 'dark' : 'light'));
