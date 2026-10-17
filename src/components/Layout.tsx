@@ -1,8 +1,8 @@
 import { useEffect, type ReactNode } from 'react';
-import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
-import { Alert, Button, Kbd } from '../ui';
+import { Alert, BrandLogo, Button, Kbd } from '../ui';
 import { CommandPalette } from './CommandPalette';
 import { useAuth } from '../auth/AuthContext';
 
@@ -64,27 +64,19 @@ export function Layout({ section, children }: { section: string; children: React
         aria-current={active ? 'page' : undefined}
         className={cx(
           'flex items-center gap-3 rounded-control px-3 py-2.5 text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
-          active ? 'bg-ink-900 text-white shadow-button dark:bg-white/10' : 'text-fg-body hover:bg-surface-muted hover:text-fg',
+          active ? 'bg-primary-50 text-primary-800 dark:bg-primary-500/15 dark:text-primary-100' : 'text-fg-body hover:bg-surface-muted hover:text-fg',
         )}
       >
-        <span className={active ? 'text-accent-300' : 'text-fg-subtle'}>{item.icon}</span>
+        <span className={active ? 'text-primary-700 dark:text-primary-300' : 'text-fg-subtle'}>{item.icon}</span>
         <span className="flex-1">{item.label}</span>
         {item.badge}
       </a>
     );
   };
 
-  const logo = (compact: boolean) => (
-    <a href="#/home" className="flex min-w-0 items-center gap-3">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-ink-900 text-accent-300 shadow-button dark:bg-white/10">
-        <Activity className="h-5 w-5" strokeWidth={2.2} />
-      </span>
-      <span className="min-w-0 leading-tight">
-        <span className="block truncate font-display text-[17px] font-semibold tracking-[-0.01em] text-fg">Điều dưỡng NNN</span>
-        {!compact && <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-700 dark:text-accent-300">NANDA-I · NOC · NIC</span>}
-      </span>
-    </a>
-  );
+  const logo = (compact: boolean) => <BrandLogo compact={compact} href="#/home" />;
+  const displayName = user?.user_metadata?.full_name?.trim() || user?.email || '';
+  const initials = displayName.split(/[\s@]+/).filter(Boolean).slice(0, 2).map(w => w[0]!.toUpperCase()).join('');
 
   return (
     <div className="min-h-screen bg-canvas text-fg-body print:bg-white">
@@ -123,12 +115,17 @@ export function Layout({ section, children }: { section: string; children: React
             aria-current={activeKey === 'settings' ? 'page' : undefined}
             className={cx(
               'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
-              activeKey === 'settings' ? 'border-primary-600 bg-primary-600 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
+              activeKey === 'settings' ? 'border-primary-700 bg-primary-700 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
             )}
           >
             <Settings className="h-5 w-5" />
           </a>
-          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-48 truncate text-xs font-medium text-fg-body hover:underline md:block">{user.email}</a>}
+          {user && (
+            <a href="#/settings" title="Cài đặt tài khoản" className="ml-auto hidden items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-3 transition hover:border-ink-300 md:flex dark:hover:border-ink-600">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">{initials}</span>
+              <span className="max-w-44 truncate text-sm font-medium text-fg">{displayName}</span>
+            </a>
+          )}
         </header>
 
         {storageError && (
@@ -160,7 +157,7 @@ export function Layout({ section, children }: { section: string; children: React
               aria-current={active ? 'page' : undefined}
               className={cx('flex min-h-[3.75rem] flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium', active ? 'text-fg' : 'text-fg-muted')}
             >
-              <span className={cx('flex h-7 w-12 items-center justify-center rounded-full transition', active && 'bg-ink-900 text-accent-300 dark:bg-white/10')}>{item.icon}</span>
+              <span className={cx('flex h-7 w-12 items-center justify-center rounded-full transition', active && 'bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-200')}>{item.icon}</span>
               <span className="max-w-full truncate">{item.short ?? item.label}</span>
             </a>
           );

@@ -40,7 +40,7 @@ export function Stat({ label, value, hint, tone = 'default' }: { label: ReactNod
   return (
     <div className="rounded-card border border-line bg-surface px-4 py-3 shadow-card">
       <p className="text-xs font-medium text-fg-muted">{label}</p>
-      <p className={cx('mt-1 font-display text-2xl font-medium tabular-nums', color)}>{value}</p>
+      <p className={cx('mt-1 text-2xl font-bold tabular-nums tracking-[-0.02em]', color)}>{value}</p>
       {hint && <p className="mt-0.5 text-xs text-fg-subtle">{hint}</p>}
     </div>
   );

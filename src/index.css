@@ -23,10 +23,8 @@
   h3 {
     text-wrap: balance;
   }
-  /* Tiêu đề trang dùng chữ có chân Fraunces: điểm nhận diện chính của giao diện */
+  /* Tiêu đề trang dùng cùng họ chữ với nội dung, đậm và khít để rõ ràng, chuyên nghiệp */
   h1 {
-    @apply font-display;
-    font-optical-sizing: auto;
     letter-spacing: -0.02em;
   }
   a:focus-visible {

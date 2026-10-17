@@ -19,6 +19,8 @@ assert.ok(!auth.includes('service_role') && !auth.includes('VITE_SUPABASE_SERVIC
 assert.ok(context.includes('carePlanStorageKey(auth.enabled'), 'Care plans must be account-scoped');
 assert.ok(!context.includes('save(KEYS.plans, plans)'), 'Global plan write is not permitted in account mode');
 assert.ok(app.includes('auth.enabled && !auth.user'), 'Login guard missing');
+assert.ok(app.includes('return <LandingPage />') && app.includes("section === 'dang-nhap'") && app.includes("section === 'dang-ky'"),
+  'Guests should see the landing page first, with dedicated sign-in and sign-up routes');
 assert.ok(page.includes('Đăng ký tài khoản') && page.includes('Quên mật khẩu'), 'Missing account actions');
 assert.ok(settings.includes('<AccountSettings />'), 'Settings must include account management');
 assert.ok(auth.includes("window.location.origin + window.location.pathname"),
