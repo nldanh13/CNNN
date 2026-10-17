@@ -90,7 +90,27 @@ export function Layout({ section, children }: { section: string; children: React
             ))}
           </ul>
         </nav>
-        <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>
+        {/* Một lối vào duy nhất cho tài khoản và cài đặt: thẻ tài khoản cuối thanh bên. */}
+        <div className="border-t border-line p-3">
+          {user ? (
+            <a
+              href={settingsItem.href}
+              aria-current={activeKey === 'settings' ? 'page' : undefined}
+              title={settingsItem.label}
+              className={cx(
+                'flex items-center gap-3 rounded-control px-2 py-2 transition-colors',
+                activeKey === 'settings' ? 'bg-primary-50 dark:bg-primary-500/15' : 'hover:bg-surface-muted',
+              )}
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">{initials}</span>
+              <span className="min-w-0 flex-1 leading-tight">
+                <span className="block truncate text-sm font-semibold text-fg">{displayName}</span>
+                <span className="block truncate text-xs text-fg-muted">{settingsItem.label}</span>
+              </span>
+              <Settings className="h-4 w-4 shrink-0 text-fg-subtle" />
+            </a>
+          ) : sideLink(settingsItem)}
+        </div>
       </aside>
 
       <div className="pb-20 lg:pb-0 lg:pl-64 print:p-0">
@@ -120,12 +140,6 @@ export function Layout({ section, children }: { section: string; children: React
           >
             <Settings className="h-5 w-5" />
           </a>
-          {user && (
-            <a href="#/settings" title="Cài đặt tài khoản" className="ml-auto hidden items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-3 transition hover:border-ink-300 md:flex dark:hover:border-ink-600">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">{initials}</span>
-              <span className="max-w-44 truncate text-sm font-medium text-fg">{displayName}</span>
-            </a>
-          )}
         </header>
 
         {storageError && (
