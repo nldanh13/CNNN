@@ -1,5 +1,5 @@
 import type { CarePlan } from '../types';
-import { load, save } from './storage';
+import { save } from './storage';
 
 /** Durable, account-scoped journal. Includes zero-plan drafts (a legitimate deletion). */
 export interface PendingPlanDraft {
@@ -40,7 +40,9 @@ export function removePlanDraft(key: string): boolean {
 
 /** Preserve unsynced edits separately before showing cloud data. Never overwrite earlier parked edits. */
 export function parkPlanDraft(source: string, destination: string, fallback: PendingPlanDraft): boolean {
-  if (load<unknown>(destination, null) !== null) return false;
+  // Check raw existence: even an unreadable archive must never be overwritten.
+  try { if (localStorage.getItem(destination) !== null) return false; }
+  catch { return false; }
   const snapshot = readPlanDraft(source) ?? fallback;
   return save(destination, snapshot);
 }
