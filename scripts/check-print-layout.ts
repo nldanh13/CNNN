@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { isRiskDiagnosisLabel, optionalPrintMetric, shouldPrintDiagnosticStatement, splitClinicalPrintNotes } from '../src/components/printNotes';
+import { getPrintReadinessIssues, getPrintSyncWarning } from '../src/lib/printReadiness';
+import { newEntry, newPlan } from '../src/lib/carePlan';
+import { NANDA_ITEMS, NOC_ITEMS, NIC_ITEMS } from '../src/data/taxonomy';
 
 const notes = [
   'Mục tiêu đề xuất: Trong thời gian nằm viện, da vùng tỳ đè nguyên vẹn.',
@@ -71,4 +74,50 @@ assert.ok(css.includes('@page') && css.includes('A4 portrait'));
 assert.ok(css.includes('break-after: avoid') && css.includes('break-inside: auto'),
   'A4 layout should keep headings and allow long plan pages to flow');
 assert.ok(css.includes('font-size: 9pt'), 'Printed text must remain legible after A4 pagination tuning');
+
+// Print preflight must never silently change or prohibit the user's saved plan.
+const plan = newPlan([]);
+plan.patient.name = 'Nguyen Van A';
+const validEntry = {
+  ...newEntry(),
+  nanda: { code: NANDA_ITEMS[0].code, label: NANDA_ITEMS[0].label },
+  noc: {
+    ...newEntry().noc, code: NOC_ITEMS[0].code, label: NOC_ITEMS[0].label,
+    scaleCode: '01', baseline: 2, target: 4, current: 3,
+  },
+  nic: [{ code: NIC_ITEMS[0].code, label: NIC_ITEMS[0].label, activities: [] }],
+};
+plan.entries = [validEntry];
+assert.deepEqual(getPrintReadinessIssues(plan), [], 'Complete synthetic plan should print directly');
+const original = JSON.stringify(plan);
+const noRating = getPrintReadinessIssues({
+  ...plan, entries: [{ ...validEntry, noc: { ...validEntry.noc, current: null } }],
+});
+assert.ok(noRating.some(i => i.message.includes('Chưa ghi điểm lượng giá NOC')), 'Pending assessment must be explicit');
+assert.equal(JSON.stringify(plan), original, 'Preflight mutated the stored care plan');
+assert.ok(getPrintReadinessIssues({ ...plan, patient: { ...plan.patient, name: '' } })
+  .some(i => i.id === 'patient-name'), 'Missing patient name not detected');
+assert.ok(getPrintReadinessIssues({ ...plan, entries: [] })
+  .some(i => i.id === 'empty-plan'), 'Empty care plan not detected');
+assert.ok(getPrintReadinessIssues({ ...plan, entries: [{ ...validEntry, nic: [] }] })
+  .some(i => i.message.includes('ít nhất một can thiệp NIC')), 'Missing NIC not detected');
+const risk = NANDA_ITEMS.find(i => /^risk for\b/i.test(i.label));
+assert.ok(risk, 'Risk diagnosis fixture missing');
+const riskIssues = getPrintReadinessIssues({
+  ...plan, entries: [{ ...validEntry, nanda: { code: risk!.code, label: risk!.label }, relatedFactors: [] }],
+});
+assert.ok(riskIssues.some(i => i.id.endsWith('risk-factors')), 'Risk factors missing without notice');
+assert.equal(getPrintSyncWarning('ready', 'saved'), null, 'Saved cloud plans should print normally');
+assert.equal(getPrintSyncWarning('local', 'error'), null, 'Local-only plans should not claim cloud sync failures');
+for (const state of ['saving', 'error', 'conflict'] as const) {
+  assert.ok(getPrintSyncWarning('ready', state), 'Unsynced cloud state not disclosed: ' + state);
+}
+assert.ok(getPrintSyncWarning('loading', 'idle'), 'Incomplete cloud load must be disclosed');
+const editor = readFileSync('src/pages/PlanEditorPage.tsx', 'utf8');
+assert.ok(editor.includes('onClick={requestPrint}') && editor.includes('getPrintReadinessIssues(plan)'),
+  'Print button must invoke the preflight review');
+assert.ok(editor.includes('getPrintSyncWarning(planStatus, planSyncState)'),
+  'Print button must disclose unsynced changes');
+assert.ok(editor.includes('Vẫn in bản hiện tại'), 'Non-blocking print override must be available');
+
 console.log('OK: A4 clinical print hierarchy, separate assistant notes and no misleading empty fields.');
