@@ -10,6 +10,7 @@ import { StandardsPage } from './pages/StandardsPage';
 import { QualityPage } from './pages/QualityPage';
 import { ReferencesPage } from './pages/ReferencesPage';
 import { AssistantPage } from './pages/AssistantPage';
+import { UiKitPage } from './pages/UiKitPage';
 import { useAuth } from './auth/AuthContext';
 import { AccountGate, RecoveryGate } from './pages/AccountPage';
 
@@ -18,7 +19,7 @@ const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ de
 export function App() {
   const { path, query } = useRoute();
   const auth = useAuth();
-  if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-slate-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
+  if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-ink-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
   if (auth.enabled && !auth.user) return <AccountGate />;
   if (auth.enabled && auth.session?.recovery) return <RecoveryGate />;
   const [section = 'library', id] = path;
@@ -39,7 +40,7 @@ export function App() {
       page = <LibraryPage query={query} />;
       break;
     case 'nic-reader':
-      page = <Suspense fallback={<div role="status" className="p-5 text-sm text-slate-500">Đang tải nội dung NIC 8…</div>}><NicReaderPage query={query}/></Suspense>;
+      page = <Suspense fallback={<div role="status" className="p-5 text-sm text-ink-500">Đang tải nội dung NIC 8…</div>}><NicReaderPage query={query}/></Suspense>;
       break;
     case 'standards':
       page = <StandardsPage />;
@@ -49,6 +50,9 @@ export function App() {
       break;
     case 'settings':
       page = <SettingsPage />;
+      break;
+    case 'ui':
+      page = <UiKitPage />;
       break;
     case 'quality':
       page = <QualityPage />;

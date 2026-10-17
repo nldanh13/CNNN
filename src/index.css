@@ -1,3 +1,4 @@
+@import './ui/tokens.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,10 +10,10 @@
     font-feature-settings: 'cv11', 'ss01';
   }
   body {
-    @apply bg-slate-50 font-sans text-slate-800 dark:bg-slate-950 dark:text-slate-200;
+    @apply bg-canvas font-sans text-ink-800 dark:text-ink-200;
   }
   ::selection {
-    @apply bg-brand-500/25;
+    @apply bg-primary-500/25;
   }
   .dark {
     color-scheme: dark;
@@ -23,15 +24,15 @@
     text-wrap: balance;
   }
   a:focus-visible {
-    @apply rounded-md outline-none ring-2 ring-brand-500/60;
+    @apply rounded-md outline-none ring-2 ring-primary-500/60;
   }
   /* Thanh cuộn mảnh, hợp với nền sáng/tối */
   * {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.slate.300') transparent;
+    scrollbar-color: theme('colors.ink.300') transparent;
   }
   .dark * {
-    scrollbar-color: theme('colors.slate.700') transparent;
+    scrollbar-color: theme('colors.ink.700') transparent;
   }
 }
 

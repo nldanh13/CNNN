@@ -4,7 +4,7 @@ import { useApp } from '../store/AppContext';
 import { dataHub } from '../data/dataHub';
 import { cx } from '../lib/utils';
 import type { TaxonomySystem } from '../types';
-import { CodeBadge, Kbd, Modal } from './ui';
+import { CodeBadge, Kbd, Modal } from '../ui';
 import { shortNnnExplanation } from '../data/nnnExplanations';
 
 export interface PickedItem {
@@ -62,26 +62,26 @@ export function TaxonomyPicker({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex w-full items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-left text-sm shadow-sm transition hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-950 dark:hover:border-slate-600"
+          className="flex w-full items-center gap-3 rounded-control border border-line bg-surface px-3 py-2.5 text-left text-sm shadow-sm transition hover:border-ink-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:hover:border-ink-600"
         >
           {value?.code ? (
             <>
               <CodeBadge system={system} code={value.code} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium text-slate-900 dark:text-white">{selected?.text}</span>
+                <span className="block truncate font-medium text-fg">{selected?.text}</span>
                 
               </span>
             </>
           ) : (
-            <span className="flex-1 text-slate-400">{placeholder}</span>
+            <span className="flex-1 text-fg-subtle">{placeholder}</span>
           )}
-          <ChevronsUpDown className="h-4 w-4 shrink-0 text-slate-400" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 text-fg-subtle" />
         </button>
       )}
 
       <Modal open={open} onClose={() => setOpen(false)}>
-        <div className="flex items-center gap-3 border-b border-slate-200 px-4 dark:border-slate-800">
-          <Search className="h-4 w-4 text-slate-400" />
+        <div className="flex items-center gap-3 border-b border-line px-4">
+          <Search className="h-4 w-4 text-fg-subtle" />
           <input
             autoFocus
             value={q}
@@ -99,13 +99,13 @@ export function TaxonomyPicker({
               }
             }}
             placeholder={t.picker.search}
-            className="h-12 flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
+            className="h-12 flex-1 bg-transparent text-sm text-fg placeholder:text-ink-400 focus:outline-none"
           />
           <Kbd>Esc</Kbd>
         </div>
-        <p className="border-b border-slate-100 px-4 py-2 text-xs font-medium text-slate-500 dark:border-slate-800">{placeholder}</p>
+        <p className="border-b border-line-soft px-4 py-2 text-xs font-medium text-fg-muted">{placeholder}</p>
         <ul ref={listRef} className="max-h-[55vh] overflow-y-auto p-2">
-          {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-slate-500">{t.app.noResults}</li>}
+          {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-fg-muted">{t.app.noResults}</li>}
           {results.map((item, i) => {
             const tr = term(item.code, item.label);
             const isSelected = value?.code === item.code && value.label === item.label;
@@ -118,16 +118,16 @@ export function TaxonomyPicker({
                   onMouseMove={() => setActive(i)}
                   onClick={() => pick(item)}
                   className={cx(
-                    'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm',
-                    i === active ? 'bg-slate-100 dark:bg-slate-800' : '',
+                    'flex w-full items-center gap-3 rounded-control px-3 py-2 text-left text-sm',
+                    i === active ? 'bg-surface-muted' : '',
                   )}
                 >
                   <CodeBadge system={system} code={item.code} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium text-slate-800 dark:text-slate-100">{tr.text}</span>
-                    <span className="block truncate text-[11px] text-slate-500 dark:text-slate-400">{shortNnnExplanation(system, item.code, item.label, lang)}</span>
+                    <span className="block truncate font-medium text-fg">{tr.text}</span>
+                    <span className="block truncate text-[11px] text-fg-muted">{shortNnnExplanation(system, item.code, item.label, lang)}</span>
                   </span>
-                  {(isSelected || isTaken) && <Check className="h-4 w-4 text-brand-600" />}
+                  {(isSelected || isTaken) && <Check className="h-4 w-4 text-primary-600" />}
                 </button>
               </li>
             );

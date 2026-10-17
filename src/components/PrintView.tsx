@@ -11,7 +11,7 @@ export function PrintView({ plan }: { plan: CarePlan }) {
   const bmi = computeBmi(p.heightCm, p.weightKg);
   const gender = p.gender === 'male' ? t.editor.male : p.gender === 'female' ? t.editor.female : t.editor.other;
 
-  const cell = 'border border-slate-400 px-2 py-1.5 align-top';
+  const cell = 'border border-ink-400 px-2 py-1.5 align-top';
 
   return (
     <div className="hidden text-[11px] leading-snug text-black print:block">
@@ -67,7 +67,7 @@ export function PrintView({ plan }: { plan: CarePlan }) {
 
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-slate-100">
+          <tr className="bg-ink-100">
             <th className={`${cell} w-6`}>#</th>
             <th className={`${cell} w-[30%] text-left`}>{t.editor.diagnosis} (NANDA-I)</th>
             <th className={`${cell} w-[30%] text-left`}>{t.editor.outcome} (NOC)</th>

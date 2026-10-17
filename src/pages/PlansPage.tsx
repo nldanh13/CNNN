@@ -1,14 +1,15 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { ClipboardList, Copy, Plus, Search, ShieldCheck, Trash2 } from 'lucide-react';
+import { ClipboardList, Copy, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { newPlan, nextPlanCode, planProgress } from '../lib/carePlan';
 import { formatDate, matches, uid } from '../lib/utils';
-import { Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, PageHeader, ProgressBar } from '../components/ui';
+import { Alert, Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Table, TBody, Td, Th, THead, Tr } from '../ui';
+import type { CarePlan } from '../types';
 import { PlanBackupButtons } from '../components/PlanBackup';
 
 export function PlansPage() {
-  const { t, lang, plans, upsertPlan, deletePlan, toast } = useApp();
+  const { t, lang, plans, upsertPlan } = useApp();
   const [q, setQ] = useState('');
 
   const filtered = useMemo(
@@ -26,6 +27,7 @@ export function PlansPage() {
     <>
       <PageHeader
         title={t.plans.title}
+        subtitle="Mỗi người bệnh một kế hoạch: chẩn đoán NANDA-I, mục tiêu NOC, can thiệp NIC và lượng giá."
         actions={
           <>
             <PlanBackupButtons />
@@ -36,17 +38,13 @@ export function PlansPage() {
         }
       />
 
-      <p className="mb-4 flex items-start gap-2 rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm leading-relaxed text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-200">
-        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+      <Alert tone="info" icon={<ShieldCheck className="h-4 w-4" />} className="mb-4">
         {t.backup.notice}
-      </p>
+      </Alert>
 
-      <Card>
-        <div className="border-b border-slate-100 p-4 dark:border-slate-800">
-          <div className="relative max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.plans.searchPlaceholder} className="pl-9" />
-          </div>
+      <Card className="overflow-hidden">
+        <div className="border-b border-line-soft p-4">
+          <SearchInput value={q} onChange={setQ} placeholder={t.plans.searchPlaceholder} className="max-w-sm" />
         </div>
 
         {filtered.length === 0 ? (
@@ -62,91 +60,85 @@ export function PlansPage() {
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 text-left text-xs font-medium text-slate-500 dark:border-slate-800">
-                  <th className="px-5 py-3 font-medium">{t.plans.colPatient}</th>
-                  <th className="hidden px-3 py-3 font-medium md:table-cell">{t.plans.colWard}</th>
-                  <th className="hidden px-3 py-3 font-medium lg:table-cell">{t.plans.colProblems}</th>
-                  <th className="px-3 py-3 font-medium">{t.plans.colProgress}</th>
-                  <th className="hidden px-3 py-3 font-medium sm:table-cell">{t.plans.colUpdated}</th>
-                  <th className="w-20 px-3 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {filtered.map((p) => {
-                  const prog = planProgress(p);
-                  return (
-                    <tr key={p.id} className="group cursor-pointer transition hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => navigate(`/plans/${p.id}`)}>
-                      <td className="px-5 py-3.5">
-                        <div className="font-medium text-slate-900 dark:text-white">{p.patient.name || t.plans.untitled}</div>
-                        <div className="mt-0.5 text-xs text-slate-500">
-                          <span className="font-mono">{p.code}</span>
-                          {p.patient.mrn && <> · {p.patient.mrn}</>}
-                          {p.patient.age != null && <> · {p.patient.age} {lang === 'vi' ? 'tuổi' : 'y'}</>}
-                        </div>
-                      </td>
-                      <td className="hidden px-3 py-3.5 text-slate-600 md:table-cell dark:text-slate-300">
-                        {[p.patient.ward, p.patient.bed].filter(Boolean).join(' · ') || '—'}
-                      </td>
-                      <td className="hidden px-3 py-3.5 lg:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                          {p.entries.slice(0, 4).map((e) => (
-                            <CodeBadge key={e.id} system="nanda" code={e.nanda.code} />
-                          ))}
-                          {p.entries.length > 4 && <Badge>+{p.entries.length - 4}</Badge>}
-                          {p.entries.length === 0 && <span className="text-slate-400">—</span>}
-                        </div>
-                      </td>
-                      <td className="px-3 py-3.5">
-                        <div className="w-28">
-                          <div className="mb-1 text-xs tabular-nums text-slate-500">
-                            {prog.met}/{prog.total}
+          <>
+            {/* Điện thoại: mỗi kế hoạch là một thẻ */}
+            <ul className="divide-y divide-line-soft sm:hidden">
+              {filtered.map((p) => {
+                const prog = planProgress(p);
+                return (
+                  <li key={p.id} className="flex items-center gap-3 px-4 py-3.5">
+                    <a href={`#/plans/${p.id}`} className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-fg">{p.patient.name || t.plans.untitled}</p>
+                      <p className="mt-0.5 truncate text-xs text-fg-muted">
+                        <span className="font-mono">{p.code}</span>
+                        {[p.patient.ward, p.patient.bed].filter(Boolean).length > 0 && <> · {[p.patient.ward, p.patient.bed].filter(Boolean).join(' · ')}</>}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="w-24"><ProgressBar value={prog.ratio} /></div>
+                        <span className="text-xs tabular-nums text-fg-muted">{prog.met}/{prog.total} {t.plans.colProgress.toLowerCase()}</span>
+                      </div>
+                    </a>
+                    <RowActions plan={p} />
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Máy tính: bảng */}
+            <div className="hidden sm:block">
+              <Table>
+                <THead>
+                  <Th>{t.plans.colPatient}</Th>
+                  <Th className="hidden md:table-cell">{t.plans.colWard}</Th>
+                  <Th className="hidden lg:table-cell">{t.plans.colProblems}</Th>
+                  <Th>{t.plans.colProgress}</Th>
+                  <Th>{t.plans.colUpdated}</Th>
+                  <Th className="w-20" />
+                </THead>
+                <TBody>
+                  {filtered.map((p) => {
+                    const prog = planProgress(p);
+                    return (
+                      <Tr key={p.id} interactive onClick={() => navigate(`/plans/${p.id}`)}>
+                        <Td>
+                          <div className="font-medium text-fg">{p.patient.name || t.plans.untitled}</div>
+                          <div className="mt-0.5 text-xs text-fg-muted">
+                            <span className="font-mono">{p.code}</span>
+                            {p.patient.mrn && <> · {p.patient.mrn}</>}
+                            {p.patient.age != null && <> · {p.patient.age} {lang === 'vi' ? 'tuổi' : 'y'}</>}
                           </div>
-                          <ProgressBar value={prog.ratio} />
-                        </div>
-                      </td>
-                      <td className="hidden px-3 py-3.5 text-xs text-slate-500 sm:table-cell">{formatDate(p.updatedAt, lang, true)}</td>
-                      <td className="px-3 py-3.5" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-end gap-0.5 opacity-60 transition group-hover:opacity-100">
-                          <IconButton
-                            label={t.plans.duplicate}
-                            onClick={() => {
-                              const now = new Date().toISOString();
-                              upsertPlan({
-                                ...structuredClone(p),
-                                id: uid('plan'),
-                                code: nextPlanCode(plans),
-                                createdAt: now,
-                                updatedAt: now,
-                                entries: p.entries.map((e) => ({ ...structuredClone(e), id: uid('entry') })),
-                              });
-                              toast(t.plans.duplicated);
-                            }}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </IconButton>
-                          <IconButton
-                            label={t.app.delete}
-                            tone="danger"
-                            onClick={() => {
-                              if (window.confirm(t.app.confirmDelete)) {
-                                deletePlan(p.id);
-                                toast(t.plans.deleted);
-                              }
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        </Td>
+                        <Td className="hidden text-fg-body md:table-cell">
+                          {[p.patient.ward, p.patient.bed].filter(Boolean).join(' · ') || '—'}
+                        </Td>
+                        <Td className="hidden lg:table-cell">
+                          <div className="flex flex-wrap gap-1">
+                            {p.entries.slice(0, 4).map((e) => (
+                              <CodeBadge key={e.id} system="nanda" code={e.nanda.code} />
+                            ))}
+                            {p.entries.length > 4 && <Badge>+{p.entries.length - 4}</Badge>}
+                            {p.entries.length === 0 && <span className="text-fg-subtle">—</span>}
+                          </div>
+                        </Td>
+                        <Td>
+                          <div className="w-28">
+                            <div className="mb-1 text-xs tabular-nums text-fg-muted">
+                              {prog.met}/{prog.total}
+                            </div>
+                            <ProgressBar value={prog.ratio} />
+                          </div>
+                        </Td>
+                        <Td className="text-xs text-fg-muted">{formatDate(p.updatedAt, lang, true)}</Td>
+                        <Td onClick={(e) => e.stopPropagation()}>
+                          <RowActions plan={p} />
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </TBody>
+              </Table>
+            </div>
+          </>
         )}
       </Card>
 
@@ -160,6 +152,44 @@ export function PlansPage() {
         }}
       />
     </>
+  );
+}
+
+/** Nhân bản hoặc xóa một kế hoạch. */
+function RowActions({ plan: p }: { plan: CarePlan }) {
+  const { t, plans, upsertPlan, deletePlan, toast } = useApp();
+  return (
+    <div className="flex justify-end gap-0.5">
+      <IconButton
+        label={t.plans.duplicate}
+        onClick={() => {
+          const now = new Date().toISOString();
+          upsertPlan({
+            ...structuredClone(p),
+            id: uid('plan'),
+            code: nextPlanCode(plans),
+            createdAt: now,
+            updatedAt: now,
+            entries: p.entries.map((e) => ({ ...structuredClone(e), id: uid('entry') })),
+          });
+          toast(t.plans.duplicated);
+        }}
+      >
+        <Copy className="h-4 w-4" />
+      </IconButton>
+      <IconButton
+        label={t.app.delete}
+        tone="danger"
+        onClick={() => {
+          if (window.confirm(t.app.confirmDelete)) {
+            deletePlan(p.id);
+            toast(t.plans.deleted);
+          }
+        }}
+      >
+        <Trash2 className="h-4 w-4" />
+      </IconButton>
+    </div>
   );
 }
 
@@ -191,43 +221,39 @@ function NewPatientDialog({ open, onClose, onCreate }: { open: boolean; onClose:
 
   return (
     <Modal open={open} onClose={close} className="max-w-md">
-      <form onSubmit={submit} className="space-y-4 p-5">
-        <h2 className="text-base font-semibold text-slate-900 dark:text-white">{t.plans.newTitle}</h2>
-        <Field label={t.editor.name}>
-          <Input
-            id="new-patient-name"
-            autoFocus
-            value={name}
-            aria-invalid={error}
-            aria-describedby={error ? 'new-patient-error' : undefined}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (error) setError(false);
-            }}
-            className={error ? 'border-rose-400 focus:border-rose-500' : undefined}
-          />
-          {error && (
-            <p id="new-patient-error" className="mt-1 text-xs text-rose-600 dark:text-rose-400">
-              {t.plans.nameRequired}
-            </p>
-          )}
-        </Field>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={t.editor.ward}>
-            <Input value={ward} onChange={(e) => setWard(e.target.value)} />
+      <form onSubmit={submit}>
+        <ModalHeader title={t.plans.newTitle} subtitle="Chỉ cần tên; các thông tin khác bổ sung sau." onClose={close} />
+        <div className="space-y-4 p-5">
+          <Field label={t.editor.name} error={error ? t.plans.nameRequired : undefined}>
+            <Input
+              id="new-patient-name"
+              autoFocus
+              value={name}
+              aria-invalid={error}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (error) setError(false);
+              }}
+              className={error ? 'border-danger-400 focus:border-danger-500' : undefined}
+            />
           </Field>
-          <Field label={t.editor.bed}>
-            <Input value={bed} onChange={(e) => setBed(e.target.value)} />
-          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t.editor.ward}>
+              <Input value={ward} onChange={(e) => setWard(e.target.value)} />
+            </Field>
+            <Field label={t.editor.bed}>
+              <Input value={bed} onChange={(e) => setBed(e.target.value)} />
+            </Field>
+          </div>
         </div>
-        <div className="flex justify-end gap-2 pt-1">
+        <ModalFooter>
           <Button variant="ghost" onClick={close}>
             {t.app.cancel}
           </Button>
           <Button type="submit" variant="primary">
             {t.plans.create}
           </Button>
-        </div>
+        </ModalFooter>
       </form>
     </Modal>
   );

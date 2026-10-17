@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
-import { Button, Card, CardHeader, Input } from '../components/ui';
+import { Alert, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
 const errorText = (e: unknown) => e instanceof Error ? e.message : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
@@ -44,52 +44,46 @@ export function AccountGate() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8 text-slate-900">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-8">
       <div className="w-full max-w-md">
-        <div className="mb-7 text-center text-white">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-600">
+        <div className="mb-7 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-card bg-primary-600 text-white shadow-sm">
             <BookOpen className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold">Thư viện Điều dưỡng NNN</h1>
-          <p className="mt-2 text-sm text-slate-300">Một tài khoản để truy cập NANDA-I, NOC, NIC và trợ lý chẩn đoán.</p>
+          <h1 className="text-2xl font-bold text-fg">Thư viện Điều dưỡng NNN</h1>
+          <p className="mt-2 text-sm text-fg-muted">Một tài khoản để truy cập NANDA-I, NOC, NIC và trợ lý chẩn đoán.</p>
         </div>
         <Card className="p-6">
-          <h2 className="mb-5 text-xl font-semibold">
+          <h2 className="mb-5 text-xl font-semibold text-fg">
             {mode === 'login' ? 'Đăng nhập' : mode === 'signup' ? 'Tạo tài khoản' : 'Khôi phục mật khẩu'}
           </h2>
           <form className="space-y-4" onSubmit={submit}>
-            {mode === 'signup' && <label className="block space-y-1.5 text-sm">
-              <span>Họ tên hiển thị</span>
+            {mode === 'signup' && <Field label="Họ tên hiển thị">
               <Input value={name} onChange={e => setName(e.target.value)} autoComplete="name" maxLength={80} required />
-            </label>}
-            <label className="block space-y-1.5 text-sm">
-              <span>Email</span>
+            </Field>}
+            <Field label="Email">
               <Input type="email" value={email} onChange={e => setEmail(e.target.value)}
                 autoComplete="email" inputMode="email" required />
-            </label>
-            {mode !== 'forgot' && <label className="block space-y-1.5 text-sm">
-              <span>Mật khẩu</span>
+            </Field>
+            {mode !== 'forgot' && <Field label="Mật khẩu" hint={mode === 'signup' ? 'Ít nhất 12 ký tự.' : undefined}>
               <Input type="password" value={password} onChange={e => setPassword(e.target.value)}
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 minLength={mode === 'signup' ? 12 : undefined} required />
-            </label>}
-            {failure && <p role="alert" className="rounded-md bg-rose-50 p-3 text-sm text-rose-800">{failure}</p>}
-            {feedback && <p role="status" className="rounded-md bg-sky-50 p-3 text-sm text-sky-800">{feedback}</p>}
+            </Field>}
+            {failure && <Alert role="alert" tone="danger" size="sm">{failure}</Alert>}
+            {feedback && <Alert role="status" tone="info" size="sm">{feedback}</Alert>}
             <Button type="submit" variant="primary" className="w-full" disabled={busy}
               icon={mode === 'forgot' ? <KeyRound className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}>
               {busy ? 'Đang xử lý…' : mode === 'login' ? 'Đăng nhập' : mode === 'signup' ? 'Đăng ký' : 'Gửi email khôi phục'}
             </Button>
           </form>
           <div className="mt-5 flex flex-wrap justify-center gap-4 text-sm">
-            {mode !== 'login' && <button type="button" onClick={() => selectMode('login')}
-              className="text-teal-700 hover:underline">Đăng nhập</button>}
-            {mode !== 'signup' && <button type="button" onClick={() => selectMode('signup')}
-              className="text-teal-700 hover:underline">Đăng ký tài khoản</button>}
-            {mode !== 'forgot' && <button type="button" onClick={() => selectMode('forgot')}
-              className="text-teal-700 hover:underline">Quên mật khẩu?</button>}
+            {mode !== 'login' && <TextLink onClick={() => selectMode('login')}>Đăng nhập</TextLink>}
+            {mode !== 'signup' && <TextLink onClick={() => selectMode('signup')}>Đăng ký tài khoản</TextLink>}
+            {mode !== 'forgot' && <TextLink onClick={() => selectMode('forgot')}>Quên mật khẩu?</TextLink>}
           </div>
         </Card>
-        <p className="mt-4 text-center text-xs text-slate-300">
+        <p className="mt-4 text-center text-xs leading-relaxed text-fg-muted">
           Kế hoạch chăm sóc hiện lưu trên thiết bị của từng tài khoản, không tự đồng bộ giữa các máy.
           Không nhập dữ liệu nhận dạng người bệnh khi chưa có hệ thống lưu trữ được phê duyệt.
         </p>
@@ -104,10 +98,10 @@ export function RecoveryGate() {
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  return <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
+  return <div className="flex min-h-screen items-center justify-center bg-canvas p-4">
     <Card className="w-full max-w-md p-6">
-      <h1 className="mb-4 text-xl font-semibold">Đặt mật khẩu mới</h1>
-      <p className="mb-4 text-sm text-slate-600">Bạn đã xác nhận liên kết khôi phục. Hãy đặt mật khẩu mới để tiếp tục.</p>
+      <h1 className="mb-4 text-xl font-semibold text-fg">Đặt mật khẩu mới</h1>
+      <p className="mb-4 text-sm text-fg-muted">Bạn đã xác nhận liên kết khôi phục. Hãy đặt mật khẩu mới để tiếp tục.</p>
       <form className="space-y-3" onSubmit={async e => {
         e.preventDefault(); setError('');
         if (password.length < 12) { setError('Mật khẩu phải có ít nhất 12 ký tự.'); return; }
@@ -120,7 +114,7 @@ export function RecoveryGate() {
           placeholder="Mật khẩu mới" autoComplete="new-password" minLength={12} required />
         <Input type="password" aria-label="Nhập lại mật khẩu" value={confirm} onChange={e => setConfirm(e.target.value)}
           placeholder="Nhập lại mật khẩu mới" autoComplete="new-password" minLength={12} required />
-        {error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
+        {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
         <Button type="submit" variant="primary" disabled={busy}>Lưu mật khẩu</Button>
       </form>
     </Card>
@@ -143,7 +137,7 @@ export function AccountSettings() {
   if (!auth.enabled) {
     return <Card>
       <CardHeader title="Tài khoản" subtitle="Chưa kết nối dịch vụ tài khoản" />
-      <p className="px-5 pb-5 text-sm text-slate-600 dark:text-slate-400">
+      <p className="px-5 py-4 text-sm leading-relaxed text-fg-muted">
         Ứng dụng hiện đang ở chế độ thiết bị cá nhân. Quản trị viên cần cấu hình VITE_SUPABASE_URL và
         VITE_SUPABASE_ANON_KEY để bật đăng ký, đăng nhập cho mọi người.
       </p>
@@ -152,44 +146,41 @@ export function AccountSettings() {
   if (!auth.user) return null;
   return <Card>
     <CardHeader title="Tài khoản của tôi" subtitle="Quản lý thông tin đăng nhập" />
-    <div className="space-y-5 p-5">
-      <div className="flex items-center gap-2 text-sm"><UserRound className="h-4 w-4" />
+    <CardBody className="space-y-5">
+      <div className="flex items-center gap-2 text-sm text-fg"><UserRound className="h-4 w-4 text-fg-muted" />
         <span className="font-medium">{auth.user.email}</span>
       </div>
-      <div className="flex items-start gap-2 rounded-md bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+      <Alert tone="neutral" size="sm" icon={<ShieldCheck className="h-4 w-4" />}>
         Mỗi tài khoản có dữ liệu kế hoạch riêng trên trình duyệt hiện tại. Chưa có lưu trữ đám mây
         hoặc đồng bộ giữa thiết bị. Không sử dụng để lưu hồ sơ bệnh án thật.
-      </div>
+      </Alert>
       <form className="space-y-3" onSubmit={e => {
         e.preventDefault();
         void action(() => auth.updateName(fullName));
       }}>
-        <label className="block space-y-1 text-sm">
-          <span>Họ tên hiển thị</span>
+        <Field label="Họ tên hiển thị">
           <Input value={fullName} onChange={e => setFullName(e.target.value)} maxLength={80} required />
-        </label>
+        </Field>
         <Button type="submit" disabled={busy}>Lưu họ tên</Button>
       </form>
-      <form className="space-y-3 border-t border-slate-200 pt-4 dark:border-slate-800" onSubmit={e => {
+      <form className="space-y-3 border-t border-line-soft pt-4" onSubmit={e => {
         e.preventDefault();
         if (newPassword.length < 12) { setError('Mật khẩu phải có ít nhất 12 ký tự.'); return; }
         void action(async () => { await auth.updatePassword(newPassword); setNewPassword(''); });
       }}>
-        <label className="block space-y-1 text-sm">
-          <span>Đổi mật khẩu</span>
+        <Field label="Đổi mật khẩu" hint="Ít nhất 12 ký tự.">
           <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
             autoComplete="new-password" minLength={12} required />
-        </label>
+        </Field>
         <Button type="submit" disabled={busy}>Đổi mật khẩu</Button>
       </form>
-      {message && <p role="status" className="text-sm text-teal-700">{message}</p>}
-      {error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
-      <div className="border-t border-slate-200 pt-4 dark:border-slate-800">
+      {message && <Alert role="status" tone="success" size="sm">{message}</Alert>}
+      {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
+      <div className="border-t border-line-soft pt-4">
         <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => void auth.signOut()}>
           Đăng xuất
         </Button>
       </div>
-    </div>
+    </CardBody>
   </Card>;
 }
