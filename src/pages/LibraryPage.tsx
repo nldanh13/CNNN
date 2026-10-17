@@ -55,10 +55,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
   const detail=selectedItem?<ItemDetail system={system} item={selectedItem} edition={edition}/>:null;
 
   return <>
-    <PageHeader title={t.library.title} subtitle="Tra cứu NANDA-I, NOC, NIC theo mã hoặc tên, gõ có dấu hay không dấu đều được. Chọn một mục NIC để đọc định nghĩa và hoạt động NIC 8." />
-    <Alert tone="warning" size="sm" className="mb-4">
-      {dataHub.translationReview.draft} nhãn tiếng Việt là bản dịch dự thảo, phân lớp NOC đã được bổ sung nhưng chưa đối chiếu sách. Cần chuyên gia thẩm định trước khi dùng làm chuẩn lâm sàng.
-    </Alert>
+    <PageHeader title={t.library.title} subtitle="Tra cứu NANDA-I, NOC và NIC." />
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
         options={(['nanda','noc','nic'] as const).map(s=>({
@@ -98,9 +95,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
                   <CodeBadge system={system} code={item.code} className="w-14 justify-center"/>
                   <span className="min-w-0 flex-1"><Term code={item.code} en={item.label}
                     className="block truncate text-sm text-fg-body"/>
-                    {dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
-                      <span className="mt-0.5 block text-[10px] text-warning-600">Bản dịch dự thảo</span>
-                    )}</span>
+</span>
                   {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<AlertTriangle className="h-4 w-4 text-warning-500"/>}
                 </button>
               </li>;
@@ -152,7 +147,7 @@ function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;ed
       <span className="text-xs text-fg-muted">{edition}</span>
     </div>
     <h2 className="mt-3 text-lg font-semibold leading-snug text-fg">{tr.text}</h2>
-    <p className="mt-2 text-xs text-fg-muted">Tên gốc để đối chiếu: {item.label}</p>
+    <p className="mt-2 text-xs text-fg-muted">{item.label}</p>
     {tr.machine&&<p className="mt-1 text-xs text-warning-600">{t.app.machineTranslatedHint}</p>}
     {rows.length>0&&<DescriptionList className="mt-5" items={rows}/>}
     <CodeExplanationPanel system={system} code={item.code} label={item.label}/>
