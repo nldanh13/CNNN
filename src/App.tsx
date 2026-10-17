@@ -15,12 +15,15 @@ import { useAuth } from './auth/AuthContext';
 import { AccountGate, RecoveryGate } from './pages/AccountPage';
 import { LandingPage } from './pages/LandingPage';
 import { PageSkeleton } from './ui';
+import { useApp } from './store/AppContext';
+import { PatientCloudGate } from './components/PatientCloudGate';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
 
 export function App() {
   const { path, query } = useRoute();
   const auth = useAuth();
+  const { planStatus } = useApp();
   // Production must never silently switch into guest mode when Auth configuration is absent.
   if (import.meta.env.PROD && !auth.enabled) return <div role="alert" className="mx-auto mt-20 max-w-lg rounded-xl border border-danger-500/40 bg-canvas p-6 text-center text-fg">CNNN đang tạm bảo trì đăng nhập. Vui lòng quay lại sau.</div>;
   if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-ink-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
@@ -70,5 +73,9 @@ export function App() {
       page = <HomePage />;
   }
 
+  if ((section === 'plans' || section === 'assistant') &&
+      planStatus !== 'ready' && planStatus !== 'local') {
+    page = <PatientCloudGate />;
+  }
   return <Layout section={section}>{page}</Layout>;
 }
