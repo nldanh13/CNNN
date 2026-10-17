@@ -52,6 +52,8 @@ const hook = readFileSync('src/store/usePatientPlans.ts', 'utf8');
 const gate = readFileSync('src/components/PatientCloudGate.tsx', 'utf8');
 const layout = readFileSync('src/components/Layout.tsx', 'utf8');
 const planPage = readFileSync('src/pages/PlansPage.tsx', 'utf8');
+const planEditor = readFileSync('src/pages/PlanEditorPage.tsx', 'utf8');
+const deleteDialog = readFileSync('src/components/DeletePlanDialog.tsx', 'utf8');
 const status = readFileSync('src/components/PlanSyncStatus.tsx', 'utf8');
 assert.ok(hook.includes('const differs = dirtyCache ||'), 'Zero-plan pending deletion must prompt recovery');
 assert.ok(hook.includes('journal?.plans ?? cached'), 'Use the durable journal ahead of legacy cache');
@@ -74,4 +76,29 @@ assert.ok(layout.includes('<PlanSyncStatus />'), 'Status should be visible on ed
 assert.ok(status.includes('Thử lưu lại'), 'Failed saves must expose retry UI');
 assert.ok(!planPage.includes('planSyncMessage.includes('),
   'Status actions must be based on typed state, not text substring heuristics');
+// Deletion must only be initiated after explicit confirmation on BOTH patient pages.
+assert.ok(deleteDialog.includes('onConfirm: (plan: CarePlan) => void') &&
+  deleteDialog.includes('onClick={() => onConfirm(plan)}') &&
+  deleteDialog.includes('onClick={onClose}') && deleteDialog.includes('autoFocus'),
+  'Deletion confirmation must offer safe cancellation and explicit approval');
+assert.ok(deleteDialog.includes('plan.patient.name.trim()') &&
+  deleteDialog.includes('{plan.code}') &&
+  deleteDialog.includes('plan.entries.length'),
+  'Deletion dialog must identify the exact patient plan and its scope');
+assert.ok(planPage.includes('onClick={onRequestDelete}') &&
+  planPage.includes('<DeletePlanDialog') &&
+  planPage.includes('deletePlan(selected.id)') &&
+  !planPage.includes('deletePlan(p.id)'),
+  'Patient list must not delete on first click');
+assert.ok(planEditor.includes('onClick={() => setDeleteReviewOpen(true)}') &&
+  planEditor.includes('<DeletePlanDialog') &&
+  planEditor.includes('plan={deleteReviewOpen ? plan : null}') &&
+  planEditor.includes('deletePlan(selected.id)') &&
+  planEditor.includes('if (editing.fromAssistant && plan.entries.length === 0 && !plan.patient.name.trim())') &&
+  planEditor.split('deletePlan(plan.id)').length === 2,
+  'Plan editor must not delete on first click');
+assert.ok(planPage.includes('run: () => upsertPlan(selected)') &&
+  planEditor.includes('upsertPlan(selected); navigate('),
+  'Existing delete undo must be preserved after confirmation');
+
 console.log('OK: pending drafts including empty deletions survive; stale/conflicting writes blocked; safe offline UX.');

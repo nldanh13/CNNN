@@ -8,10 +8,12 @@ import { validateName, type NameError } from '../lib/patientValidation';
 import { Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Table, TBody, Td, Th, THead, Tr } from '../ui';
 import type { CarePlan } from '../types';
 import { MAX_PATIENTS } from '../cloud/patientWorkspace';
+import { DeletePlanDialog } from '../components/DeletePlanDialog';
 
 export function PlansPage() {
-  const { t, lang, plans, upsertPlan } = useApp();
+  const { t, lang, plans, upsertPlan, deletePlan, toast } = useApp();
   const [q, setQ] = useState('');
+  const [deleting, setDeleting] = useState<CarePlan | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -76,7 +78,7 @@ export function PlansPage() {
                         <span className="text-xs tabular-nums text-fg-muted">{prog.met}/{prog.total} {t.plans.colProgress.toLowerCase()}</span>
                       </div>
                     </a>
-                    <RowActions plan={p} />
+                    <RowActions plan={p} onRequestDelete={() => setDeleting(p)} />
                   </li>
                 );
               })}
@@ -128,7 +130,7 @@ export function PlansPage() {
                         </Td>
                         <Td className="text-xs text-fg-muted">{formatDate(p.updatedAt, lang, true)}</Td>
                         <Td onClick={(e) => e.stopPropagation()}>
-                          <RowActions plan={p} />
+                          <RowActions plan={p} onRequestDelete={() => setDeleting(p)} />
                         </Td>
                       </Tr>
                     );
@@ -140,6 +142,19 @@ export function PlansPage() {
         )}
       </Card>
 
+      <DeletePlanDialog
+        plan={deleting}
+        onClose={() => setDeleting(null)}
+        onConfirm={(selected) => {
+          setDeleting(null);
+          if (!plans.some((p) => p.id === selected.id)) return;
+          deletePlan(selected.id);
+          toast(t.plans.deleted, 'success', {
+            label: t.app.undo,
+            run: () => upsertPlan(selected),
+          });
+        }}
+      />
       <NewPatientDialog
         open={adding && plans.length < MAX_PATIENTS}
         onClose={() => setAdding(false)}
@@ -155,8 +170,8 @@ export function PlansPage() {
 }
 
 /** Nhân bản hoặc xóa một kế hoạch. */
-function RowActions({ plan: p }: { plan: CarePlan }) {
-  const { t, plans, upsertPlan, deletePlan, toast } = useApp();
+function RowActions({ plan: p, onRequestDelete }: { plan: CarePlan; onRequestDelete: () => void }) {
+  const { t, plans, upsertPlan, toast } = useApp();
   return (
     <div className="flex justify-end gap-0.5">
       <IconButton
@@ -181,10 +196,7 @@ function RowActions({ plan: p }: { plan: CarePlan }) {
       <IconButton
         label={t.app.delete}
         tone="danger"
-        onClick={() => {
-          deletePlan(p.id);
-          toast(t.plans.deleted, 'success', { label: t.app.undo, run: () => upsertPlan(p) });
-        }}
+        onClick={onRequestDelete}
       >
         <Trash2 className="h-4 w-4" />
       </IconButton>

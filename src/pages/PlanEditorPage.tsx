@@ -30,6 +30,7 @@ import { EntryForm } from '../components/EntryForm';
 import { scaleLabel } from '../components/Likert';
 import { NocAssessmentPanel } from '../components/NocAssessmentPanel';
 import { PrintView } from '../components/PrintView';
+import { DeletePlanDialog } from '../components/DeletePlanDialog';
 import { RETIRED_NIC7 } from '../data/nicMigration';
 import { AGE_RULE, HEIGHT_RULE, WEIGHT_RULE, parseMeasure, validateName, type MeasureError } from '../lib/patientValidation';
 import { NnnReasoningWorkflow } from '../components/NnnReasoningWorkflow';
@@ -54,6 +55,7 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
   const plan = plans.find((p) => p.id === id);
   const [editing, setEditing] = useState<{ entry: CareEntry; isNew: boolean; fromAssistant?: boolean } | null>(null);
   const [printReviewOpen, setPrintReviewOpen] = useState(false);
+  const [deleteReviewOpen, setDeleteReviewOpen] = useState(false);
   // Mặc định chỉ mở vấn đề ưu tiên đầu tiên để danh sách dài vẫn gọn.
   const [openIds, setOpenIds] = useState<Set<string>>(() => new Set(plan?.entries[0] ? [plan.entries[0].id] : []));
   const toggleOpen = (entryId: string) =>
@@ -142,11 +144,7 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
               <IconButton
                 label={t.app.delete}
                 tone="danger"
-                onClick={() => {
-                  deletePlan(plan.id);
-                  toast(t.plans.deleted, 'success', { label: t.app.undo, run: () => { upsertPlan(plan); navigate(`/plans/${plan.id}`); } });
-                  navigate('/plans');
-                }}
+                onClick={() => setDeleteReviewOpen(true)}
               >
                 <Trash2 className="h-4 w-4" />
               </IconButton>
@@ -236,6 +234,21 @@ export function PlanEditorPage({ id, query }: { id: string; query: URLSearchPara
       </div>
 
       <PrintView plan={plan} />
+
+      <DeletePlanDialog
+        plan={deleteReviewOpen ? plan : null}
+        onClose={() => setDeleteReviewOpen(false)}
+        onConfirm={(selected) => {
+          setDeleteReviewOpen(false);
+          if (!plans.some((p) => p.id === selected.id)) return;
+          deletePlan(selected.id);
+          toast(t.plans.deleted, 'success', {
+            label: t.app.undo,
+            run: () => { upsertPlan(selected); navigate(`/plans/${selected.id}`); },
+          });
+          navigate('/plans');
+        }}
+      />
 
       <Modal open={printReviewOpen} onClose={() => setPrintReviewOpen(false)}>
         <ModalHeader
