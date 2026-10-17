@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { BookText, Check, ChevronDown, ClipboardCopy, ClipboardPlus, Eraser, ListChecks, Plus, Sparkles, Stethoscope, Target, Wand2, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { ArrowDown, BookText, Check, ChevronDown, ClipboardCopy, ClipboardPlus, Eraser, ListChecks, Plus, Sparkles, Stethoscope, Target, Wand2, X } from 'lucide-react';
 import type { CareEntry } from '../types';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
@@ -7,7 +7,7 @@ import { CUE_BY_ID, CUE_GROUPS, CUES, SAMPLE_NOTES, type Cue } from '../data/dia
 import { PREFILL_KEY, analyzeNote, pesStatement, rankDiagnoses, ruleVi, type Confidence, type DiagnosisSuggestion, type NoteAnalysis } from '../lib/diagnosisAssistant';
 import { newEntry, newPlan } from '../lib/carePlan';
 import { copyText, cx, matches, uid } from '../lib/utils';
-import { ModalFooter, ModalHeader, CardBody, Chip, Eyebrow, Steps, Alert, Badge, Button, Card, CardHeader, CodeBadge, Disclosure, EmptyState, Modal, PageHeader, ProgressBar, SearchInput, Textarea } from '../ui';
+import { ModalFooter, ModalHeader, CardBody, Chip, Eyebrow, Alert, Badge, Button, Card, CardHeader, CodeBadge, Disclosure, EmptyState, Modal, PageHeader, ProgressBar, SearchInput, Textarea } from '../ui';
 
 const STATE_KEY = 'clinicalnnn.assistant.state';
 
@@ -43,6 +43,8 @@ export function AssistantPage() {
   const [evidence, setEvidence] = useState<Record<string, string>>(initial.evidence);
   const [analysis, setAnalysis] = useState<NoteAnalysis | null>(null);
   const [pushing, setPushing] = useState<CareEntry | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const resultsInView = useInView(resultsRef);
   const { toast, plans, upsertPlan } = useApp();
   // Chưa có kế hoạch nào thì tạo luôn kế hoạch mới, không cần hỏi chọn.
   const push = (entry: CareEntry) => {
@@ -81,23 +83,13 @@ export function AssistantPage() {
         actions={selected.length > 0 && <Button icon={<Eraser className="h-4 w-4" />} onClick={clearAll}>Làm mới</Button>}
       />
 
-      <div className="mb-5">
-        <Steps
-          steps={[
-            { title: 'Nhận định', text: 'Dán ghi chép hoặc chọn dấu hiệu, chỉ số sinh tồn, yếu tố nguy cơ.', icon: <Stethoscope className="h-4 w-4" /> },
-            { title: 'Chẩn đoán', text: 'Xếp hạng theo bằng chứng và mức ưu tiên, có lý do và điều cần đánh giá thêm.', icon: <ListChecks className="h-4 w-4" /> },
-            { title: 'Mục tiêu & can thiệp', text: 'Chọn NOC, NIC phù hợp; đưa vào kế hoạch để chấm điểm và theo dõi.', icon: <Target className="h-4 w-4" /> },
-          ]}
-        />
-      </div>
-
       <div className="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="space-y-5">
           <NotePanel note={note} setNote={setNote} analysis={analysis} onAnalyze={runAnalysis} />
           <CuePanel selected={selectedSet} evidence={evidence} toggle={toggle} />
         </div>
 
-        <div className="space-y-4">
+        <div ref={resultsRef} className="scroll-mt-20 space-y-4">
           <Card>
             <CardHeader
               icon={<ListChecks className="h-5 w-5" />}
@@ -111,7 +103,7 @@ export function AssistantPage() {
                 icon={<Wand2 className="h-5 w-5" />}
                 title={selected.length
                   ? 'Dữ liệu hiện có chưa đủ để gợi ý. Hãy bổ sung dấu hiệu đặc trưng (ví dụ: ho không hiệu quả, điểm đau, SpO₂, Braden).'
-                  : 'Dán một ghi chép nhận định hoặc thử một ví dụ mẫu ở bên trái.'}
+                  : 'Dán ghi chép nhận định hoặc thử một ví dụ mẫu để xem gợi ý.'}
               />
             ) : (
               <ol className="divide-y divide-line-soft">
@@ -142,9 +134,33 @@ export function AssistantPage() {
         </div>
       </div>
 
+      {/* Điện thoại: kết quả nằm dưới danh sách dấu hiệu, nên có nút nhảy thẳng tới. */}
+      {main.length > 0 && !resultsInView && (
+        <button
+          type="button"
+          onClick={() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="fixed inset-x-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 flex items-center justify-center gap-2 rounded-control bg-primary-700 px-4 py-3 text-sm font-semibold text-white shadow-raised lg:hidden print:hidden"
+        >
+          Xem {main.length} chẩn đoán gợi ý<ArrowDown className="h-4 w-4" />
+        </button>
+      )}
+
       {pushing && <PushToPlanModal entry={pushing} onClose={() => setPushing(null)} />}
     </>
   );
+}
+
+/** Theo dõi phần tử có đang hiện trên màn hình không. */
+function useInView(ref: RefObject<HTMLElement | null>) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { rootMargin: '0px 0px -40% 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+  return inView;
 }
 
 // ---------------------------------------------------------------------------
@@ -162,11 +178,11 @@ function NotePanel({ note, setNote, analysis, onAnalyze }: {
           onChange={(e) => setNote(e.target.value)}
           placeholder="Ví dụ: Người bệnh 75 tuổi, ho yếu, đờm đặc khó khạc, SpO2 90%, nhiệt độ 38.5°C, đau vết mổ 6/10, không sốt về đêm…"
         />
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="primary" icon={<Sparkles className="h-4 w-4" />} disabled={!note.trim()} onClick={() => onAnalyze()}>Phân tích</Button>
-          <span className="text-xs text-fg-muted">Ví dụ:</span>
+        <Button variant="primary" className="w-full sm:w-auto" icon={<Sparkles className="h-4 w-4" />} disabled={!note.trim()} onClick={() => onAnalyze()}>Phân tích</Button>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-0.5 text-xs text-fg-muted">Thử ví dụ:</span>
           {SAMPLE_NOTES.map((s) => (
-            <Button key={s.title} size="sm" variant="ghost" onClick={() => { setNote(s.text); onAnalyze(s.text); }}>{s.title}</Button>
+            <Chip key={s.title} onClick={() => { setNote(s.text); onAnalyze(s.text); }}>{s.title}</Chip>
           ))}
         </div>
         {analysis && (analysis.detections.length > 0 || analysis.negated.length > 0) && (

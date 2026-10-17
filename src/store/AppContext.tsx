@@ -92,7 +92,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const toast = useCallback((message: string, tone: Toast['tone'] = 'success') => {
     const id = ++toastId.current;
-    setToasts((ts) => [...ts, { id, message, tone }]);
+    // Cùng một thông báo lặp lại thì thay thế, không xếp chồng.
+    setToasts((ts) => [...ts.filter((x) => x.message !== message), { id, message, tone }]);
     setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== id)), 3200);
   }, []);
 

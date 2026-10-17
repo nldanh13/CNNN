@@ -30,7 +30,7 @@ export function PlansPage() {
         actions={
           <>
             <PlanBackupButtons />
-            <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={create}>
+            <Button variant="primary" className="order-first w-full sm:w-auto lg:order-none" icon={<Plus className="h-4 w-4" />} onClick={create}>
               {t.plans.newTitle}
             </Button>
           </>
