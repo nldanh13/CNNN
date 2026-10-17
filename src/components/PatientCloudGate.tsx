@@ -5,7 +5,7 @@ import { Button, Card } from '../ui';
 /** Show migration once for existing local plans; never silently discard them. */
 export function PatientCloudGate() {
   const {
-    planStatus, planError, oldPlansCount, retryCloudPlans,
+    planStatus, planError, oldPlansCount, planMigrationKind, retryCloudPlans,
     importOldPlans, skipOldPlans,
   } = useApp();
 
@@ -35,18 +35,23 @@ export function PatientCloudGate() {
     <Card className="mx-auto max-w-xl space-y-4 p-6">
       <div className="flex items-center gap-3">
         <Cloud className="h-6 w-6 text-primary-600" />
-        <h2 className="text-lg font-semibold text-fg">Chuyển kế hoạch cũ vào tài khoản</h2>
+        <h2 className="text-lg font-semibold text-fg">{planMigrationKind === 'legacy' ? 'Chuyển kế hoạch cũ vào tài khoản' : 'Đối chiếu bản nháp chưa đồng bộ'}</h2>
       </div>
       <p className="text-sm leading-relaxed text-fg-muted">
-        Phát hiện {oldPlansCount} kế hoạch đã lưu trước đây trên thiết bị này.
-        Bạn có thể chuyển chúng vào tài khoản để tự lưu và mở trên thiết bị khác.
-        Các kế hoạch cũ không bị xóa.
+        {planMigrationKind === 'legacy'
+          ? `Phát hiện ${oldPlansCount} kế hoạch cũ. Bạn có thể chuyển vào tài khoản; dữ liệu cũ không bị xóa.`
+          : `Thiết bị này còn một bản chỉnh sửa chưa đồng bộ (${oldPlansCount} kế hoạch, có thể bao gồm thao tác xóa).
+              Dữ liệu trên Supabase có thể khác. Bản nháp sẽ không bị tự động ghi đè hoặc xóa.`}
       </p>
       <p className="text-xs text-fg-muted">Mỗi tài khoản được lưu tối đa 3 người bệnh.</p>
       {planError && <p role="alert" className="text-sm text-danger-600">{planError}</p>}
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => void importOldPlans()}>Chuyển vào tài khoản</Button>
-        <Button variant="secondary" onClick={skipOldPlans}>Dùng dữ liệu đang có trên tài khoản</Button>
+        <Button onClick={() => void importOldPlans()}>
+          {planMigrationKind === 'legacy' ? 'Chuyển vào tài khoản' : 'Thử lưu bản chỉnh sửa trên máy'}
+        </Button>
+        <Button variant="secondary" onClick={skipOldPlans}>
+          {planMigrationKind === 'legacy' ? 'Dùng dữ liệu đang có trên tài khoản' : 'Dùng dữ liệu Supabase, giữ bản nháp trên máy'}
+        </Button>
       </div>
     </Card>
   );
