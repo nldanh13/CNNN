@@ -97,7 +97,7 @@ export function Segmented<T extends string>({
           className={cx(
             'inline-flex items-center gap-1.5 rounded-md font-medium transition',
             size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3.5 py-1.5 text-sm',
-            value === o.value ? 'bg-surface text-fg shadow-sm' : 'text-fg-muted hover:text-fg',
+            value === o.value ? 'bg-surface text-fg shadow-card ring-1 ring-line' : 'text-fg-muted hover:text-fg',
           )}
         >
           {o.icon}

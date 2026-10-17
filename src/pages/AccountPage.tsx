@@ -162,7 +162,7 @@ export function AccountSettings() {
         {initials(displayName)}
       </span>
       <div className="min-w-0 flex-1 basis-48">
-        <p className="truncate text-lg font-semibold text-fg">{displayName}</p>
+        <p className="truncate font-display text-xl font-semibold text-fg">{displayName}</p>
         <p className="truncate text-sm text-fg-muted">{auth.user.email}</p>
       </div>
       <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => void auth.signOut()}>

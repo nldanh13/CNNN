@@ -8,8 +8,8 @@ const BASE =
   'inline-flex shrink-0 items-center justify-center rounded-control font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-55';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-primary-600 text-white shadow-sm hover:bg-primary-700 active:bg-primary-800',
-  secondary: 'border border-line bg-surface text-fg-body shadow-sm hover:border-ink-300 hover:bg-surface-muted dark:hover:border-ink-600',
+  primary: 'bg-primary-600 text-white shadow-button hover:bg-primary-700 active:bg-primary-800',
+  secondary: 'border border-line bg-surface text-fg shadow-card hover:border-ink-300 hover:bg-surface-muted dark:hover:border-ink-600',
   ghost: 'text-fg-body hover:bg-surface-muted hover:text-fg',
   danger: 'text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-500/10',
 };

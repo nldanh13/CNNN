@@ -92,5 +92,5 @@ export function Chip({
 
 /** Nhãn nhỏ viết hoa phía trên một nhóm nội dung. */
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cx('mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-fg-subtle', className)}>{children}</p>;
+  return <p className={cx('mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-700 dark:text-accent-300', className)}>{children}</p>;
 }
