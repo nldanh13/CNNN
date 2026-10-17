@@ -4,6 +4,7 @@ import { STRINGS, type Strings } from '../i18n/strings';
 import { migrateCarePlans } from '../lib/nandaCodeMigration';
 import { translateVi } from '../lib/translate';
 import { load, save } from './storage';
+import { useAuth } from '../auth/AuthContext';
 
 const KEYS = { plans: 'clinicalnnn.plans.v2', lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
 
@@ -42,18 +43,45 @@ function withoutSamplePlan(plans: CarePlan[]): CarePlan[] {
   return plans.filter((p) => !(p.id === 'plan-sample-1' && p.patient?.mrn === 'BN-240176'));
 }
 
+function readPlans(key: string): CarePlan[] {
+  return migrateCarePlans(withoutSamplePlan(load<CarePlan[] | null>(key, null) ?? []));
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  // In account mode, never attach the old unscoped plans to a newly logged-in user.
+  // Users must explicitly import their legacy backup into their own account.
+  const planKey = auth.enabled
+    ? (auth.user ? KEYS.plans + '.user.' + auth.user.id : null)
+    : KEYS.plans;
   // Giao diện Việt hóa cố định; vẫn giữ khóa cũ để phục hồi cấu hình người dùng.
   const lang:Lang = 'vi';
   const [theme, setTheme] = useState<Theme>(() => (document.documentElement.classList.contains('dark') ? 'dark' : 'light'));
-  const [plans, setPlans] = useState<CarePlan[]>(() => migrateCarePlans(withoutSamplePlan(load<CarePlan[] | null>(KEYS.plans, null) ?? [])));
+  const [planState, setPlanState] = useState<{ key: string | null; plans: CarePlan[] }>(
+    () => ({ key: planKey, plans: planKey ? readPlans(planKey) : [] }),
+  );
+  const plans = planState.key === planKey ? planState.plans : [];
+  const setPlans = (change: (current: CarePlan[]) => CarePlan[]) => {
+    setPlanState(previous => previous.key === planKey
+      ? { ...previous, plans: change(previous.plans) } : previous);
+  };
   const [storageError, setStorageError] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const toastId = useRef(0);
 
-  useEffect(() => { setStorageError(!save(KEYS.plans, plans)); }, [plans]);
-  const retryStorage = useCallback(() => setStorageError(!save(KEYS.plans, plans)), [plans]);
+  useEffect(() => {
+    setPlanState({ key: planKey, plans: planKey ? readPlans(planKey) : [] });
+    setStorageError(false);
+  }, [planKey]);
+  useEffect(() => {
+    if (!auth.ready || !planKey || planState.key !== planKey) return;
+    setStorageError(!save(planKey, planState.plans));
+  }, [auth.ready, planKey, planState]);
+  const retryStorage = useCallback(() => {
+    if (!planKey || planState.key !== planKey) return;
+    setStorageError(!save(planKey, planState.plans));
+  }, [planKey, planState]);
   useEffect(() => {
     save(KEYS.lang, lang);
     document.documentElement.lang = lang;
