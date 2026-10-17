@@ -30,7 +30,8 @@
     "check:clean-interface": "tsx scripts/check-clean-interface.ts",
     "check:home-navigation": "tsx scripts/check-home-navigation.ts",
     "check:cloud-backup": "tsx scripts/check-cloud-backup.ts",
-    "check:security": "tsx scripts/check-security-baseline.ts"
+    "check:security": "tsx scripts/check-security-baseline.ts",
+    "check:rls-read": "tsx scripts/check-rls-read.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",

@@ -110,3 +110,19 @@ export async function deleteCloudBackup(session: AccountSession, id: string): Pr
     throw new Error('Không tìm thấy bản sao lưu cần xóa.');
   }
 }
+
+/**
+ * Read-only adversarial RLS check. The query deliberately omits user_id:
+ * the database must filter other users' records via its authenticated JWT
+ * and RLS policies, NOT through a client-supplied owner filter.
+ * Never fetch payload or perform a DELETE during this check.
+ */
+export async function canReadCloudBackupId(session: AccountSession, id: string): Promise<boolean> {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id.trim())) {
+    throw new Error('Mã bản sao lưu không đúng định dạng UUID.');
+  }
+  const rows = await request<Array<{ id: string }>>(session, 'GET',
+    'select=id&id=eq.' + encodeURIComponent(id.trim()) + '&limit=1');
+  if (!Array.isArray(rows)) throw new Error('Dữ liệu phản hồi không hợp lệ.');
+  return rows.length > 0;
+}
