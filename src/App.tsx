@@ -14,6 +14,8 @@ import { UiKitPage } from './pages/UiKitPage';
 import { useAuth } from './auth/AuthContext';
 import { AccountGate, RecoveryGate } from './pages/AccountPage';
 import { PageSkeleton } from './ui';
+import { MfaGate } from './components/MfaGate';
+import { requiresTotp } from './auth/mfa';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
 
