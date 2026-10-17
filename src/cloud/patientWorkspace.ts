@@ -1,6 +1,7 @@
 import type { AccountSession } from '../auth/supabaseAuth';
 import type { CarePlan } from '../types';
 import { migrateCarePlans } from '../lib/nandaCodeMigration';
+import { parseBackup } from '../lib/backup';
 
 export const MAX_PATIENTS = 3;
 export const patientCloudEnabled =
@@ -103,4 +104,17 @@ export async function savePatientWorkspace(
     throw new CloudWorkspaceError('Supabase không xác nhận phiên bản dữ liệu đã lưu.', 'other');
   }
   return result;
+}
+
+/**
+ * Read the last old backup ONLY for one-time, user-confirmed migration.
+ * This path is not exposed as a backup/restore UI. Existing snapshots are
+ * left in their original protected table; no destructive data conversion.
+ */
+export async function findPreviousAccountPlans(session: AccountSession): Promise<CarePlan[]> {
+  const query = 'cnnn_backup_snapshots?select=payload&user_id=eq.' +
+    encodeURIComponent(session.user.id) + '&order=created_at.desc&limit=1';
+  const rows = await request<Array<{ payload: unknown }>>(session, query, 'GET');
+  if (!Array.isArray(rows) || !rows.length) return [];
+  return parseBackup(JSON.stringify(rows[0].payload));
 }
