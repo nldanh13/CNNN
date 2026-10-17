@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { AlertTriangle, CheckCircle2, Info, ShieldAlert } from 'lucide-react';
 import { cx } from '../lib/utils';
 import { TONE_ICON, TONE_PANEL, TONE_SOFT, TONE_SOLID, type Tone } from './tone';
@@ -51,7 +51,7 @@ export function Alert({
 
 export function ProgressBar({ value, tone = 'primary' }: { value: number; tone?: Tone }) {
   return (
-    <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-muted">
       <div className={cx('h-full rounded-full transition-all', TONE_SOLID[tone])} style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
     </div>
   );
@@ -59,4 +59,38 @@ export function ProgressBar({ value, tone = 'primary' }: { value: number; tone?:
 
 export function Kbd({ children }: { children: ReactNode }) {
   return <kbd className="rounded border border-line bg-surface-muted px-1.5 py-0.5 font-mono text-[10px] font-medium text-fg-muted">{children}</kbd>;
+}
+
+/** Thẻ chọn hình viên thuốc: dấu hiệu, bộ lọc, gợi ý thêm. */
+export function Chip({
+  selected,
+  variant = 'toggle',
+  className,
+  children,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { selected?: boolean; variant?: 'toggle' | 'solid' | 'add' }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={variant === 'toggle' ? !!selected : undefined}
+      className={cx(
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-left text-xs font-medium transition disabled:cursor-default disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
+        variant === 'solid' && 'bg-primary-600 text-white hover:bg-primary-700',
+        variant === 'add' && 'border border-dashed border-ink-300 text-fg-body hover:border-primary-500 hover:text-primary-700 dark:border-ink-600',
+        variant === 'toggle' &&
+          (selected
+            ? 'border border-primary-600 bg-primary-50 text-primary-800 dark:bg-primary-500/15 dark:text-primary-200'
+            : 'border border-line text-fg-body hover:border-ink-300 hover:bg-surface-muted'),
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Nhãn nhỏ viết hoa phía trên một nhóm nội dung. */
+export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
+  return <p className={cx('mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-fg-subtle', className)}>{children}</p>;
 }

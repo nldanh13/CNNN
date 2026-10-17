@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, BookText, Check, ChevronDown, ClipboardCopy, ClipboardPlus, Eraser, ListChecks, Plus, Sparkles, Stethoscope, Target, Wand2, X } from 'lucide-react';
+import { BookText, Check, ChevronDown, ClipboardCopy, ClipboardPlus, Eraser, ListChecks, Plus, Sparkles, Stethoscope, Target, Wand2, X } from 'lucide-react';
 import type { CareEntry } from '../types';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
@@ -7,7 +7,7 @@ import { CUE_BY_ID, CUE_GROUPS, CUES, SAMPLE_NOTES, type Cue } from '../data/dia
 import { PREFILL_KEY, analyzeNote, pesStatement, rankDiagnoses, ruleVi, type Confidence, type DiagnosisSuggestion, type NoteAnalysis } from '../lib/diagnosisAssistant';
 import { newEntry, newPlan } from '../lib/carePlan';
 import { copyText, cx, matches, uid } from '../lib/utils';
-import { Steps, Alert, Badge, Button, Card, CardHeader, CodeBadge, Disclosure, EmptyState, Modal, PageHeader, ProgressBar, SearchInput, Textarea } from '../ui';
+import { ModalFooter, ModalHeader, CardBody, Chip, Eyebrow, Steps, Alert, Badge, Button, Card, CardHeader, CodeBadge, Disclosure, EmptyState, Modal, PageHeader, ProgressBar, SearchInput, Textarea } from '../ui';
 
 const STATE_KEY = 'clinicalnnn.assistant.state';
 
@@ -124,7 +124,7 @@ export function AssistantPage() {
 
           {superseded.length > 0 && (
             <Disclosure summary={`${superseded.length} chẩn đoán nguy cơ đã được thay bằng chẩn đoán hiện tại`}>
-              <ul className="space-y-1 text-sm text-ink-600 dark:text-ink-400">
+              <ul className="space-y-1 text-sm text-fg-body">
                 {superseded.map((s) => (
                   <li key={s.rule.code}><CodeBadge system="nanda" code={s.rule.code} className="mr-2" />{s.rule.vi}: vấn đề đã xảy ra, dùng “{ruleVi(s.supersededBy!)}”.</li>
                 ))}
@@ -151,7 +151,7 @@ function NotePanel({ note, setNote, analysis, onAnalyze }: {
   return (
     <Card>
       <CardHeader icon={<Wand2 className="h-5 w-5" />} title="Phân tích ghi chép nhận định" subtitle="Viết tự do, có dấu hoặc không dấu. Nhận diện cả chỉ số: SpO₂, nhiệt độ, mạch, HA, nhịp thở, điểm đau x/10, đường huyết, Braden, Morse, GCS." />
-      <div className="space-y-3 p-5">
+      <CardBody className="space-y-3">
         <Textarea
           rows={5}
           value={note}
@@ -160,16 +160,16 @@ function NotePanel({ note, setNote, analysis, onAnalyze }: {
         />
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="primary" icon={<Sparkles className="h-4 w-4" />} disabled={!note.trim()} onClick={() => onAnalyze()}>Phân tích</Button>
-          <span className="text-xs text-ink-500">Ví dụ:</span>
+          <span className="text-xs text-fg-muted">Ví dụ:</span>
           {SAMPLE_NOTES.map((s) => (
             <Button key={s.title} size="sm" variant="ghost" onClick={() => { setNote(s.text); onAnalyze(s.text); }}>{s.title}</Button>
           ))}
         </div>
         {analysis && (analysis.detections.length > 0 || analysis.negated.length > 0) && (
-          <div className="space-y-2 rounded-lg bg-ink-50 p-3 text-xs dark:bg-ink-800/50">
+          <div className="space-y-2 rounded-control bg-surface-muted p-3 text-xs">
             {analysis.detections.length > 0 && (
               <div>
-                <p className="mb-1.5 font-medium text-ink-700 dark:text-ink-300">Đã nhận diện và thêm vào dữ liệu:</p>
+                <p className="mb-1.5 font-medium text-fg-body">Đã nhận diện và thêm vào dữ liệu:</p>
                 <div className="flex flex-wrap gap-1.5">
                   {analysis.detections.map((d) => (
                     <Badge key={d.cueId} tone="primary" title={CUE_BY_ID.get(d.cueId)?.vi}><Check className="h-3 w-3" />{d.evidence}</Badge>
@@ -178,11 +178,11 @@ function NotePanel({ note, setNote, analysis, onAnalyze }: {
               </div>
             )}
             {analysis.negated.length > 0 && (
-              <p className="text-ink-500">Bỏ qua vì có từ phủ định: {analysis.negated.map((d) => d.evidence).join(', ')}.</p>
+              <p className="text-fg-muted">Bỏ qua vì có từ phủ định: {analysis.negated.map((d) => d.evidence).join(', ')}.</p>
             )}
           </div>
         )}
-      </div>
+      </CardBody>
     </Card>
   );
 }
@@ -198,10 +198,9 @@ function CuePanel({ selected, evidence, toggle }: { selected: Set<string>; evide
         {chosen.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {chosen.map((c) => (
-              <button key={c.id} type="button" onClick={() => toggle(c.id)}
-                className="inline-flex items-center gap-1 rounded-full bg-primary-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-primary-700">
+              <Chip key={c.id} variant="solid" onClick={() => toggle(c.id)}>
                 {c.vi}{evidence[c.id] && /\d/.test(evidence[c.id]) ? ` · ${evidence[c.id]}` : ''}<X className="h-3 w-3" aria-label="Bỏ chọn" />
-              </button>
+              </Chip>
             ))}
           </div>
         )}
@@ -212,21 +211,18 @@ function CuePanel({ selected, evidence, toggle }: { selected: Set<string>; evide
             if (!cues.length) return null;
             const count = cues.filter((c) => selected.has(c.id)).length;
             return (
-              <details key={g.id} open={Boolean(q) || count > 0} className="group rounded-lg border border-line">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2 text-sm font-medium text-ink-800 dark:text-ink-200">
+              <details key={g.id} open={Boolean(q) || count > 0} className="group rounded-control border border-line">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-3 py-2.5 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden">
                   <span>{g.vi}{count > 0 && <Badge tone="primary" className="ml-2">{count}</Badge>}</span>
-                  <ChevronDown className="h-4 w-4 text-ink-400 transition group-open:rotate-180" />
+                  <ChevronDown className="h-4 w-4 text-fg-subtle transition group-open:rotate-180" />
                 </summary>
                 <div className="flex flex-wrap gap-1.5 px-3 pb-3">
                   {cues.map((c) => {
                     const on = selected.has(c.id);
                     return (
-                      <button key={c.id} type="button" aria-pressed={on} onClick={() => toggle(c.id)}
-                        className={cx('rounded-full border px-2.5 py-1 text-left text-xs transition',
-                          on ? 'border-primary-600 bg-primary-50 text-primary-800 dark:bg-primary-500/15 dark:text-primary-200'
-                            : 'border-ink-200 text-ink-600 hover:border-ink-300 hover:bg-ink-50 dark:border-ink-700 dark:text-ink-300 dark:hover:bg-ink-800')}>
-                        {on && <Check className="mr-1 inline h-3 w-3" />}{c.vi}
-                      </button>
+                      <Chip key={c.id} selected={on} onClick={() => toggle(c.id)}>
+                        {on && <Check className="h-3 w-3" />}{c.vi}
+                      </Chip>
                     );
                   })}
                 </div>
@@ -276,15 +272,15 @@ function SuggestionCard({ rank, s, evidence, selected, onAddCue, onPush, default
     <li className="px-5 py-4">
       <div className="flex items-start gap-3">
         <span className={cx('mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
-          rank === 1 ? 'bg-primary-600 text-white' : 'bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300')}>{rank}</span>
+          rank === 1 ? 'bg-primary-600 text-white' : 'bg-surface-muted text-fg-body')}>{rank}</span>
         <div className="min-w-0 flex-1">
           <button type="button" onClick={() => setOpen(!open)} className="w-full text-left" aria-expanded={open}>
             <div className="flex flex-wrap items-center gap-2">
               <CodeBadge system="nanda" code={s.rule.code} />
               <h3 className="text-[15px] font-semibold text-fg">{s.rule.vi}</h3>
-              <ChevronDown className={cx('ml-auto h-4 w-4 shrink-0 text-ink-400 transition', open && 'rotate-180')} />
+              <ChevronDown className={cx('ml-auto h-4 w-4 shrink-0 text-fg-subtle transition', open && 'rotate-180')} />
             </div>
-            <p className="mt-0.5 text-xs text-ink-500">{s.label}</p>
+            <p className="mt-0.5 text-xs text-fg-muted">{s.label}</p>
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <Badge tone={conf.tone}>{conf.label}</Badge>
               <Badge tone={pr.tone}>{pr.label}</Badge>
@@ -292,66 +288,63 @@ function SuggestionCard({ rank, s, evidence, selected, onAddCue, onPush, default
             </div>
             <div className="mt-2 flex items-center gap-2">
               <div className="flex-1"><ProgressBar value={s.relevance / 100} tone={s.confidence === 'high' ? 'primary' : 'warning'} /></div>
-              <span className="w-10 text-right text-xs tabular-nums text-ink-500">{s.relevance}%</span>
+              <span className="w-10 text-right text-xs tabular-nums text-fg-muted">{s.relevance}%</span>
             </div>
           </button>
 
           {s.redFlag && (
-            <p role="alert" className="mt-3 flex items-start gap-2 rounded-lg border border-danger-300 bg-danger-50 px-3 py-2 text-xs font-medium text-danger-900 dark:border-danger-800 dark:bg-danger-950/40 dark:text-danger-200">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />{s.redFlag}
-            </p>
+            <Alert role="alert" tone="danger" size="sm" className="mt-3 font-medium">{s.redFlag}</Alert>
           )}
 
           {open && (
             <div className="mt-4 space-y-4 text-sm">
               <section>
-                <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-500">Vì sao gợi ý</h4>
+                <Eyebrow>Vì sao gợi ý</Eyebrow>
                 <ul className="space-y-1">
                   {s.matchedSigns.map((m) => (
                     <li key={m.cue.id} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-success-600" />
                       <span>{withEvidence(m.cue)}{m.weight === 3 && <Badge tone="success" className="ml-1.5">đặc trưng</Badge>}</span></li>
                   ))}
                   {s.matchedFactors.map((m) => (
-                    <li key={m.cue.id} className="flex items-start gap-2 text-ink-600 dark:text-ink-400"><Plus className="mt-0.5 h-4 w-4 shrink-0 text-info-600" />
+                    <li key={m.cue.id} className="flex items-start gap-2 text-fg-body"><Plus className="mt-0.5 h-4 w-4 shrink-0 text-info-600" />
                       <span>{s.rule.kind === 'risk' ? 'Yếu tố nguy cơ' : 'Yếu tố liên quan'}: {withEvidence(m.cue)}</span></li>
                   ))}
                 </ul>
-                {s.rule.differential && <p className="mt-2 text-xs leading-relaxed text-ink-500">Phân biệt: {s.rule.differential}</p>}
+                {s.rule.differential && <p className="mt-2 text-xs leading-relaxed text-fg-muted">Phân biệt: {s.rule.differential}</p>}
               </section>
 
               {s.toVerify.length > 0 && (
                 <section>
-                  <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-500">Cần đánh giá thêm để khẳng định</h4>
+                  <Eyebrow>Cần đánh giá thêm để khẳng định</Eyebrow>
                   <div className="flex flex-wrap gap-1.5">
                     {s.toVerify.map((c) => (
-                      <button key={c.id} type="button" onClick={() => onAddCue(c.id)} disabled={selected.has(c.id)}
-                        className="inline-flex items-center gap-1 rounded-full border border-dashed border-ink-300 px-2.5 py-1 text-xs text-ink-600 hover:border-primary-500 hover:text-primary-700 dark:border-ink-600 dark:text-ink-300">
+                      <Chip key={c.id} variant="add" onClick={() => onAddCue(c.id)} disabled={selected.has(c.id)}>
                         <Plus className="h-3 w-3" />{c.vi}
-                      </button>
+                      </Chip>
                     ))}
                   </div>
                 </section>
               )}
 
-              <section className="rounded-lg bg-ink-50 p-3 dark:bg-ink-800/50">
+              <section className="rounded-control bg-surface-muted p-3">
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-500">Câu chẩn đoán (P – E – S)</h4>
+                  <Eyebrow className="mb-0">Câu chẩn đoán (P – E – S)</Eyebrow>
                   <Button size="sm" variant="ghost" icon={<ClipboardCopy className="h-3.5 w-3.5" />}
                     onClick={async () => toast(await copyText(pes) ? 'Đã sao chép câu chẩn đoán' : 'Không sao chép được', 'info')}>Sao chép</Button>
                 </div>
-                <p className="leading-relaxed text-ink-800 dark:text-ink-200">{pes}</p>
+                <p className="leading-relaxed text-fg-body">{pes}</p>
               </section>
 
               <section>
-                <h4 className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-info-700 dark:text-info-300"><Target className="h-3.5 w-3.5" />Mục tiêu (NOC): chọn một</h4>
+                <h4 className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-noc-700 dark:text-noc-300"><Target className="h-3.5 w-3.5" />Mục tiêu (NOC): chọn một</h4>
                 <div className="space-y-1.5">
                   {s.noc.map((n) => (
-                    <label key={n.code} className={cx('flex cursor-pointer items-start gap-2 rounded-lg border px-3 py-2',
-                      nocCode === n.code ? 'border-info-400 bg-info-50/60 dark:border-info-700 dark:bg-info-950/20' : 'border-line', !n.relevant && 'opacity-70')}>
+                    <label key={n.code} className={cx('flex cursor-pointer items-start gap-2 rounded-control border px-3 py-2',
+                      nocCode === n.code ? 'border-noc-400 bg-noc-50 dark:border-noc-500/40 dark:bg-noc-500/10' : 'border-line', !n.relevant && 'opacity-70')}>
                       <input type="radio" name={'noc-' + s.rule.code} className="mt-1" checked={nocCode === n.code} onChange={() => setNocCode(n.code)} />
                       <span className="min-w-0">
                         <span className="flex flex-wrap items-center gap-1.5"><CodeBadge system="noc" code={n.code} /><span className="font-medium">{n.vi}</span></span>
-                        <span className="block text-xs text-ink-500">{n.label} · {n.why}</span>
+                        <span className="block text-xs text-fg-muted">{n.label} · {n.why}</span>
                       </span>
                     </label>
                   ))}
@@ -362,21 +355,21 @@ function SuggestionCard({ rank, s, evidence, selected, onAddCue, onPush, default
               </section>
 
               <section>
-                <h4 className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-success-700 dark:text-success-300"><ListChecks className="h-3.5 w-3.5" />Can thiệp (NIC)</h4>
+                <h4 className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-nic-700 dark:text-nic-300"><ListChecks className="h-3.5 w-3.5" />Can thiệp (NIC)</h4>
                 <div className="space-y-1.5">
                   {s.nic.map((n) => {
                     const on = nicCodes.includes(n.code);
                     return (
-                      <div key={n.code} className={cx('flex items-start gap-2 rounded-lg border px-3 py-2',
-                        on ? 'border-success-400 bg-success-50/50 dark:border-success-800 dark:bg-success-950/20' : 'border-line', !n.relevant && !on && 'opacity-70')}>
+                      <div key={n.code} className={cx('flex items-start gap-2 rounded-control border px-3 py-2',
+                        on ? 'border-nic-400 bg-nic-50 dark:border-nic-500/40 dark:bg-nic-500/10' : 'border-line', !n.relevant && !on && 'opacity-70')}>
                         <input type="checkbox" className="mt-1" checked={on} aria-label={n.vi}
                           onChange={() => setNicCodes((xs) => (on ? xs.filter((x) => x !== n.code) : [...xs, n.code]))} />
                         <span className="min-w-0 flex-1">
                           <span className="flex flex-wrap items-center gap-1.5"><CodeBadge system="nic" code={n.code} /><span className="font-medium">{n.vi}</span>
                             {!n.relevant && <Badge>khi cần</Badge>}</span>
-                          <span className="block text-xs text-ink-500">{n.label} · {n.why}</span>
+                          <span className="block text-xs text-fg-muted">{n.label} · {n.why}</span>
                         </span>
-                        <a href={`#/nic-reader?code=${n.code}`} title="Xem định nghĩa và hoạt động NIC 8" className="shrink-0 rounded p-1 text-ink-400 hover:bg-ink-100 hover:text-success-700 dark:hover:bg-ink-800">
+                        <a href={`#/nic-reader?code=${n.code}`} title="Xem định nghĩa và hoạt động NIC 8" className="shrink-0 rounded p-1 text-fg-subtle hover:bg-surface-muted hover:text-nic-700">
                           <BookText className="h-4 w-4" />
                         </a>
                       </div>
@@ -385,8 +378,8 @@ function SuggestionCard({ rank, s, evidence, selected, onAddCue, onPush, default
                 </div>
               </section>
 
-              <div className="flex flex-wrap items-center justify-end gap-2 border-t border-ink-100 pt-3 dark:border-ink-800">
-                <span className="mr-auto text-xs text-ink-500">Mở biểu mẫu kế hoạch để chọn thang NOC và điểm ban đầu trước khi lưu.</span>
+              <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line-soft pt-3">
+                <span className="mr-auto text-xs text-fg-muted">Mở biểu mẫu kế hoạch để chọn thang NOC và điểm ban đầu trước khi lưu.</span>
                 <Button variant="primary" icon={<ClipboardPlus className="h-4 w-4" />} disabled={!nocCode || nicCodes.length === 0} onClick={() => onPush(buildEntry())}>
                   Đưa vào kế hoạch chăm sóc
                 </Button>
@@ -419,27 +412,26 @@ function PushToPlanModal({ entry, onClose }: { entry: CareEntry; onClose: () => 
   };
   return (
     <Modal open onClose={onClose}>
-      <div className="border-b border-line px-5 py-4">
-        <h2 className="text-base font-semibold text-fg">Đưa vào kế hoạch chăm sóc</h2>
-        <p className="mt-0.5 text-xs text-ink-500">
-          <CodeBadge system="nanda" code={entry.nanda.code} className="mr-1.5" />{ruleVi(entry.nanda.code)}, kèm {entry.nic.length} can thiệp NIC. Biểu mẫu sẽ mở để bạn chọn thang NOC và điểm ban đầu.
-        </p>
-      </div>
+      <ModalHeader
+        title="Đưa vào kế hoạch chăm sóc"
+        onClose={onClose}
+        subtitle={<><CodeBadge system="nanda" code={entry.nanda.code} className="mr-1.5" />{ruleVi(entry.nanda.code)}, kèm {entry.nic.length} can thiệp NIC. Biểu mẫu sẽ mở để bạn chọn thang NOC và điểm ban đầu.</>}
+      />
       <div className="max-h-[50vh] overflow-y-auto p-2">
-        <button type="button" onClick={createAndGo} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-500/10">
+        <button type="button" onClick={createAndGo} className="flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-left text-sm font-medium text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-500/10">
           <Plus className="h-4 w-4" />Tạo kế hoạch mới
         </button>
         {sorted.map((p) => (
-          <button key={p.id} type="button" onClick={() => go(p.id)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm hover:bg-ink-50 dark:hover:bg-ink-800">
-            <span className="font-mono text-xs text-ink-500">{p.code}</span>
+          <button key={p.id} type="button" onClick={() => go(p.id)} className="flex w-full items-center gap-3 rounded-control px-3 py-2.5 text-left text-sm hover:bg-surface-muted">
+            <span className="font-mono text-xs text-fg-muted">{p.code}</span>
             <span className="flex-1 truncate">{p.patient.name || 'Chưa có tên người bệnh'}{p.patient.bed ? ` · giường ${p.patient.bed}` : ''}</span>
-            <span className="text-xs text-ink-400">{p.entries.length} vấn đề</span>
+            <span className="text-xs text-fg-subtle">{p.entries.length} vấn đề</span>
           </button>
         ))}
       </div>
-      <div className="flex justify-end border-t border-line px-5 py-3">
+      <ModalFooter>
         <Button onClick={onClose}>Hủy</Button>
-      </div>
+      </ModalFooter>
     </Modal>
   );
 }

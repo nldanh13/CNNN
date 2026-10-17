@@ -4,7 +4,7 @@ import { useApp } from '../store/AppContext';
 
 const TONES = {
   neutral: 'bg-ink-700 text-white dark:bg-ink-200 dark:text-ink-900',
-  info: 'bg-info-600 text-white',
+  info: 'bg-noc-600 text-white',
   success: 'bg-success-600 text-white',
 };
 
@@ -42,7 +42,7 @@ export function LikertInput({
             className={cx(
               'rounded-md font-mono font-semibold tabular-nums transition',
               size === 'sm' ? 'h-6 w-6 text-[11px]' : 'h-8 w-8 text-xs',
-              on ? TONES[tone] : 'bg-ink-100 text-ink-500 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-400 dark:hover:bg-ink-700',
+              on ? TONES[tone] : 'bg-surface-muted text-fg-muted hover:bg-ink-200 dark:hover:bg-ink-700',
             )}
           >
             {n}

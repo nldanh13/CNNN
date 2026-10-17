@@ -17,18 +17,19 @@ Vai trò tự đổi theo chế độ sáng/tối, ưu tiên dùng thay cho cặ
 
 - Nền: `bg-canvas` (nền trang), `bg-surface` (thẻ), `bg-surface-muted` (vùng phụ)
 - Viền: `border-line`, `border-line-soft`
-- Chữ: `text-fg` (chính), `text-fg-muted` (phụ), `text-fg-subtle` (mờ)
+- Chữ: `text-fg` (tiêu đề), `text-fg-body` (nội dung), `text-fg-muted` (phụ), `text-fg-subtle` (mờ)
 - Bo góc: `rounded-control` (nút, ô nhập), `rounded-card` (thẻ)
 
 ## Thành phần
 
 Nhập từ `../ui`:
 
-- Nút: `Button`, `LinkButton`, `IconButton`, `buttonClass()`
+- Nút: `Button`, `LinkButton`, `IconButton`, `TextLink`, `buttonClass()`
 - Khung: `PageHeader`, `SectionTitle`, `Card`, `CardHeader`, `CardBody`, `Steps`, `Disclosure`, `EmptyState`
-- Thông báo: `Alert` (info/success/warning/danger), `Badge`, `ProgressBar`, `Kbd`
-- Biểu mẫu: `Field`, `Input`, `Textarea`, `Select`, `SearchInput`, `Segmented`, `TagInput`
-- Lớp phủ: `Modal`, `Drawer`
+- Dữ liệu: `Table` (`THead`, `Th`, `TBody`, `Tr`, `Td`), `Stat`, `DescriptionList`, `SettingRow`
+- Thông báo: `Alert` (info/success/warning/danger), `Badge`, `Chip`, `Eyebrow`, `ProgressBar`, `Kbd`
+- Biểu mẫu: `Field` (có `hint`, `error`), `Input`, `Textarea`, `Select`, `SearchInput`, `Segmented`, `TagInput`
+- Lớp phủ: `Modal` (`ModalHeader`, `ModalFooter`), `Drawer`
 - Phân loại: `CodeBadge`, `SYSTEM_DOT`, `SYSTEM_TEXT`, `Term`
 
 ## Quy tắc
@@ -37,4 +38,7 @@ Nhập từ `../ui`:
 2. Mỗi vùng chỉ có một nút `primary`.
 3. Hộp lưu ý luôn là `Alert`, không tự tô khung màu.
 4. Ô tìm kiếm luôn là `SearchInput`.
-5. Mã NANDA-I/NOC/NIC luôn hiển thị bằng `CodeBadge`.
+5. Mã NANDA-I/NOC/NIC luôn hiển thị bằng `CodeBadge`; màu riêng của từng hệ dùng `SYSTEM_DOT`, `SYSTEM_TEXT` hoặc bảng `nanda`/`noc`/`nic`.
+6. Bảng luôn dùng `Table`; hộp thoại luôn có `ModalHeader` và `ModalFooter`.
+
+`npm run check:ui` (chạy trong CI) báo lỗi khi có màu ngoài kho hoặc nhập giao diện từ nơi khác.

@@ -62,7 +62,7 @@ export function TaxonomyPicker({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex w-full items-center gap-3 rounded-lg border border-ink-200 bg-white px-3 py-2.5 text-left text-sm shadow-sm transition hover:border-ink-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-ink-700 dark:bg-ink-950 dark:hover:border-ink-600"
+          className="flex w-full items-center gap-3 rounded-control border border-line bg-surface px-3 py-2.5 text-left text-sm shadow-sm transition hover:border-ink-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:hover:border-ink-600"
         >
           {value?.code ? (
             <>
@@ -73,15 +73,15 @@ export function TaxonomyPicker({
               </span>
             </>
           ) : (
-            <span className="flex-1 text-ink-400">{placeholder}</span>
+            <span className="flex-1 text-fg-subtle">{placeholder}</span>
           )}
-          <ChevronsUpDown className="h-4 w-4 shrink-0 text-ink-400" />
+          <ChevronsUpDown className="h-4 w-4 shrink-0 text-fg-subtle" />
         </button>
       )}
 
       <Modal open={open} onClose={() => setOpen(false)}>
         <div className="flex items-center gap-3 border-b border-line px-4">
-          <Search className="h-4 w-4 text-ink-400" />
+          <Search className="h-4 w-4 text-fg-subtle" />
           <input
             autoFocus
             value={q}
@@ -103,9 +103,9 @@ export function TaxonomyPicker({
           />
           <Kbd>Esc</Kbd>
         </div>
-        <p className="border-b border-ink-100 px-4 py-2 text-xs font-medium text-ink-500 dark:border-ink-800">{placeholder}</p>
+        <p className="border-b border-line-soft px-4 py-2 text-xs font-medium text-fg-muted">{placeholder}</p>
         <ul ref={listRef} className="max-h-[55vh] overflow-y-auto p-2">
-          {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-ink-500">{t.app.noResults}</li>}
+          {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-fg-muted">{t.app.noResults}</li>}
           {results.map((item, i) => {
             const tr = term(item.code, item.label);
             const isSelected = value?.code === item.code && value.label === item.label;
@@ -118,13 +118,13 @@ export function TaxonomyPicker({
                   onMouseMove={() => setActive(i)}
                   onClick={() => pick(item)}
                   className={cx(
-                    'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm',
-                    i === active ? 'bg-ink-100 dark:bg-ink-800' : '',
+                    'flex w-full items-center gap-3 rounded-control px-3 py-2 text-left text-sm',
+                    i === active ? 'bg-surface-muted' : '',
                   )}
                 >
                   <CodeBadge system={system} code={item.code} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium text-ink-800 dark:text-ink-100">{tr.text}</span>
+                    <span className="block truncate font-medium text-fg">{tr.text}</span>
                     <span className="block truncate text-[11px] text-fg-muted">{shortNnnExplanation(system, item.code, item.label, lang)}</span>
                   </span>
                   {(isSelected || isTaken) && <Check className="h-4 w-4 text-primary-600" />}

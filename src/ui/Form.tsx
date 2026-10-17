@@ -55,7 +55,7 @@ export function SearchInput({
         className={cx(CONTROL, '[&::-webkit-search-cancel-button]:hidden', size === 'lg' ? 'h-12 pl-11 pr-10 text-base' : 'h-10 pl-9 pr-9')}
       />
       {value && (
-        <button type="button" onClick={() => onChange('')} aria-label="Xóa nội dung tìm kiếm" className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-fg-subtle hover:bg-ink-100 hover:text-fg dark:hover:bg-ink-800">
+        <button type="button" onClick={() => onChange('')} aria-label="Xóa nội dung tìm kiếm" className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-fg-subtle hover:bg-surface-muted hover:text-fg">
           <X className="h-3.5 w-3.5" />
         </button>
       )}
@@ -63,12 +63,12 @@ export function SearchInput({
   );
 }
 
-export function Field({ label, children, className, hint }: { label: ReactNode; children: ReactNode; className?: string; hint?: ReactNode }) {
+export function Field({ label, children, className, hint, error }: { label: ReactNode; children: ReactNode; className?: string; hint?: ReactNode; error?: ReactNode }) {
   return (
     <label className={cx('block', className)}>
-      <span className="mb-1.5 block text-xs font-medium text-ink-600 dark:text-ink-400">{label}</span>
+      <span className="mb-1.5 block text-xs font-medium text-fg-body">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-fg-subtle">{hint}</span>}
+      {error ? <span role="alert" className="mt-1 block text-xs text-danger-600 dark:text-danger-400">{error}</span> : hint && <span className="mt-1 block text-xs text-fg-subtle">{hint}</span>}
     </label>
   );
 }
@@ -86,7 +86,7 @@ export function Segmented<T extends string>({
   size?: 'sm' | 'md';
 }) {
   return (
-    <div className="inline-flex rounded-control bg-ink-100 p-1 dark:bg-ink-800" role="tablist">
+    <div className="inline-flex rounded-control bg-surface-muted p-1" role="tablist">
       {options.map((o) => (
         <button
           key={o.value}
@@ -131,7 +131,7 @@ export function TagInput({
       {values.length > 0 && (
         <ul className="space-y-1.5">
           {values.map((v, i) => (
-            <li key={`${v}-${i}`} className="group flex items-start gap-2 rounded-control bg-surface-muted px-3 py-2 text-sm text-ink-700 dark:text-ink-200">
+            <li key={`${v}-${i}`} className="group flex items-start gap-2 rounded-control bg-surface-muted px-3 py-2 text-sm text-fg-body">
               <span className="min-w-0 flex-1">{renderValue ? renderValue(v) : v}</span>
               <button type="button" aria-label="Xóa" onClick={() => onChange(values.filter((_, j) => j !== i))} className="mt-0.5 rounded text-fg-subtle hover:text-danger-600">
                 <X className="h-3.5 w-3.5" />

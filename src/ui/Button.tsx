@@ -9,8 +9,8 @@ const BASE =
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: 'bg-primary-600 text-white shadow-sm hover:bg-primary-700 active:bg-primary-800',
-  secondary: 'border border-line bg-surface text-ink-700 shadow-sm hover:border-ink-300 hover:bg-surface-muted dark:text-ink-200 dark:hover:border-ink-600',
-  ghost: 'text-ink-600 hover:bg-ink-100 hover:text-fg dark:text-ink-300 dark:hover:bg-ink-800',
+  secondary: 'border border-line bg-surface text-fg-body shadow-sm hover:border-ink-300 hover:bg-surface-muted dark:hover:border-ink-600',
+  ghost: 'text-fg-body hover:bg-surface-muted hover:text-fg',
   danger: 'text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-500/10',
 };
 
@@ -73,11 +73,20 @@ export function IconButton({
         'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 disabled:pointer-events-none disabled:opacity-30',
         tone === 'danger'
           ? 'text-fg-subtle hover:bg-danger-50 hover:text-danger-600 dark:hover:bg-danger-500/10'
-          : 'text-fg-muted hover:bg-ink-100 hover:text-fg dark:hover:bg-ink-800',
+          : 'text-fg-muted hover:bg-surface-muted hover:text-fg',
         className,
       )}
       {...props}
     >
+      {children}
+    </button>
+  );
+}
+
+/** Liên kết dạng chữ (đổi chế độ, mở trang phụ). */
+export function TextLink({ className, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button type="button" className={cx('text-sm font-medium text-primary-700 underline-offset-2 hover:underline dark:text-primary-300', className)} {...props}>
       {children}
     </button>
   );

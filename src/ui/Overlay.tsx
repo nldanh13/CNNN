@@ -75,3 +75,24 @@ export function Modal({ open, onClose, children, className }: { open: boolean; o
     document.body,
   );
 }
+
+/** Phần đầu và chân của hộp thoại, dùng chung cho mọi Modal. */
+export function ModalHeader({ title, subtitle, onClose }: { title: ReactNode; subtitle?: ReactNode; onClose?: () => void }) {
+  return (
+    <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
+      <div className="min-w-0">
+        <h2 className="text-base font-semibold text-fg">{title}</h2>
+        {subtitle && <div className="mt-0.5 text-xs leading-relaxed text-fg-muted">{subtitle}</div>}
+      </div>
+      {onClose && (
+        <IconButton label="Đóng" onClick={onClose}>
+          <X className="h-4 w-4" />
+        </IconButton>
+      )}
+    </div>
+  );
+}
+
+export function ModalFooter({ children }: { children: ReactNode }) {
+  return <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line bg-surface-muted px-5 py-3">{children}</div>;
+}

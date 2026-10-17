@@ -17,7 +17,7 @@ function Section({ step, title, color, children }: { step: number; title: string
   return (
     <section className="relative pl-10">
       <span className={`absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold text-white ${color}`}>{step}</span>
-      <h3 className="mb-4 pt-1 text-sm font-semibold text-fg">{title}</h3>
+      <h3 className="mb-4 pt-1 text-[15px] font-semibold text-fg">{title}</h3>
       <div className="space-y-4">{children}</div>
     </section>
   );
@@ -83,7 +83,7 @@ export function EntryForm({
       }
     >
       <div className="space-y-8">
-        <Section step={1} title={t.entryForm.step1} color="bg-danger-500">
+        <Section step={1} title={t.entryForm.step1} color="bg-nanda-500">
           <TaxonomyPicker
             system="nanda"
             value={entry.nanda}
@@ -92,7 +92,7 @@ export function EntryForm({
           />
           {entry.nanda.code && <CodeExplanationPanel system="nanda" code={entry.nanda.code} label={entry.nanda.label} compact />}
           {nandaItem && (
-            <p className="text-xs text-ink-500">
+            <p className="text-xs text-fg-muted">
               {t.library.domain} {nandaItem.domainNumber}: {lang === 'vi' ? nandaDomain(nandaItem.domainNumber)?.nameVi : nandaDomain(nandaItem.domainNumber)?.nameEn} ·{' '}
               {t.library.class} {nandaItem.classNumber}: <Term code={null} en={nandaItem.className} showOriginal={false} />
             </p>
@@ -111,11 +111,11 @@ export function EntryForm({
           </div>
         </Section>
 
-        <Section step={2} title={t.entryForm.step2} color="bg-info-500">
+        <Section step={2} title={t.entryForm.step2} color="bg-noc-500">
           <TaxonomyPicker system="noc" value={entry.noc} placeholder={t.entryForm.pickNoc} onPick={chooseNoc} />
           {entry.noc.code && <CodeExplanationPanel system="noc" code={entry.noc.code} label={entry.noc.label} compact />}
           {nocItem && (
-            <p className="text-xs text-ink-500">
+            <p className="text-xs text-fg-muted">
               {t.library.domain} {nocDomain(nocItem.domainId)?.roman}: {lang === 'vi' ? nocDomain(nocItem.domainId)?.nameVi : nocDomain(nocItem.domainId)?.nameEn} ·{' '}
               {t.library.class} {nocItem.classLetter}: <Term code={null} en={nocItem.className} showOriginal={false} />
             </p>
@@ -130,7 +130,7 @@ export function EntryForm({
               ))}
             </Select>
           </Field>
-          <div className="grid gap-4 rounded-xl border border-line p-4 sm:grid-cols-3">
+          <div className="grid gap-4 rounded-card border border-line p-4 sm:grid-cols-3">
             {(
               [
                 ['baseline', t.editor.baseline, 'neutral'],
@@ -139,20 +139,20 @@ export function EntryForm({
               ] as const
             ).map(([key, label, tone]) => (
               <div key={key}>
-                <p className="mb-1.5 text-xs font-medium text-ink-600 dark:text-ink-400">{label}</p>
+                <p className="mb-1.5 text-xs font-medium text-fg-body">{label}</p>
                 {key === 'current' ? (
-                  <p className="py-1 text-sm font-semibold">{entry.noc.current ?? '—'} <span className="text-xs font-normal text-ink-500">{t.entryForm.assessInPlan}</span></p>
+                  <p className="py-1 text-sm font-semibold">{entry.noc.current ?? '—'} <span className="text-xs font-normal text-fg-muted">{t.entryForm.assessInPlan}</span></p>
                 ) : (
                   <LikertInput value={entry.noc[key]} tone={tone} scaleCode={entry.noc.scaleCode}
                     onChange={(v) => setNoc({ [key]: v ?? 1 } as Partial<CareEntry['noc']>)} />
                 )}
-                <p className="mt-1 h-4 truncate text-[11px] text-ink-400">{scaleLabel(entry.noc.scaleCode, entry.noc[key], lang)}</p>
+                <p className="mt-1 h-4 truncate text-[11px] text-fg-subtle">{scaleLabel(entry.noc.scaleCode, entry.noc[key], lang)}</p>
               </div>
             ))}
             {entry.noc.current != null && (
-              <p className="text-xs text-ink-500 sm:col-span-3">
-                {t.editor.change}: <strong className="font-semibold text-ink-800 dark:text-ink-200">{signed(entry.noc.current - entry.noc.baseline)}</strong>
-                {scale && <span className="ml-2 text-ink-400">({lang === 'vi' ? scale.meaningVi : scale.meaningEn})</span>}
+              <p className="text-xs text-fg-muted sm:col-span-3">
+                {t.editor.change}: <strong className="font-semibold text-fg-body">{signed(entry.noc.current - entry.noc.baseline)}</strong>
+                {scale && <span className="ml-2 text-fg-subtle">({lang === 'vi' ? scale.meaningVi : scale.meaningEn})</span>}
               </p>
             )}
           </div>
@@ -160,7 +160,7 @@ export function EntryForm({
           <Field label={t.editor.indicators}>
             <div className="space-y-2">
               {entry.noc.indicators.map((ind, i) => (
-                <div key={ind.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-ink-50 p-2 dark:bg-ink-800/50">
+                <div key={ind.id} className="flex flex-wrap items-center gap-2 rounded-control bg-surface-muted p-2">
                   <Input
                     value={ind.code}
                     placeholder={t.entryForm.indicatorCode}
@@ -180,7 +180,7 @@ export function EntryForm({
                   </Select>
                   <Input className="w-28" placeholder={t.entryForm.sourcePage} value={ind.sourcePage ?? ''}
                     onChange={(e) => setNoc({ indicators: entry.noc.indicators.map((x, j) => (j === i ? { ...x, sourcePage: e.target.value } : x)) })} />
-                  <span className="text-xs text-ink-500">{ind.score ?? '—'}</span>
+                  <span className="text-xs text-fg-muted">{ind.score ?? '—'}</span>
                   <IconButton label={t.app.delete} tone="danger" onClick={() => setNoc({ indicators: entry.noc.indicators.filter((_, j) => j !== i) })}>
                     <Trash2 className="h-4 w-4" />
                   </IconButton>
@@ -200,13 +200,13 @@ export function EntryForm({
           </Field>
         </Section>
 
-        <Section step={3} title={t.entryForm.step3} color="bg-success-500">
+        <Section step={3} title={t.entryForm.step3} color="bg-nic-500">
           <div className="space-y-3">
             {entry.nic.map((n, i) => (
-              <div key={n.code} className="rounded-xl border border-line p-3">
+              <div key={n.code} className="rounded-card border border-line p-3">
                 <div className="mb-3 flex items-start gap-3">
                   <CodeBadge system="nic" code={n.code} className="mt-0.5" />
-                  <span className="min-w-0 flex-1"><Term code={n.code} en={n.label} className="block text-sm font-medium text-ink-800 dark:text-ink-100" />
+                  <span className="min-w-0 flex-1"><Term code={n.code} en={n.label} className="block text-sm font-medium text-fg" />
                     {RETIRED_NIC7[n.code]
                       ? <p className="mt-1 text-xs font-medium text-warning-700 dark:text-warning-300">
                           Mã NIC 7 đã ngừng dùng trong NIC 8. Đây là dữ liệu của kế hoạch cũ;

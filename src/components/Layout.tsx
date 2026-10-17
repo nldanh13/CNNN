@@ -62,7 +62,7 @@ export function Layout({ section, children }: { section: string; children: React
         aria-current={active ? 'page' : undefined}
         className={cx(
           'flex items-center gap-3 rounded-control px-3 py-2.5 text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
-          active ? 'bg-primary-600 text-white shadow-sm' : 'text-ink-600 hover:bg-ink-100 hover:text-fg dark:text-ink-300 dark:hover:bg-ink-800',
+          active ? 'bg-primary-600 text-white shadow-sm' : 'text-fg-body hover:bg-surface-muted hover:text-fg',
         )}
       >
         <span className={active ? 'text-white' : 'text-fg-subtle'}>{item.icon}</span>
@@ -85,7 +85,7 @@ export function Layout({ section, children }: { section: string; children: React
   );
 
   return (
-    <div className="min-h-screen bg-canvas text-ink-800 dark:text-ink-200 print:bg-white">
+    <div className="min-h-screen bg-canvas text-fg-body print:bg-white">
       {/* Thanh bên cố định trên màn hình lớn */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface lg:flex print:hidden">
         <div className="px-5 py-5">{logo(false)}</div>
@@ -126,7 +126,7 @@ export function Layout({ section, children }: { section: string; children: React
           >
             <Settings className="h-5 w-5" />
           </a>
-          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-48 truncate text-xs font-medium text-ink-600 hover:underline md:block dark:text-ink-300">{user.email}</a>}
+          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-48 truncate text-xs font-medium text-fg-body hover:underline md:block">{user.email}</a>}
         </header>
 
         {storageError && (

@@ -26,7 +26,7 @@ export default {
       canvas: v('canvas'),
       surface: { DEFAULT: v('surface'), muted: v('surface-muted') },
       line: { DEFAULT: v('line'), soft: v('line-soft') },
-      fg: { DEFAULT: v('fg'), muted: v('fg-muted'), subtle: v('fg-subtle') },
+      fg: { DEFAULT: v('fg'), body: v('fg-body'), muted: v('fg-muted'), subtle: v('fg-subtle') },
     },
     extend: {
       fontFamily: {

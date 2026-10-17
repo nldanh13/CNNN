@@ -8,7 +8,7 @@ import { dataHub } from '../data/dataHub';
 import type { AnyItem } from '../lib/search';
 import { copyText, cx } from '../lib/utils';
 import { DataIssueReport } from '../components/DataIssueReport';
-import { Alert, Badge, Button, Card, CodeBadge, Drawer, EmptyState, LinkButton, PageHeader, SearchInput, Segmented, Select, SYSTEM_DOT, Term } from '../ui';
+import { Alert, DescriptionList, Badge, Button, Card, CodeBadge, Drawer, EmptyState, LinkButton, PageHeader, SearchInput, Segmented, Select, SYSTEM_DOT, Term } from '../ui';
 import { CodeExplanationPanel } from '../components/CodeExplanationPanel';
 
 function useIsDesktop() {
@@ -75,7 +75,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
     </div>
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_30rem]">
       <Card className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-ink-100 px-5 py-3 text-xs text-ink-500 dark:border-ink-800">
+        <div className="flex items-center justify-between border-b border-line-soft px-5 py-3 text-xs text-fg-muted">
           <span><strong className="font-semibold tabular-nums">{results.length}</strong> {t.app.results}</span>
           <span>{edition}</span>
         </div>
@@ -94,10 +94,10 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
                 {header&&<GroupHeader system={system} item={item}/>}
                 <button type="button" onClick={()=>setSelected(itemKey(item))}
                   className={cx('flex w-full items-center gap-3 border-l-2 px-5 py-2.5 text-left transition',
-                    active?'border-primary-500 bg-primary-50/70 dark:bg-primary-500/10':'border-transparent hover:bg-ink-50 dark:hover:bg-ink-800/40')}>
+                    active?'border-primary-600 bg-primary-50 dark:bg-primary-500/10':'border-transparent hover:bg-surface-muted')}>
                   <CodeBadge system={system} code={item.code} className="w-14 justify-center"/>
                   <span className="min-w-0 flex-1"><Term code={item.code} en={item.label}
-                    className="block truncate text-sm text-ink-800 dark:text-ink-200"/>
+                    className="block truncate text-sm text-fg-body"/>
                     {dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
                       <span className="mt-0.5 block text-[10px] text-warning-600">Bản dịch dự thảo</span>
                     )}</span>
@@ -121,13 +121,13 @@ function GroupHeader({system,item}:{system:TaxonomySystem;item:AnyItem}) {
   if(system==='nanda'){
     const n=item as NandaItem;
     const d=nandaDomain(n.domainNumber);
-    return <div className="sticky top-0 z-[1] border-y border-ink-100 bg-ink-50/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-500 dark:border-ink-800 dark:bg-ink-900/95">
+    return <div className="sticky top-0 z-[1] border-y border-line-soft bg-surface-muted/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">
       {n.domainNumber}.{n.classNumber} · {d?.nameVi} — {term(null,n.className).text}
     </div>;
   }
   const n=item as NocItem;
   const d=nocDomain(n.domainId);
-  return <div className="sticky top-0 z-[1] border-y border-ink-100 bg-ink-50/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-500 dark:border-ink-800 dark:bg-ink-900/95">
+  return <div className="sticky top-0 z-[1] border-y border-line-soft bg-surface-muted/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">
     {d?.roman}-{n.classLetter} · {d?.nameVi} — {term(null,n.className).text}
   </div>;
 }
@@ -149,15 +149,12 @@ function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;ed
     <div className="flex items-center gap-2">
       <CodeBadge system={system} code={item.code} className="text-sm"/>
       <Badge>{system==='nanda'?'NANDA-I':system.toUpperCase()}</Badge>
-      <span className="text-xs text-ink-500">{edition}</span>
+      <span className="text-xs text-fg-muted">{edition}</span>
     </div>
     <h2 className="mt-3 text-lg font-semibold leading-snug text-fg">{tr.text}</h2>
-    <p className="mt-2 text-xs text-ink-500">Tên gốc để đối chiếu: {item.label}</p>
+    <p className="mt-2 text-xs text-fg-muted">Tên gốc để đối chiếu: {item.label}</p>
     {tr.machine&&<p className="mt-1 text-xs text-warning-600">{t.app.machineTranslatedHint}</p>}
-    <dl className="mt-5 space-y-3 text-sm">{rows.map(([label,value])=><div key={label}>
-      <dt className="text-xs text-ink-500">{label}</dt>
-      <dd className="mt-0.5 text-ink-700 dark:text-ink-300">{value}</dd>
-    </div>)}</dl>
+    {rows.length>0&&<DescriptionList className="mt-5" items={rows}/>}
     <CodeExplanationPanel system={system} code={item.code} label={item.label}/>
     {system==='nic'&&<LinkButton variant="primary" className="mt-3" href={'#/nic-reader?code='+encodeURIComponent(item.code)}>
       Xem định nghĩa và hoạt động NIC 8 →

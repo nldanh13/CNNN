@@ -1,7 +1,7 @@
 import { Moon, Palette, Sun } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
-import { Card, CardHeader, LinkButton, PageHeader, Segmented } from '../ui';
+import { Badge, Card, CardBody, CardHeader, LinkButton, PageHeader, Segmented, SettingRow } from '../ui';
 import { PlanBackupButtons } from '../components/PlanBackup';
 import { AccountSettings } from './AccountPage';
 
@@ -10,22 +10,17 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader title={t.settings.title} />
+      <PageHeader title={t.settings.title} subtitle="Tài khoản, giao diện và sao lưu dữ liệu." />
 
       <div className="space-y-6">
         <AccountSettings />
         <Card>
           <CardHeader title={t.settings.display} />
           <div className="divide-y divide-line-soft">
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-fg">{t.settings.language}</p>
-                <p className="text-xs text-fg-muted">{t.settings.languageHint}</p>
-              </div>
-              <span className="rounded-lg border border-ink-200 px-3 py-2 text-sm font-medium dark:border-ink-700">Tiếng Việt</span>
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-              <p className="text-sm font-medium text-fg">{t.settings.theme}</p>
+            <SettingRow label={t.settings.language} hint={t.settings.languageHint}>
+              <Badge className="px-3 py-1 text-xs">Tiếng Việt</Badge>
+            </SettingRow>
+            <SettingRow label={t.settings.theme}>
               <Segmented<Theme>
                 value={theme}
                 onChange={setTheme}
@@ -34,25 +29,21 @@ export function SettingsPage() {
                   { value: 'dark', label: t.app.dark, icon: <Moon className="h-4 w-4" /> },
                 ]}
               />
-            </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-fg">Kho giao diện</p>
-                <p className="text-xs text-fg-muted">Xem bảng màu và các thành phần dùng chung của ứng dụng.</p>
-              </div>
+            </SettingRow>
+            <SettingRow label="Kho giao diện" hint="Xem bảng màu và các thành phần dùng chung của ứng dụng.">
               <LinkButton href="#/ui" icon={<Palette className="h-4 w-4" />}>Mở kho giao diện</LinkButton>
-            </div>
+            </SettingRow>
           </div>
         </Card>
 
         <Card>
           <CardHeader title={t.settings.data} subtitle={`${plans.length} ${t.settings.planCount}`} />
-          <div className="space-y-4 px-5 py-4">
-            <p className="text-sm leading-relaxed text-ink-600 dark:text-ink-400">{t.settings.dataHint}</p>
+          <CardBody className="space-y-4">
+            <p className="text-sm leading-relaxed text-fg-muted">{t.settings.dataHint}</p>
             <div className="flex flex-wrap gap-2">
               <PlanBackupButtons />
             </div>
-          </div>
+          </CardBody>
         </Card>
       </div>
     </div>

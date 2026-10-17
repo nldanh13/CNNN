@@ -33,8 +33,8 @@ export function CommandPalette() {
     const query = q.trim();
     if (!query) {
       out.push(
-        { key: 'p-lib', group: t.nav.reference, title: t.nav.library, href: '#/library', badge: <BookOpen className="h-4 w-4 text-ink-400" /> },
-        { key: 'p-refs', group: t.nav.reference, title: t.nav.references, href: '#/references', badge: <Library className="h-4 w-4 text-ink-400" /> },
+        { key: 'p-lib', group: t.nav.reference, title: t.nav.library, href: '#/library', badge: <BookOpen className="h-4 w-4 text-fg-subtle" /> },
+        { key: 'p-refs', group: t.nav.reference, title: t.nav.references, href: '#/references', badge: <Library className="h-4 w-4 text-fg-subtle" /> },
       );
       return out;
     }
@@ -73,7 +73,7 @@ export function CommandPalette() {
   return (
     <Modal open={paletteOpen} onClose={() => setPaletteOpen(false)}>
       <div className="flex items-center gap-3 border-b border-line px-4">
-        <Search className="h-4 w-4 text-ink-400" />
+        <Search className="h-4 w-4 text-fg-subtle" />
         <input
           autoFocus
           value={q}
@@ -95,29 +95,29 @@ export function CommandPalette() {
         <Kbd>Esc</Kbd>
       </div>
       <ul ref={listRef} className="max-h-[60vh] overflow-y-auto p-2">
-        {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-ink-500">{t.app.noResults}</li>}
+        {results.length === 0 && <li className="px-3 py-8 text-center text-sm text-fg-muted">{t.app.noResults}</li>}
         {results.map((r, i) => {
           const header = r.group !== lastGroup ? r.group : null;
           lastGroup = r.group;
           return (
             <li key={r.key}>
-              {header && <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-ink-400">{header}</p>}
+              {header && <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-fg-subtle">{header}</p>}
               <button
                 type="button"
                 data-idx={i}
                 onMouseMove={() => setActive(i)}
                 onClick={() => go(r)}
                 className={cx(
-                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm',
-                  i === active ? 'bg-primary-50 text-primary-900 dark:bg-primary-500/10 dark:text-white' : 'text-ink-700 dark:text-ink-300',
+                  'flex w-full items-center gap-3 rounded-control px-3 py-2 text-left text-sm',
+                  i === active ? 'bg-primary-50 text-primary-900 dark:bg-primary-500/10 dark:text-white' : 'text-fg-body',
                 )}
               >
                 <span className="flex w-14 shrink-0 justify-start">{r.badge}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{r.title}</span>
-                  {r.hint && <span className="block truncate text-xs text-ink-400">{r.hint}</span>}
+                  {r.hint && <span className="block truncate text-xs text-fg-subtle">{r.hint}</span>}
                 </span>
-                {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-ink-400" />}
+                {i === active && <CornerDownLeft className="h-3.5 w-3.5 text-fg-subtle" />}
               </button>
             </li>
           );

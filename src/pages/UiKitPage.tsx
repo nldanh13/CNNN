@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { BookOpen, ClipboardList, Palette, Plus, Printer, Search, Sparkles, Trash2 } from 'lucide-react';
 import {
-  Alert, Badge, Button, Card, CardBody, CardHeader, CodeBadge, Disclosure, EmptyState, Field, IconButton, Input, Kbd,
-  LinkButton, PageHeader, ProgressBar, SearchInput, Segmented, Select, SectionTitle, Steps, SYSTEM_DOT, TagInput, Textarea, type Tone,
+  Alert, Badge, Button, Card, CardBody, CardHeader, Chip, CodeBadge, DescriptionList, Disclosure, EmptyState, Eyebrow, Field, IconButton, Input, Kbd,
+  LinkButton, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Segmented, Select, SectionTitle, SettingRow, Stat, Steps, SYSTEM_DOT,
+  Table, TagInput, TBody, Td, Textarea, TextLink, Th, THead, Tr, type Tone,
 } from '../ui';
 import { cx } from '../lib/utils';
 
@@ -47,6 +48,8 @@ export function UiKitPage() {
   const [q, setQ] = useState('');
   const [seg, setSeg] = useState<'a' | 'b' | 'c'>('a');
   const [tags, setTags] = useState(['Khó thở', 'SpO₂ 90%']);
+  const [chips, setChips] = useState<string[]>(['Ho yếu']);
+  const [modal, setModal] = useState(false);
   return (
     <>
       <PageHeader
@@ -85,7 +88,7 @@ export function UiKitPage() {
               <p className="text-2xl font-bold tracking-tight text-fg">Tiêu đề trang · 24px đậm</p>
               <p className="text-base font-semibold text-fg">Tiêu đề nhóm · 16px</p>
               <p className="text-[15px] font-semibold text-fg">Tiêu đề thẻ · 15px</p>
-              <p className="text-sm text-ink-700 dark:text-ink-300">Nội dung · 14px. Người bệnh 75 tuổi, ho yếu, đờm đặc khó khạc.</p>
+              <p className="text-sm text-fg-body">Nội dung · 14px. Người bệnh 75 tuổi, ho yếu, đờm đặc khó khạc.</p>
               <p className="text-xs text-fg-muted">Chú thích · 12px, màu phụ</p>
               <p className="font-mono text-xs font-semibold text-fg">00031 · 0410 · 3140 (mã, chữ đơn cách)</p>
             </CardBody>
@@ -167,6 +170,69 @@ export function UiKitPage() {
             </CardBody>
           </Card>
         </section>
+
+        <section className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader title="Bảng dữ liệu" subtitle="Table, THead, Th, TBody, Tr, Td" />
+            <Table>
+              <THead><Th>Người bệnh</Th><Th>Khoa</Th><Th>Đạt mục tiêu</Th></THead>
+              <TBody>
+                {[['Nguyễn Văn A', 'Nội', 0.5], ['Trần Thị B', 'Ngoại', 1]].map(([n, k, v]) => (
+                  <Tr key={n as string} interactive>
+                    <Td className="font-medium text-fg">{n}</Td>
+                    <Td className="text-fg-muted">{k}</Td>
+                    <Td><div className="w-24"><ProgressBar value={v as number} /></div></Td>
+                  </Tr>
+                ))}
+              </TBody>
+            </Table>
+          </Card>
+          <Card>
+            <CardHeader title="Số liệu, chi tiết, cài đặt" />
+            <CardBody className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <Stat label="Chẩn đoán" value={277} hint="NANDA-I 2024–2026" />
+                <Stat label="Đạt mục tiêu" value="3/4" tone="success" />
+              </div>
+              <DescriptionList items={[['Lĩnh vực', '11 · An toàn / bảo vệ'], ['Phân lớp', '2. Tổn thương thể chất']]} />
+            </CardBody>
+            <div className="border-t border-line-soft">
+              <SettingRow label="Chế độ tối" hint="Hàng cài đặt (SettingRow)"><Button size="sm">Đổi</Button></SettingRow>
+            </div>
+          </Card>
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader title="Thẻ chọn (Chip)" subtitle="Chọn dấu hiệu, bộ lọc, gợi ý thêm." />
+            <CardBody className="space-y-3">
+              <Eyebrow>Nhãn nhỏ phía trên nhóm (Eyebrow)</Eyebrow>
+              <div className="flex flex-wrap gap-1.5">
+                {['Ho yếu', 'Đờm đặc', 'Sốt'].map((c) => (
+                  <Chip key={c} selected={chips.includes(c)} onClick={() => setChips((x) => (x.includes(c) ? x.filter((y) => y !== c) : [...x, c]))}>{c}</Chip>
+                ))}
+                <Chip variant="solid">Đã chọn ×</Chip>
+                <Chip variant="add"><Plus className="h-3 w-3" />Cần đánh giá thêm</Chip>
+              </div>
+              <TextLink>Liên kết dạng chữ (TextLink)</TextLink>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader title="Hộp thoại" subtitle="Modal với ModalHeader và ModalFooter." />
+            <CardBody>
+              <Button onClick={() => setModal(true)}>Mở hộp thoại mẫu</Button>
+            </CardBody>
+          </Card>
+        </section>
+
+        <Modal open={modal} onClose={() => setModal(false)} className="max-w-md">
+          <ModalHeader title="Thêm người bệnh" subtitle="Chỉ cần tên; các thông tin khác bổ sung sau." onClose={() => setModal(false)} />
+          <div className="p-5"><Field label="Họ và tên"><Input autoFocus /></Field></div>
+          <ModalFooter>
+            <Button variant="ghost" onClick={() => setModal(false)}>Hủy</Button>
+            <Button variant="primary" onClick={() => setModal(false)}>Tạo kế hoạch</Button>
+          </ModalFooter>
+        </Modal>
 
         <section className="space-y-3">
           <SectionTitle>Bố cục</SectionTitle>

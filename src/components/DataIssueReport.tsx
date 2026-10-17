@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Clipboard, ExternalLink, Flag, X } from 'lucide-react';
+import { Clipboard, ExternalLink, Flag } from 'lucide-react';
 import type { TaxonomySystem } from '../types';
 import { useApp } from '../store/AppContext';
 import { makeDataReportIssueUrl, makeDataReportText, type DataReport, type ReportCategory } from '../lib/dataReports';
-import { Alert, Button, Field, Input, Modal, Select, Textarea } from '../ui';
+import { Alert, Button, Field, Input, LinkButton, Modal, ModalFooter, ModalHeader, Select, Textarea } from '../ui';
 
 const TYPES: Array<{value:ReportCategory;label:string}> = [
   {value:'wrong-code',label:'Sai mã phân loại'},
@@ -38,16 +38,11 @@ export function DataIssueReport({system,code,label,fallbackEdition}:{
   return <>
     <Button size="sm" icon={<Flag className="h-3.5 w-3.5"/>} onClick={reset}>Báo cáo dữ liệu</Button>
     <Modal open={open} onClose={()=>setOpen(false)} className="max-w-2xl">
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
-        <h3 className="font-semibold">Báo cáo sai sót hoặc góp ý bản dịch</h3>
-        <button type="button" onClick={()=>setOpen(false)} aria-label="Đóng" className="rounded p-1 text-ink-500 hover:bg-ink-100">
-          <X className="h-4 w-4"/>
-        </button>
-      </div>
+      <ModalHeader title="Báo cáo sai sót hoặc góp ý bản dịch" onClose={()=>setOpen(false)}/>
       <div className="max-h-[65vh] space-y-4 overflow-y-auto px-5 py-4 text-sm">
-        <p className="rounded-lg bg-ink-50 px-3 py-2 text-xs dark:bg-ink-800">
+        <p className="rounded-control bg-surface-muted px-3 py-2 text-xs">
           <strong>{system.toUpperCase()} {code}</strong> · {titleVi}
-          <span className="mt-1 block text-ink-500">{fallbackEdition}</span>
+          <span className="mt-1 block text-fg-muted">{fallbackEdition}</span>
         </p>
         <Field label="Loại vấn đề">
           <Select value={category} onChange={e=>setCategory(e.target.value as ReportCategory)}>
@@ -74,27 +69,22 @@ export function DataIssueReport({system,code,label,fallbackEdition}:{
           Tôi xác nhận báo cáo không chứa dữ liệu cá nhân hoặc nội dung sách nguyên văn.
         </label>
       </div>
-      <div className="flex flex-wrap justify-end gap-2 border-t border-line px-5 py-3">
+      <ModalFooter>
         <Button size="sm" disabled={!valid} icon={<Clipboard className="h-3.5 w-3.5"/>}
           onClick={()=>{void navigator.clipboard.writeText(makeDataReportText(draft))
             .then(()=>toast('Đã sao chép báo cáo'))
             .catch(()=>toast('Không thể sao chép','error'));}}>Sao chép</Button>
         {valid ? (
-          <a
-            href={makeDataReportIssueUrl(draft)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/60 bg-primary-600 text-white hover:bg-primary-700 shadow-sm h-8 px-2.5 text-xs gap-1.5"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
+          <LinkButton href={makeDataReportIssueUrl(draft)} target="_blank" rel="noopener noreferrer"
+            variant="primary" size="sm" icon={<ExternalLink className="h-3.5 w-3.5" />}>
             Mở GitHub để gửi
-          </a>
+          </LinkButton>
         ) : (
           <Button size="sm" variant="primary" disabled icon={<ExternalLink className="h-3.5 w-3.5" />}>
             Mở GitHub để gửi
           </Button>
         )}
-      </div>
+      </ModalFooter>
     </Modal>
   </>;
 }

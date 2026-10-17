@@ -8,4 +8,5 @@ export * from './Surface';
 export * from './Feedback';
 export * from './Form';
 export * from './Overlay';
+export * from './Data';
 export * from './Taxonomy';

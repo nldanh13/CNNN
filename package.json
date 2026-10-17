@@ -25,7 +25,8 @@
     "check:nic8-reader": "tsx scripts/check-nic8-reader.ts",
     "check:assistant": "tsx scripts/check-assistant.ts",
     "check:unified-catalog": "tsx scripts/check-unified-catalog.ts",
-    "check:account": "tsx scripts/check-account.ts"
+    "check:account": "tsx scripts/check-account.ts",
+    "check:ui": "tsx scripts/check-ui-kit.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",
