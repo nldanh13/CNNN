@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, ChevronDown, ClipboardPlus, Plus, Sparkles, X } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ClipboardPlus, Plus, RotateCcw, Sparkles, X } from 'lucide-react';
 import type { CareEntry } from '../types';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
@@ -26,8 +26,10 @@ function loadState(): SavedState {
   return { note: '', selected: [], evidence: {} };
 }
 
+/** Nhãn ngắn cho thẻ: phần trước dấu phẩy, gạch chéo hoặc ngoặc. */
+const shortLabel = (c: Cue) => c.vi.split(/\s*[,/(]/)[0].trim();
 const withEvidence = (c: Cue, evidence: Record<string, string>) =>
-  (evidence[c.id] && /\d/.test(evidence[c.id]) ? evidence[c.id] : c.vi);
+  (evidence[c.id] && /\d/.test(evidence[c.id]) ? evidence[c.id] : shortLabel(c));
 
 export function AssistantPage() {
   const initial = useMemo(loadState, []);
@@ -88,7 +90,12 @@ export function AssistantPage() {
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Button variant="primary" icon={<Sparkles className="h-4 w-4" />} disabled={!note.trim()} onClick={() => analyze()}>Gợi ý chẩn đoán</Button>
           <Button variant="ghost" onClick={trySample}>Thử ví dụ</Button>
-          {(selected.length > 0 || note) && <Button variant="ghost" className="ml-auto" onClick={reset}>Làm mới</Button>}
+          {(selected.length > 0 || note) && (
+            <button type="button" onClick={reset} aria-label="Làm mới" title="Làm mới"
+              className="ml-auto rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800">
+              <RotateCcw className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {selected.length > 0 && (
@@ -98,7 +105,7 @@ export function AssistantPage() {
               {selected.map((id) => {
                 const c = CUE_BY_ID.get(id);
                 return c && (
-                  <span key={id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 py-1 pl-2.5 pr-1 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  <span key={id} title={c.vi} className="inline-flex items-center gap-1 rounded-full bg-slate-100 py-1 pl-2.5 pr-1 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                     {withEvidence(c, evidence)}
                     <button type="button" onClick={() => remove(id)} aria-label={`Bỏ ${c.vi}`} className="rounded-full p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700"><X className="h-3 w-3" /></button>
                   </span>
@@ -183,7 +190,10 @@ function DiagnosisRow({ rank, s, evidence, open, onToggle, onAddCue, onPush }: {
   const [nicCodes, setNicCodes] = useState<string[]>(() => s.nic.filter((n) => n.relevant).slice(0, 3).map((n) => n.code));
   useEffect(() => { if (!s.noc.some((n) => n.code === nocCode)) setNocCode(s.noc[0]?.code ?? ''); }, [s.noc, nocCode]);
 
-  const reasons = [...s.matchedSigns, ...s.matchedFactors].map((m) => withEvidence(m.cue, evidence));
+  const reasons = [...s.matchedSigns, ...s.matchedFactors].map((m, i) => {
+    const t = withEvidence(m.cue, evidence);
+    return i === 0 || /^\S*\p{Lu}\S*\p{Lu}/u.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1);
+  });
   const isRisk = s.rule.kind === 'risk';
 
   const buildEntry = (): CareEntry => {
@@ -224,7 +234,7 @@ function DiagnosisRow({ rank, s, evidence, open, onToggle, onAddCue, onPush }: {
       </button>
 
       {open && (
-        <div className="space-y-4 px-4 pb-4 pl-[3.25rem] text-sm">
+        <div className="space-y-4 px-4 pb-4 text-sm sm:pl-[3.25rem]">
           {s.redFlag && (
             <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-xs font-medium text-rose-800 dark:bg-rose-950/40 dark:text-rose-200">{s.redFlag}</p>
           )}
@@ -235,7 +245,7 @@ function DiagnosisRow({ rank, s, evidence, open, onToggle, onAddCue, onPush }: {
               <span className="mt-1 block text-xs text-slate-500">
                 Kiểm tra thêm:{' '}
                 {s.toVerify.map((c, i) => (
-                  <span key={c.id}>{i > 0 && ', '}<button type="button" onClick={() => onAddCue(c.id)} className="text-brand-700 hover:underline dark:text-brand-300" title="Bấm để thêm nếu có">{c.vi.toLowerCase()}</button></span>
+                  <span key={c.id}>{i > 0 && ', '}<button type="button" onClick={() => onAddCue(c.id)} className="text-brand-700 hover:underline dark:text-brand-300" title="Bấm để thêm nếu có">{shortLabel(c).toLowerCase()}</button></span>
                 ))}
               </span>
             )}

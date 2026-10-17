@@ -43,8 +43,8 @@ export function Layout({ section, children }: { section: string; children: React
   }, [setPaletteOpen]);
 
   const items: NavItem[] = [
-    { href: '#/library', key: 'home', label: t.nav.library, icon: <BookOpen className="h-5 w-5" /> },
-    { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Chẩn đoán', icon: <Sparkles className="h-5 w-5" /> },
+    { href: '#/library', key: 'home', label: t.nav.library, short: 'Thư viện', icon: <BookOpen className="h-5 w-5" /> },
+    { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Trợ lý', icon: <Sparkles className="h-5 w-5" /> },
     { href: '#/standards', key: 'guide', label: 'Hướng dẫn chẩn đoán', short: 'Hướng dẫn', icon: <BookText className="h-5 w-5" /> },
     { href: '#/plans', key: 'plans', label: t.nav.plansShort, icon: <ClipboardList className="h-5 w-5" /> },
     { href: '#/references', key: 'references', label: t.nav.referencesShort, icon: <Library className="h-5 w-5" /> },
@@ -143,7 +143,7 @@ export function Layout({ section, children }: { section: string; children: React
               href={item.href}
               aria-current={active ? 'page' : undefined}
               className={cx(
-                'flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium',
+                'flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-0.5 text-[10.5px] font-medium',
                 active ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 dark:text-slate-400',
               )}
             >
