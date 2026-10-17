@@ -16,7 +16,7 @@ const page = readFileSync('src/pages/AccountPage.tsx', 'utf8');
 const settings = readFileSync('src/pages/SettingsPage.tsx', 'utf8');
 assert.ok(auth.includes("sessionStorage.setItem(SESSION_KEY"), 'Sessions must be per tab');
 assert.ok(!auth.includes('service_role') && !auth.includes('VITE_SUPABASE_SERVICE'), 'Never ship backend secret');
-assert.ok(context.includes('carePlanStorageKey(auth.enabled'), 'Care plans must be account-scoped');
+assert.ok(context.includes('usePatientPlans(auth)'), 'Care plans must use account-scoped auto persistence');
 assert.ok(!context.includes('save(KEYS.plans, plans)'), 'Global plan write is not permitted in account mode');
 assert.ok(app.includes('auth.enabled && !auth.user'), 'Login guard missing');
 assert.ok(app.includes('return <LandingPage />') && app.includes("section === 'dang-nhap'") && app.includes("section === 'dang-ky'"),
