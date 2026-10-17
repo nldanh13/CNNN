@@ -129,7 +129,14 @@ export function usePatientPlans(auth: {
       const cached = readPlans(cacheKey);
       const journal = readPlanDraft(draftKey);
       const dirtyCache = Boolean(journal) || load<boolean>(pendingKey, false);
-      setHasParkedDraft(Boolean(readPlanDraft(parkedKey)));
+      try { setHasParkedDraft(Boolean(readPlanDraft(parkedKey))); }
+      catch {
+        // An unreadable parked archive must remain intact, but must not block
+        // safe read-only access to the current server workspace.
+        setHasParkedDraft(true);
+        setSyncMessage('Có bản nháp cũ bị lỗi định dạng trên thiết bị; không xóa dữ liệu đó.');
+        setSyncState('error');
+      }
       const oldPlans = readPlans(carePlanStorageKey(true, uid));
       // Account A may have saved a manual snapshot from another device.
       // Discover it once, but NEVER import/upload until the owner confirms.
@@ -358,6 +365,10 @@ export function usePatientPlans(auth: {
 
   const reviewParkedDraft = useCallback(() => {
     if (status !== 'ready' || !parkedKey) return;
+    if (load<boolean>(pendingKey ?? '', false) || syncState === 'saving') {
+      setSyncMessage('Hãy đợi lưu xong thay đổi hiện tại trước khi xem lại bản nháp cũ.');
+      return;
+    }
     try {
       const parked = readPlanDraft(parkedKey);
       if (!parked) { setHasParkedDraft(false); return; }
@@ -370,7 +381,7 @@ export function usePatientPlans(auth: {
       setSyncMessage(err instanceof Error ? err.message : 'Không đọc được bản nháp đã giữ.');
       setSyncState('error');
     }
-  }, [status, parkedKey]);
+  }, [status, parkedKey, pendingKey, syncState]);
 
   const retryStorage = useCallback(() => {
     if (!planKey) return;
