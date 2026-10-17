@@ -45,21 +45,18 @@ jobs:
             exit 1
           fi
 
-      - name: Verify cloud backup rollout flag
+      - name: Check automatic account plan rollout
         env:
-          VITE_CLOUD_BACKUP_ENABLED: ${{ vars.VITE_CLOUD_BACKUP_ENABLED }}
+          VITE_PATIENT_CLOUD_ENABLED: ${{ vars.VITE_PATIENT_CLOUD_ENABLED }}
         run: |
-          if [[ -n "$VITE_CLOUD_BACKUP_ENABLED" && "$VITE_CLOUD_BACKUP_ENABLED" != "true" && "$VITE_CLOUD_BACKUP_ENABLED" != "false" ]]; then
-            echo "::error::VITE_CLOUD_BACKUP_ENABLED must be exactly true or false (lowercase)."
+          if [[ -n "$VITE_PATIENT_CLOUD_ENABLED" && "$VITE_PATIENT_CLOUD_ENABLED" != "true" && "$VITE_PATIENT_CLOUD_ENABLED" != "false" ]]; then
+            echo "::error::VITE_PATIENT_CLOUD_ENABLED must be true or false."
             exit 1
           fi
-          if [[ "$VITE_CLOUD_BACKUP_ENABLED" == "true" ]]; then
-            echo "Cloud backup UI: ENABLED for test data only"
-            echo "### Cloud backup: enabled (testing only)" >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning::Verify Supabase RLS with two test accounts before storing any real data."
+          if [[ "$VITE_PATIENT_CLOUD_ENABLED" == "true" ]]; then
+            echo "Automatic account plans: ENABLED"
           else
-            echo "Cloud backup UI: DISABLED"
-            echo "### Cloud backup: disabled" >> "$GITHUB_STEP_SUMMARY"
+            echo "Automatic account plans: DISABLED; legacy plans stay on their device"
           fi
 
       - name: Check Turnstile deployment configuration
@@ -82,8 +79,8 @@ jobs:
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-          # OFF by default: enable only AFTER creating and verifying RLS tables.
-          VITE_CLOUD_BACKUP_ENABLED: ${{ vars.VITE_CLOUD_BACKUP_ENABLED }}
+          # OFF until SQL migration for patient workspaces is deployed and verified.
+          VITE_PATIENT_CLOUD_ENABLED: ${{ vars.VITE_PATIENT_CLOUD_ENABLED }}
         run: npm run build
 
       - name: Configure GitHub Pages
