@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Copy, Languages, ListOrdered } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { copyText, cx } from '../lib/utils';
-import { Alert, Badge, Button, Card, CodeBadge, EmptyState, Eyebrow, PageHeader, SearchInput, Select, TextLink } from '../ui';
+import { Badge, Button, Card, CodeBadge, EmptyState, Eyebrow, PageHeader, SearchInput, Select, TextLink } from '../ui';
 import { NIC8_SOURCE, findNic8, nic8Text, nic8Titles, type Nic8SourceEntry, type ReaderLanguage } from '../data/nic8Reader';
 
 const LANGUAGES: { value: ReaderLanguage; label: string }[] = [
