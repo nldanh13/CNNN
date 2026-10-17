@@ -43,8 +43,8 @@ export function Layout({ section, children }: { section: string; children: React
   }, [setPaletteOpen]);
 
   const items: NavItem[] = [
-    { href: '#/library', key: 'home', label: t.nav.library, icon: <BookOpen className="h-5 w-5" /> },
-    { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Chẩn đoán', icon: <Sparkles className="h-5 w-5" /> },
+    { href: '#/library', key: 'home', label: t.nav.library, short: 'Thư viện', icon: <BookOpen className="h-5 w-5" /> },
+    { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Trợ lý', icon: <Sparkles className="h-5 w-5" /> },
     { href: '#/standards', key: 'guide', label: 'Hướng dẫn chẩn đoán', short: 'Hướng dẫn', icon: <BookText className="h-5 w-5" /> },
     { href: '#/plans', key: 'plans', label: t.nav.plansShort, icon: <ClipboardList className="h-5 w-5" /> },
     { href: '#/references', key: 'references', label: t.nav.referencesShort, icon: <Library className="h-5 w-5" /> },
@@ -114,6 +114,19 @@ export function Layout({ section, children }: { section: string; children: React
               <Kbd>K</Kbd>
             </span>
           </button>
+          <a
+            href={settingsItem.href}
+            aria-label={settingsItem.label}
+            aria-current={activeKey === 'settings' ? 'page' : undefined}
+            className={cx(
+              'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition lg:hidden',
+              activeKey === 'settings'
+                ? 'border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300'
+                : 'border-slate-200 bg-slate-50 text-slate-500 hover:bg-white dark:border-slate-700 dark:bg-slate-800/60',
+            )}
+          >
+            <Settings className="h-5 w-5" />
+          </a>
         </header>
 
         {storageError && (
@@ -133,9 +146,9 @@ export function Layout({ section, children }: { section: string; children: React
       {/* Thanh điều hướng dưới cùng trên điện thoại và máy tính bảng */}
       <nav
         aria-label={t.app.name}
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95 print:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95 print:hidden"
       >
-        {[...items, settingsItem].map((item) => {
+        {items.map((item) => {
           const active = activeKey === item.key;
           return (
             <a
