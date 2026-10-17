@@ -17,8 +17,8 @@ assert.ok(!library.includes('translationReview.draft'), 'Do not show aggregate e
 assert.ok(!reader.includes('<Stat label='), 'Technical coverage stats should not crowd Reader screen');
 assert.ok(reader.includes('text.fallback') && reader.includes('tiếng Tây Ban Nha'),
   'Language fallback must remain visible when the requested translation is unavailable');
-assert.ok(plans.includes('Lưu trữ & quyền riêng tư') && plans.includes('t.backup.notice'),
-  'Plan privacy notice must remain accessible');
+assert.ok(plans.includes('người bệnh') && !plans.includes('PlanBackupButtons'),
+  'Plans page should show patient limit without manual backup/restore clutter');
 assert.ok(account.includes('Lưu trữ & quyền riêng tư') && account.includes('Không nhập dữ liệu nhận dạng người bệnh thật'),
   'Account privacy warning must remain accessible');
 assert.ok(assistant.includes('s.redFlag'), 'Clinical red flags must not be removed');
