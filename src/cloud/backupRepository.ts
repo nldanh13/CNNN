@@ -33,8 +33,11 @@ function getError(data: unknown, response: Response): string {
   if (response.status === 401 || response.status === 403) {
     return 'Phiên đăng nhập đã hết hạn hoặc bạn không có quyền truy cập. Hãy đăng nhập lại.';
   }
-  if (err.code === '23514' || response.status === 413) {
-    return 'Bản sao lưu vượt giới hạn dung lượng hoặc không đúng định dạng.';
+  if (err.code === '23514') {
+    return 'Bản sao lưu không hợp lệ hoặc đã đạt giới hạn dung lượng/số lượng. Hãy xóa bản cũ hoặc thử bản nhỏ hơn.';
+  }
+  if (response.status === 413) {
+    return 'Bản sao lưu vượt giới hạn dung lượng.';
   }
   return 'Không thể kết nối kho sao lưu. Hãy thử lại sau.';
 }
