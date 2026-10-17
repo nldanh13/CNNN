@@ -57,6 +57,17 @@ assert.ok(deploy.includes('vars.VITE_TURNSTILE_SITE_KEY'), 'Deploy must include 
 assert.ok(migration.includes('security invoker') && migration.includes('existing_count >= 10'),
   'Quota trigger must not bypass RLS and must bound rows per account');
 
+// Do not let additional licensed/source-book payloads enter this public repo.
+const legacyAllowlist = new Set(['shared-data/nic8-licensed-es-source.json']);
+const newSources = tracked.filter(p => {
+  const path = p.toLowerCase();
+  if (legacyAllowlist.has(p)) return false;
+  return /\.(?:epub|mobi|azw3?|pdf)$/i.test(p)
+    || /^shared-data\/.*(?:licensed|copyrighted|book-source|fulltext)/i.test(path)
+    || /^public\/.*(?:licensed|copyrighted|book-source|fulltext)/i.test(path);
+});
+assert.deepEqual(newSources, [], 'New book or licensed-source assets found in public tree: ' + newSources.join(', '));
+
 // Intentional risk to resolve in a later, separate migration. DO NOT hide this.
 const legacy = tracked.filter(p => /^(shared-data\/nnn-catalog\.json|shared-data\/nic8-licensed-es-source\.json)$/.test(p));
 if (legacy.length) {

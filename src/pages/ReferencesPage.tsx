@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { EDITION_AUDIT } from '../data/editionAudit';
+import { CATALOG_QUALITY_SUMMARY } from '../data/catalogProvenance';
 import { editionLabel } from '../data/taxonomy';
 import { Badge, Card, CardHeader, PageHeader, Stat, SYSTEM_DOT } from '../ui';
 import { cx } from '../lib/utils';
@@ -21,6 +22,19 @@ export function ReferencesPage() {
     </div>
 
     <div className="grid gap-6">
+      <Card>
+        <CardHeader title="Tình trạng thẩm định bản dịch" subtitle="Metadata lấy trực tiếp từ bộ danh mục NNN đang sử dụng, không phải đánh giá lâm sàng độc lập." />
+        <ul className="divide-y divide-line-soft text-sm">
+          {CATALOG_QUALITY_SUMMARY.map(row => <li key={row.system} className="flex flex-wrap items-center gap-3 px-5 py-3">
+            <strong className="w-20 text-fg">{row.system === 'nanda' ? 'NANDA-I' : row.system.toUpperCase()}</strong>
+            <span className="min-w-0 flex-1 text-xs text-fg-muted">{row.unreviewed}/{row.count} nhãn chưa thẩm định{row.unknown ? ` · ${row.unknown} thiếu trạng thái` : ''}</span>
+            <Badge tone={row.unreviewed || row.unknown ? 'warning' : 'success'}>{row.unreviewed || row.unknown ? 'Cần kiểm duyệt' : 'Đã có trạng thái'}</Badge>
+          </li>)}
+        </ul>
+        <p className="border-t border-line-soft px-5 py-3 text-xs leading-relaxed text-fg-muted">
+          Các nhãn chưa thẩm định không được coi là bản dịch chính thức. NOC ấn bản 6 vẫn được giữ để tránh làm sai kế hoạch đã lưu; nâng cấp mã/ấn bản cần nguồn được cấp phép và đối chiếu riêng.
+        </p>
+      </Card>
       <Card>
         <CardHeader title={t.references.editions}
           icon={anyOlder?<AlertTriangle className="h-4 w-4"/>:<CheckCircle2 className="h-4 w-4"/>}/>
