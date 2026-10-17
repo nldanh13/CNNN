@@ -12,7 +12,8 @@ assert.ok(app.includes("case 'library':\n      page = <LibraryPage"), 'Library m
 assert.ok(layout.includes("href: '#/home', key: 'home'"), 'Home needs a dedicated navigation item');
 assert.ok(layout.includes("href: '#/library', key: 'library'"), 'Library needs an independent navigation item');
 assert.ok(layout.includes('href="#/home"'), 'Brand logo should return to Home');
-assert.ok(layout.includes("items.filter(item => item.key !== 'references').map"), 'Mobile navigation should have five primary items');
+assert.ok(!layout.includes("href: '#/references'") && layout.includes('grid-cols-5') && layout.includes('{items.map((item) => {'),
+  'Navigation should have five primary items and no data/editions page');
 assert.ok(/await auth\.signIn\(email, password(?:, [^\n]*)?\);\s*navigate\('\/home'\);/.test(login),
   'Sign-in should open Home instead of a stale Library hash');
 assert.ok(home.includes('useAuth()') && home.includes('user?.user_metadata?.full_name'),

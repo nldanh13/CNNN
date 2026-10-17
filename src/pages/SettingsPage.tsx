@@ -1,4 +1,4 @@
-import { ArrowRight, Monitor, Moon, Sun } from 'lucide-react';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
 import { dataHub } from '../data/dataHub';
@@ -41,7 +41,7 @@ export function SettingsPage() {
           </div>
         </SettingsSection>
 
-        <SettingsSection id="gioi-thieu" title="Giới thiệu" description="Ấn bản dữ liệu đang dùng và nguồn tham khảo.">
+        <SettingsSection id="gioi-thieu" title="Giới thiệu" description="Ấn bản dữ liệu đang dùng.">
           <ul className="divide-y divide-line-soft">
             {SYSTEMS.map(({ system, label }) => (
               <li key={system} className="flex items-center justify-between gap-3 px-5 py-3.5 text-sm">
@@ -49,11 +49,6 @@ export function SettingsPage() {
                 <span className="text-right text-fg-muted">{dataHub.editionFor(system)} · {dataHub.listLibrary(system).length} mã</span>
               </li>
             ))}
-            <li>
-              <a href="#/references" className="flex items-center justify-between gap-3 px-5 py-3.5 text-sm font-medium text-primary-700 transition hover:bg-surface-muted dark:text-primary-300">
-                Nguồn tham khảo và chất lượng dữ liệu <ArrowRight className="h-4 w-4" />
-              </a>
-            </li>
           </ul>
           <p className="border-t border-line-soft bg-surface-muted/60 px-5 py-3.5 text-xs leading-relaxed text-fg-muted">
             Công cụ hỗ trợ học tập và tham khảo. Không thay thế đánh giá lâm sàng, y lệnh hay quy trình của cơ sở y tế.

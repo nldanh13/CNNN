@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { BookOpen, CornerDownLeft, Library, Search } from 'lucide-react';
+import { BookOpen, CornerDownLeft, Search } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { dataHub } from '../data/dataHub';
@@ -34,7 +34,6 @@ export function CommandPalette() {
     if (!query) {
       out.push(
         { key: 'p-lib', group: t.nav.reference, title: t.nav.library, href: '#/library', badge: <BookOpen className="h-4 w-4 text-fg-subtle" /> },
-        { key: 'p-refs', group: t.nav.reference, title: t.nav.references, href: '#/references', badge: <Library className="h-4 w-4 text-fg-subtle" /> },
       );
       return out;
     }

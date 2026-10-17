@@ -154,9 +154,7 @@ function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;ed
     {system==='nic'&&<LinkButton variant="primary" className="mt-3" href={'#/nic-reader?code='+encodeURIComponent(item.code)}>
       Xem định nghĩa và hoạt động NIC 8 →
     </LinkButton>}
-    {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<a href="#/quality" className="mt-3 block">
-      <Alert tone="warning" size="sm">{t.library.duplicateCode}</Alert>
-    </a>}
+    {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<Alert tone="warning" size="sm" className="mt-3">{t.library.duplicateCode}</Alert>}
     <div className="mt-6 flex flex-wrap gap-2">
       <Button size="sm" icon={<Copy className="h-3.5 w-3.5"/>}
         onClick={async()=>{await copyText(item.code+' '+tr.text);toast(t.app.copied);}}>
