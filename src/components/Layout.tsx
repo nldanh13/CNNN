@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
 import { Alert, Button, Kbd } from '../ui';
@@ -18,9 +18,10 @@ interface NavItem {
 /** Các trang phụ được tô sáng dưới mục menu chứa chúng. */
 const NAV_OF_SECTION: Record<string, string> = {
   dashboard: 'home',
+  home: 'home',
   assistant: 'assistant',
-  library: 'home',
-  'nic-reader': 'home',
+  library: 'library',
+  'nic-reader': 'library',
   standards: 'guide',
   plans: 'plans',
   references: 'references',
@@ -46,7 +47,8 @@ export function Layout({ section, children }: { section: string; children: React
   }, [setPaletteOpen]);
 
   const items: NavItem[] = [
-    { href: '#/library', key: 'home', label: t.nav.library, short: 'Thư viện', icon: <BookOpen className="h-5 w-5" /> },
+    { href: '#/home', key: 'home', label: 'Trang chủ', short: 'Trang chủ', icon: <House className="h-5 w-5" /> },
+    { href: '#/library', key: 'library', label: t.nav.library, short: 'Thư viện', icon: <BookOpen className="h-5 w-5" /> },
     { href: '#/assistant', key: 'assistant', label: 'Trợ lý chẩn đoán', short: 'Trợ lý', icon: <Sparkles className="h-5 w-5" /> },
     { href: '#/standards', key: 'guide', label: 'Hướng dẫn chẩn đoán', short: 'Hướng dẫn', icon: <BookText className="h-5 w-5" /> },
     { href: '#/plans', key: 'plans', label: t.nav.plansShort, icon: <ClipboardList className="h-5 w-5" /> },
@@ -73,7 +75,7 @@ export function Layout({ section, children }: { section: string; children: React
   };
 
   const logo = (compact: boolean) => (
-    <a href="#/library" className="flex min-w-0 items-center gap-3">
+    <a href="#/home" className="flex min-w-0 items-center gap-3">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary-600 text-white shadow-sm">
         <Activity className="h-5 w-5" strokeWidth={2.4} />
       </span>
@@ -149,7 +151,7 @@ export function Layout({ section, children }: { section: string; children: React
         aria-label={t.app.name}
         className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden print:hidden"
       >
-        {items.map((item) => {
+        {items.filter(item => item.key !== 'references').map((item) => {
           const active = activeKey === item.key;
           return (
             <a

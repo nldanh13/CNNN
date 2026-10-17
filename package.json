@@ -27,7 +27,8 @@
     "check:unified-catalog": "tsx scripts/check-unified-catalog.ts",
     "check:account": "tsx scripts/check-account.ts",
     "check:ui": "tsx scripts/check-ui-kit.ts",
-    "check:clean-interface": "tsx scripts/check-clean-interface.ts"
+    "check:clean-interface": "tsx scripts/check-clean-interface.ts",
+    "check:home-navigation": "tsx scripts/check-home-navigation.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",
