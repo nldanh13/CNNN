@@ -94,7 +94,8 @@ assert.ok(planEditor.includes('onClick={() => setDeleteReviewOpen(true)}') &&
   planEditor.includes('<DeletePlanDialog') &&
   planEditor.includes('plan={deleteReviewOpen ? plan : null}') &&
   planEditor.includes('deletePlan(selected.id)') &&
-  !planEditor.includes('deletePlan(plan.id)'),
+  planEditor.includes('if (editing.fromAssistant && plan.entries.length === 0 && !plan.patient.name.trim())') &&
+  planEditor.split('deletePlan(plan.id)').length === 2,
   'Plan editor must not delete on first click');
 assert.ok(planPage.includes('run: () => upsertPlan(selected)') &&
   planEditor.includes('upsertPlan(selected); navigate('),
