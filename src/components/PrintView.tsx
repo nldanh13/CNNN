@@ -104,8 +104,8 @@ function PrintInterventions({ entry, tr }: {
   );
 }
 
-function PrintEvaluation({ entry, tr, lang }: {
-  entry: CareEntry; tr: (code: string | null, label: string) => string; lang: 'vi' | 'en';
+function PrintEvaluation({ entry, lang }: {
+  entry: CareEntry; lang: 'vi' | 'en';
 }) {
   const assessments = entry.noc.assessments ?? [];
   const notes = splitClinicalPrintNotes(entry.notes);
@@ -206,7 +206,7 @@ export function PrintView({ plan }: { plan: CarePlan }) {
           <PrintDiagnosis entry={entry} tr={tr} />
           <PrintOutcome entry={entry} tr={tr} lang={lang} />
           <PrintInterventions entry={entry} tr={tr} />
-          <PrintEvaluation entry={entry} tr={tr} lang={lang} />
+          <PrintEvaluation entry={entry} lang={lang} />
         </article>
       )) : <p className="cnnn-print-small">Chưa có vấn đề chăm sóc nào được ghi nhận.</p>}
 
