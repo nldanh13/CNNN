@@ -1,47 +1,24 @@
-import type { MouseEvent, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import {
-  ArrowRight, BookOpen, CheckCircle2, ClipboardList, FileCheck2, HandHeart, Lock,
-  Printer, ShieldCheck, Sparkles, Stethoscope, Target, UserRoundCheck,
+  ArrowRight, BookOpen, CheckCircle2, ClipboardList, Printer, Sparkles, UserRoundCheck,
 } from 'lucide-react';
-import { dataHub } from '../data/dataHub';
 import { BrandLogo, BrandMark, LinkButton } from '../ui';
-import type { TaxonomySystem } from '../types';
 
 /** Trang giới thiệu: người chưa đăng nhập thấy trang này trước, rồi mới chọn Đăng nhập hoặc Tạo tài khoản. */
 
-const SYSTEMS: { system: TaxonomySystem; label: string; subtitle: string; icon: ReactNode; tone: string }[] = [
-  { system: 'nanda', label: 'NANDA-I', subtitle: 'Chẩn đoán điều dưỡng', icon: <Stethoscope className="h-5 w-5" />, tone: 'bg-danger-50 text-danger-600 dark:bg-danger-500/15 dark:text-danger-300' },
-  { system: 'noc', label: 'NOC', subtitle: 'Kết quả chăm sóc', icon: <Target className="h-5 w-5" />, tone: 'bg-info-50 text-info-600 dark:bg-info-500/15 dark:text-info-300' },
-  { system: 'nic', label: 'NIC', subtitle: 'Can thiệp điều dưỡng', icon: <HandHeart className="h-5 w-5" />, tone: 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-300' },
-];
-
 const FEATURES: { icon: ReactNode; title: string; text: string }[] = [
-  { icon: <BookOpen className="h-5 w-5" />, title: 'Thư viện số NNN', text: 'Tra cứu chẩn đoán NANDA-I, kết quả NOC và can thiệp NIC bằng tiếng Việt, theo tên hoặc theo mã.' },
-  { icon: <Sparkles className="h-5 w-5" />, title: 'Trợ lý chẩn đoán', text: 'Nhập dữ kiện đánh giá người bệnh, nhận gợi ý chẩn đoán kèm đặc điểm xác định và yếu tố liên quan.' },
-  { icon: <ClipboardList className="h-5 w-5" />, title: 'Kế hoạch chăm sóc', text: 'Liên kết chẩn đoán với kết quả mong đợi và can thiệp, chấm thang đo NOC trước và sau chăm sóc.' },
-  { icon: <Printer className="h-5 w-5" />, title: 'In và lưu trữ', text: 'Xuất kế hoạch thành bản in gọn gàng để nộp bài hoặc bàn giao, sao lưu theo tài khoản của bạn.' },
+  { icon: <BookOpen className="h-5 w-5" />, title: 'Thư viện NNN', text: '1.431 mã NANDA-I, NOC, NIC tiếng Việt' },
+  { icon: <Sparkles className="h-5 w-5" />, title: 'Trợ lý chẩn đoán', text: 'Gợi ý chẩn đoán từ dữ kiện đánh giá' },
+  { icon: <ClipboardList className="h-5 w-5" />, title: 'Kế hoạch chăm sóc', text: 'Mục tiêu NOC, can thiệp NIC, thang đo' },
+  { icon: <Printer className="h-5 w-5" />, title: 'In và lưu trữ', text: 'Bản in gọn, lưu theo tài khoản' },
 ];
-
-const STEPS: { title: string; text: string }[] = [
-  { title: 'Đánh giá', text: 'Ghi nhận dữ kiện chủ quan và khách quan của người bệnh.' },
-  { title: 'Chẩn đoán', text: 'Chọn chẩn đoán NANDA-I phù hợp với sự hỗ trợ của trợ lý.' },
-  { title: 'Lập kế hoạch', text: 'Đặt mục tiêu NOC, chọn can thiệp NIC và theo dõi kết quả.' },
-];
-
-const anchor = 'text-sm font-medium text-fg-body transition hover:text-fg';
 
 export function LandingPage() {
-  const total = SYSTEMS.reduce((n, s) => n + dataHub.listLibrary(s.system).length, 0);
   return (
     <div className="min-h-screen bg-canvas text-fg-body">
       <header className="sticky top-0 z-20 border-b border-line-soft bg-canvas/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
           <BrandLogo href="#/" />
-          <nav aria-label="Giới thiệu" className="ml-4 hidden items-center gap-6 md:flex">
-            <a href="#/gioi-thieu" onClick={e => scrollTo(e, 'tinh-nang')} className={anchor}>Tính năng</a>
-            <a href="#/gioi-thieu" onClick={e => scrollTo(e, 'quy-trinh')} className={anchor}>Quy trình</a>
-            <a href="#/gioi-thieu" onClick={e => scrollTo(e, 'nguon-du-lieu')} className={anchor}>Nguồn dữ liệu</a>
-          </nav>
           <div className="ml-auto flex items-center gap-2">
             <LinkButton href="#/dang-nhap" variant="ghost" className="hidden sm:inline-flex">Đăng nhập</LinkButton>
             <LinkButton href="#/dang-ky" variant="primary">Tạo tài khoản</LinkButton>
@@ -76,88 +53,22 @@ export function LandingPage() {
           <ProductPreview />
         </section>
 
-        <section aria-label="Quy mô dữ liệu" className="border-y border-line bg-surface">
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:px-6 md:grid-cols-4">
-            <Stat value={total.toLocaleString('vi-VN')} label="Mã chuẩn hóa" />
-            {SYSTEMS.map(s => <Stat key={s.system} value={String(dataHub.listLibrary(s.system).length)} label={`${s.label} · ${s.subtitle}`} />)}
-          </div>
-        </section>
-
-        <section id="tinh-nang" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24">
-          <SectionTitle eyebrow="Tính năng" title="Mọi bước của quy trình điều dưỡng ở một nơi" text="Từ tra cứu thuật ngữ đến bản kế hoạch hoàn chỉnh, không phải chuyển qua lại giữa sách, tệp và ghi chú." />
-          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <section aria-label="Tính năng" className="border-t border-line bg-surface">
+          <ul className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
             {FEATURES.map(f => (
-              <div key={f.title} className="rounded-card border border-line bg-surface p-6 shadow-card">
-                <span className="flex h-10 w-10 items-center justify-center rounded-control bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">{f.icon}</span>
-                <h3 className="mt-4 text-base font-semibold text-fg">{f.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-fg-muted">{f.text}</p>
-              </div>
+              <li key={f.title} className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">{f.icon}</span>
+                <span>
+                  <span className="block text-sm font-semibold text-fg">{f.title}</span>
+                  <span className="mt-0.5 block text-sm text-fg-muted">{f.text}</span>
+                </span>
+              </li>
             ))}
-          </div>
-        </section>
-
-        <section id="quy-trinh" className="scroll-mt-20 border-y border-line bg-surface">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-            <SectionTitle eyebrow="Quy trình" title="Ba bước, đúng trình tự NNN" text="Ứng dụng đi theo đúng trình tự bạn đã học: đánh giá, chẩn đoán, rồi lập kế hoạch và đánh giá kết quả." />
-            <ol className="mt-10 grid gap-4 md:grid-cols-3">
-              {STEPS.map((s, i) => (
-                <li key={s.title} className="relative rounded-card border border-line bg-canvas p-6">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-700 text-sm font-bold text-white">{i + 1}</span>
-                  <h3 className="mt-4 text-base font-semibold text-fg">{s.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-fg-muted">{s.text}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <section id="nguon-du-lieu" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6 lg:py-24">
-          <div className="grid gap-10 lg:grid-cols-2">
-            <div>
-              <SectionTitle eyebrow="Nguồn dữ liệu" title="Dựa trên ấn bản chính thức" text="Danh mục được đối chiếu theo từng ấn bản và ghi rõ nguồn ngay trong ứng dụng." align="left" />
-              <ul className="mt-8 divide-y divide-line-soft rounded-card border border-line bg-surface">
-                {SYSTEMS.map(s => (
-                  <li key={s.system} className="flex items-center gap-4 px-5 py-4">
-                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-control ${s.tone}`}>{s.icon}</span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold text-fg">{s.label}</span>
-                      <span className="block text-xs text-fg-muted">{dataHub.editionFor(s.system)}</span>
-                    </span>
-                    <span className="text-sm font-semibold tabular-nums text-fg">{dataHub.listLibrary(s.system).length} mã</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <SectionTitle eyebrow="Bảo mật" title="Tài khoản riêng, dữ liệu riêng" text="Mỗi người dùng có không gian làm việc tách biệt." align="left" />
-              <ul className="mt-8 space-y-4">
-                <Trust icon={<Lock className="h-5 w-5" />} title="Đăng nhập an toàn" text="Mật khẩu tối thiểu 12 ký tự, có xác minh chống truy cập tự động." />
-                <Trust icon={<ShieldCheck className="h-5 w-5" />} title="Tách biệt theo tài khoản" text="Kế hoạch của bạn chỉ bạn xem được, không chia sẻ với người dùng khác." />
-                <Trust icon={<FileCheck2 className="h-5 w-5" />} title="Không cần dữ liệu người bệnh thật" text="Dùng tên viết tắt hoặc mã ca bệnh khi luyện tập và lập kế hoạch." />
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section className="px-4 pb-16 sm:px-6 lg:pb-24">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-card bg-primary-800 px-6 py-10 text-white sm:px-10 md:flex-row md:items-center md:justify-between dark:bg-primary-900">
-            <div>
-              <h2 className="font-sans text-2xl font-bold tracking-[-0.01em] sm:text-3xl">Sẵn sàng lập kế hoạch đầu tiên?</h2>
-              <p className="mt-2 text-primary-100">Chỉ cần email và mật khẩu để bắt đầu.</p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <a href="#/dang-ky" className="inline-flex h-12 items-center justify-center gap-2 rounded-control bg-white px-6 font-semibold text-primary-800 shadow-button transition hover:bg-primary-50">
-                Tạo tài khoản <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href="#/dang-nhap" className="inline-flex h-12 items-center justify-center rounded-control border border-white/30 px-6 font-semibold text-white transition hover:bg-white/10">
-                Đăng nhập
-              </a>
-            </div>
-          </div>
+          </ul>
         </section>
       </main>
 
-      <footer className="border-t border-line bg-surface">
+      <footer className="border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-xs text-fg-muted sm:px-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <BrandMark className="h-8 w-8" />
@@ -170,42 +81,6 @@ export function LandingPage() {
         </div>
       </footer>
     </div>
-  );
-}
-
-function scrollTo(event: MouseEvent, id: string) {
-  event.preventDefault();
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-}
-
-function SectionTitle({ eyebrow, title, text, align = 'center' }: { eyebrow: string; title: string; text: string; align?: 'center' | 'left' }) {
-  return (
-    <div className={align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-xl'}>
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary-700 dark:text-primary-300">{eyebrow}</p>
-      <h2 className="mt-3 text-balance font-sans text-[1.75rem] font-bold leading-tight tracking-[-0.015em] text-fg sm:text-[2rem]">{title}</h2>
-      <p className="mt-3 text-base leading-relaxed text-fg-muted">{text}</p>
-    </div>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="px-2 py-7 text-center">
-      <div className="font-sans text-3xl font-bold tabular-nums tracking-[-0.02em] text-fg">{value}</div>
-      <div className="mt-1 text-xs text-fg-muted sm:text-sm">{label}</div>
-    </div>
-  );
-}
-
-function Trust({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
-  return (
-    <li className="flex gap-4 rounded-card border border-line bg-surface p-5">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">{icon}</span>
-      <span>
-        <span className="block text-sm font-semibold text-fg">{title}</span>
-        <span className="mt-1 block text-sm leading-relaxed text-fg-muted">{text}</span>
-      </span>
-    </li>
   );
 }
 
