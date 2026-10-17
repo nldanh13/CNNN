@@ -4,6 +4,7 @@ import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
 import { Alert, BrandLogo, Button, Kbd } from '../ui';
 import { CommandPalette } from './CommandPalette';
+import { PlanSyncStatus } from './PlanSyncStatus';
 import { useAuth } from '../auth/AuthContext';
 import { navigate } from '../store/router';
 
@@ -137,6 +138,7 @@ export function Layout({ section, children }: { section: string; children: React
             </Alert>
           </div>
         )}
+        {(section === 'plans' || section === 'assistant') && <PlanSyncStatus />}
         <main key={section} className="mx-auto max-w-7xl animate-rise px-4 py-6 sm:px-6 lg:px-8 lg:py-8 print:max-w-none print:animate-none print:p-0">
           {children}
         </main>
