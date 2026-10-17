@@ -4,7 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import { TurnstileChallenge, turnstileSiteKey } from '../auth/TurnstileChallenge';
 import { navigate } from '../store/router';
 import { patientCloudEnabled } from '../cloud/patientWorkspace';
-import { Alert, BrandLogo, BrandMark, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
+import { Alert, Badge, BrandLogo, BrandMark, Button, Card, Field, Input, SettingRow, SettingsSection, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
 const errorText = (e: unknown) => e instanceof Error ? e.message : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
@@ -160,66 +160,109 @@ export function RecoveryGate() {
   </div>;
 }
 
+/** Các nhóm cài đặt tài khoản: Hồ sơ, Bảo mật, Dữ liệu & quyền riêng tư. */
 export function AccountSettings() {
   const auth = useAuth();
-  const [fullName, setFullName] = useState(auth.user?.user_metadata?.full_name ?? '');
+  const savedName = auth.user?.user_metadata?.full_name ?? '';
+  const [fullName, setFullName] = useState(savedName);
   const [newPassword, setNewPassword] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const action = async (fn: () => Promise<void>) => {
-    setBusy(true); setMessage(''); setError('');
-    try { await fn(); setMessage('Đã cập nhật tài khoản.'); }
-    catch (e) { setError(errorText(e)); }
-    finally { setBusy(false); }
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [busy, setBusy] = useState<'' | 'name' | 'password'>('');
+  const [status, setStatus] = useState<{ form: 'name' | 'password'; tone: 'success' | 'danger'; text: string } | null>(null);
+  const run = async (form: 'name' | 'password', fn: () => Promise<void>, ok: string) => {
+    setBusy(form); setStatus(null);
+    try { await fn(); setStatus({ form, tone: 'success', text: ok }); }
+    catch (e) { setStatus({ form, tone: 'danger', text: errorText(e) }); }
+    finally { setBusy(''); }
   };
+  const note = (form: 'name' | 'password') => status?.form === form &&
+    <Alert role={status.tone === 'danger' ? 'alert' : 'status'} tone={status.tone} size="sm">{status.text}</Alert>;
+
   if (!auth.enabled) {
-    return <Card>
-      <CardHeader title="Tài khoản" subtitle="Chưa kết nối dịch vụ tài khoản" />
+    return <SettingsSection title="Tài khoản" description="Chưa kết nối dịch vụ tài khoản.">
       <p className="px-5 py-4 text-sm leading-relaxed text-fg-muted">
         Ứng dụng hiện đang ở chế độ thiết bị cá nhân. Quản trị viên cần cấu hình VITE_SUPABASE_URL và
         VITE_SUPABASE_ANON_KEY để bật đăng ký, đăng nhập cho mọi người.
       </p>
-    </Card>;
+    </SettingsSection>;
   }
   if (!auth.user) return null;
-  return <Card>
-    <CardHeader title="Tài khoản của tôi" subtitle="Quản lý thông tin đăng nhập" />
-    <CardBody className="space-y-5">
-      <div className="flex items-center gap-2 text-sm text-fg"><UserRound className="h-4 w-4 text-fg-muted" />
-        <span className="font-medium">{auth.user.email}</span>
+  const email = auth.user.email;
+  const display = savedName.trim() || email;
+  const initials = display.split(/[\s@]+/).filter(Boolean).slice(0, 2).map(w => w[0]!.toUpperCase()).join('');
+  const passwordTooShort = newPassword.length > 0 && newPassword.length < 12;
+  const mismatch = confirmPassword.length > 0 && confirmPassword !== newPassword;
+
+  return <>
+    <SettingsSection id="ho-so" title="Hồ sơ" description="Tên hiển thị trong lời chào và trên kế hoạch chăm sóc.">
+      <div className="flex items-center gap-4 border-b border-line-soft px-5 py-5">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary-700 text-lg font-bold text-white">{initials}</span>
+        <div className="min-w-0">
+          <p className="truncate text-base font-semibold text-fg">{display}</p>
+          <p className="flex items-center gap-1.5 truncate text-sm text-fg-muted"><UserRound className="h-3.5 w-3.5 shrink-0" />{email}</p>
+        </div>
       </div>
-      <details className="text-xs text-fg-muted">
-        <summary className="flex cursor-pointer items-center gap-2 font-medium">
-          <ShieldCheck className="h-4 w-4" /> Lưu trữ & quyền riêng tư
-        </summary>
-        <p className="mt-2 rounded-control bg-surface-muted p-3 leading-relaxed">
-          {patientCloudEnabled ? 'Kế hoạch được tự lưu theo tài khoản trên Supabase (tối đa 3 người bệnh).' : 'Kế hoạch hiện lưu theo tài khoản trên thiết bị này; tính năng tự lưu đang chờ cấu hình.'}
-          {' '}Không nhập dữ liệu nhận dạng người bệnh thật khi chưa có hệ thống bảo vệ hồ sơ được phê duyệt.
-        </p>
-      </details>
-      <form className="space-y-3" onSubmit={e => {
+      <form className="space-y-4 px-5 py-5" onSubmit={e => {
         e.preventDefault();
-        void action(() => auth.updateName(fullName));
+        void run('name', () => auth.updateName(fullName.trim()), 'Đã lưu họ tên.');
       }}>
         <Field label="Họ tên hiển thị">
-          <Input value={fullName} onChange={e => setFullName(e.target.value)} maxLength={80} required />
+          <Input value={fullName} onChange={e => setFullName(e.target.value)} maxLength={80} autoComplete="name" required />
         </Field>
-        <Button type="submit" disabled={busy}>Lưu họ tên</Button>
+        <Field label="Email đăng nhập" hint="Email dùng để đăng nhập và khôi phục mật khẩu, không đổi được tại đây.">
+          <Input value={email} readOnly disabled />
+        </Field>
+        {note('name')}
+        <div className="flex justify-end">
+          <Button type="submit" variant="primary" disabled={busy !== '' || !fullName.trim() || fullName.trim() === savedName.trim()}>
+            {busy === 'name' ? 'Đang lưu…' : 'Lưu thay đổi'}
+          </Button>
+        </div>
       </form>
-      <form className="space-y-3 border-t border-line-soft pt-4" onSubmit={e => {
+    </SettingsSection>
+
+    <SettingsSection id="bao-mat" title="Bảo mật" description="Đổi mật khẩu đăng nhập. Mật khẩu cần ít nhất 12 ký tự.">
+      <form className="space-y-4 px-5 py-5" onSubmit={e => {
         e.preventDefault();
-        if (newPassword.length < 12) { setError('Mật khẩu phải có ít nhất 12 ký tự.'); return; }
-        void action(async () => { await auth.updatePassword(newPassword); setNewPassword(''); });
+        if (newPassword.length < 12) { setStatus({ form: 'password', tone: 'danger', text: 'Mật khẩu phải có ít nhất 12 ký tự.' }); return; }
+        if (newPassword !== confirmPassword) { setStatus({ form: 'password', tone: 'danger', text: 'Hai mật khẩu không khớp.' }); return; }
+        void run('password', async () => { await auth.updatePassword(newPassword); setNewPassword(''); setConfirmPassword(''); }, 'Đã đổi mật khẩu.');
       }}>
-        <Field label="Đổi mật khẩu" hint="Ít nhất 12 ký tự.">
-          <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-            autoComplete="new-password" minLength={12} required />
-        </Field>
-        <Button type="submit" disabled={busy}>Đổi mật khẩu</Button>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Mật khẩu mới" error={passwordTooShort ? 'Ít nhất 12 ký tự.' : undefined}>
+            <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+              autoComplete="new-password" minLength={12} required />
+          </Field>
+          <Field label="Nhập lại mật khẩu mới" error={mismatch ? 'Chưa khớp với mật khẩu mới.' : undefined}>
+            <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+              autoComplete="new-password" minLength={12} required />
+          </Field>
+        </div>
+        {note('password')}
+        <div className="flex justify-end">
+          <Button type="submit" variant="primary" icon={<KeyRound className="h-4 w-4" />}
+            disabled={busy !== '' || newPassword.length < 12 || newPassword !== confirmPassword}>
+            {busy === 'password' ? 'Đang cập nhật…' : 'Cập nhật mật khẩu'}
+          </Button>
+        </div>
       </form>
-      {message && <Alert role="status" tone="success" size="sm">{message}</Alert>}
-      {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
-    </CardBody>
-  </Card>;
+    </SettingsSection>
+
+    <SettingsSection id="du-lieu" title="Lưu trữ & quyền riêng tư" description="Nơi lưu kế hoạch chăm sóc và lưu ý khi nhập dữ liệu.">
+      <div className="divide-y divide-line-soft">
+        <SettingRow label="Nơi lưu kế hoạch" hint={patientCloudEnabled
+          ? 'Tự lưu theo tài khoản, mở được trên mọi thiết bị (tối đa 3 người bệnh).'
+          : 'Lưu theo tài khoản trên trình duyệt này; tính năng tự lưu lên máy chủ đang chờ cấu hình.'}>
+          <Badge tone={patientCloudEnabled ? 'success' : 'neutral'}>{patientCloudEnabled ? 'Đồng bộ tài khoản' : 'Trên thiết bị này'}</Badge>
+        </SettingRow>
+        <div className="flex gap-3 px-5 py-4 text-sm">
+          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-warning-600 dark:text-warning-300" />
+          <p className="leading-relaxed text-fg-body">
+            Không nhập dữ liệu nhận dạng người bệnh thật (họ tên đầy đủ, số hồ sơ, địa chỉ) khi chưa có hệ thống bảo vệ hồ sơ được phê duyệt.
+            Dùng tên viết tắt hoặc mã ca bệnh.
+          </p>
+        </div>
+      </div>
+    </SettingsSection>
+  </>;
 }

@@ -72,3 +72,16 @@ export function SettingRow({ label, hint, children }: { label: ReactNode; hint?:
     </div>
   );
 }
+
+/** Một nhóm cài đặt: tiêu đề và mô tả bên trái, nội dung trong thẻ bên phải (xếp chồng trên điện thoại). */
+export function SettingsSection({ id, title, description, children }: { id?: string; title: ReactNode; description?: ReactNode; children: ReactNode }) {
+  return (
+    <section id={id} className="grid gap-4 border-t border-line-soft pt-8 first:border-t-0 first:pt-0 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
+      <div>
+        <h2 className="text-base font-semibold text-fg">{title}</h2>
+        {description && <p className="mt-1 text-sm leading-relaxed text-fg-muted">{description}</p>}
+      </div>
+      <div className="min-w-0 overflow-hidden rounded-card border border-line bg-surface shadow-card">{children}</div>
+    </section>
+  );
+}
