@@ -31,7 +31,8 @@
     "check:home-navigation": "tsx scripts/check-home-navigation.ts",
     "check:cloud-backup": "tsx scripts/check-cloud-backup.ts",
     "check:security": "tsx scripts/check-security-baseline.ts",
-    "check:rls-read": "tsx scripts/check-rls-read.ts"
+    "check:rls-read": "tsx scripts/check-rls-read.ts",
+    "check:totp-mfa": "tsx scripts/check-totp-mfa.ts"
   },
   "dependencies": {
     "lucide-react": "0.460.0",
