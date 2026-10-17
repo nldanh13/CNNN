@@ -23,6 +23,12 @@
   h3 {
     text-wrap: balance;
   }
+  /* Tiêu đề trang dùng chữ có chân Fraunces: điểm nhận diện chính của giao diện */
+  h1 {
+    @apply font-display;
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+  }
   a:focus-visible {
     @apply rounded-md outline-none ring-2 ring-primary-500/60;
   }

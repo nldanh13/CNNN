@@ -10,6 +10,7 @@ import { cx } from '../lib/utils';
 const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
 const PALETTES = [
   ['primary', 'Chủ đạo', 'Nút chính, mục đang chọn, liên kết'],
+  ['accent', 'Điểm nhấn', 'Vàng đồng: biểu trưng, nhãn nhỏ, mục đang chọn'],
   ['ink', 'Trung tính', 'Chữ, viền, nền phụ'],
   ['info', 'Thông tin', 'Ghi chú, gợi ý'],
   ['success', 'Thành công', 'Đạt mục tiêu, hoàn tất'],
@@ -24,6 +25,7 @@ const TONES: Tone[] = ['neutral', 'primary', 'info', 'success', 'warning', 'dang
 /** Các ô màu phải là chuỗi đầy đủ để Tailwind sinh ra lớp CSS. */
 const SWATCH: Record<string, string[]> = {
   primary: ['bg-primary-50', 'bg-primary-100', 'bg-primary-200', 'bg-primary-300', 'bg-primary-400', 'bg-primary-500', 'bg-primary-600', 'bg-primary-700', 'bg-primary-800', 'bg-primary-900', 'bg-primary-950'],
+  accent: ['bg-accent-50', 'bg-accent-100', 'bg-accent-200', 'bg-accent-300', 'bg-accent-400', 'bg-accent-500', 'bg-accent-600', 'bg-accent-700', 'bg-accent-800', 'bg-accent-900', 'bg-accent-950'],
   ink: ['bg-ink-50', 'bg-ink-100', 'bg-ink-200', 'bg-ink-300', 'bg-ink-400', 'bg-ink-500', 'bg-ink-600', 'bg-ink-700', 'bg-ink-800', 'bg-ink-900', 'bg-ink-950'],
   info: ['bg-info-50', 'bg-info-100', 'bg-info-200', 'bg-info-300', 'bg-info-400', 'bg-info-500', 'bg-info-600', 'bg-info-700', 'bg-info-800', 'bg-info-900', 'bg-info-950'],
   success: ['bg-success-50', 'bg-success-100', 'bg-success-200', 'bg-success-300', 'bg-success-400', 'bg-success-500', 'bg-success-600', 'bg-success-700', 'bg-success-800', 'bg-success-900', 'bg-success-950'],
@@ -85,8 +87,8 @@ export function UiKitPage() {
           <SectionTitle>Chữ</SectionTitle>
           <Card>
             <CardBody className="space-y-2">
-              <p className="text-2xl font-bold tracking-tight text-fg">Tiêu đề trang · 24px đậm</p>
-              <p className="text-base font-semibold text-fg">Tiêu đề nhóm · 16px</p>
+              <p className="font-display text-[2rem] font-medium leading-tight tracking-[-0.02em] text-fg">Tiêu đề trang · Fraunces 32px</p>
+              <p className="font-display text-lg font-medium text-fg">Tiêu đề nhóm · Fraunces 18px</p>
               <p className="text-[15px] font-semibold text-fg">Tiêu đề thẻ · 15px</p>
               <p className="text-sm text-fg-body">Nội dung · 14px. Người bệnh 75 tuổi, ho yếu, đờm đặc khó khạc.</p>
               <p className="text-xs text-fg-muted">Chú thích · 12px, màu phụ</p>

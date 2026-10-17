@@ -4,7 +4,7 @@
  * như slate-500 hay red-600 không còn tồn tại: mọi trang buộc phải dùng chung một bảng màu.
  */
 const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
-const PALETTES = ['ink', 'primary', 'info', 'success', 'warning', 'danger', 'nanda', 'noc', 'nic'];
+const PALETTES = ['ink', 'primary', 'accent', 'info', 'success', 'warning', 'danger', 'nanda', 'noc', 'nic'];
 
 const v = (name) => `rgb(var(--${name}) / <alpha-value>)`;
 const palette = (name) => {
@@ -31,6 +31,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Be Vietnam Pro"', 'Inter', 'system-ui', 'sans-serif'],
+        /* Chữ có chân cho tiêu đề lớn và con số: tạo nét riêng của CNNN */
+        display: ['Fraunces', '"Be Vietnam Pro"', 'Georgia', 'serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
@@ -50,8 +52,9 @@ export default {
         rise: 'rise .2s ease-out',
       },
       boxShadow: {
-        card: '0 1px 2px rgb(15 23 42 / .04), 0 2px 8px -2px rgb(15 23 42 / .06)',
-        raised: '0 4px 16px -4px rgb(15 23 42 / .12)',
+        card: 'var(--shadow-card)',
+        raised: 'var(--shadow-raised)',
+        button: 'var(--shadow-button)',
       },
     },
   },

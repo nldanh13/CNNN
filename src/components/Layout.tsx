@@ -64,10 +64,10 @@ export function Layout({ section, children }: { section: string; children: React
         aria-current={active ? 'page' : undefined}
         className={cx(
           'flex items-center gap-3 rounded-control px-3 py-2.5 text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
-          active ? 'bg-primary-600 text-white shadow-sm' : 'text-fg-body hover:bg-surface-muted hover:text-fg',
+          active ? 'bg-ink-900 text-white shadow-button dark:bg-white/10' : 'text-fg-body hover:bg-surface-muted hover:text-fg',
         )}
       >
-        <span className={active ? 'text-white' : 'text-fg-subtle'}>{item.icon}</span>
+        <span className={active ? 'text-accent-300' : 'text-fg-subtle'}>{item.icon}</span>
         <span className="flex-1">{item.label}</span>
         {item.badge}
       </a>
@@ -76,12 +76,12 @@ export function Layout({ section, children }: { section: string; children: React
 
   const logo = (compact: boolean) => (
     <a href="#/home" className="flex min-w-0 items-center gap-3">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary-600 text-white shadow-sm">
-        <Activity className="h-5 w-5" strokeWidth={2.4} />
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-ink-900 text-accent-300 shadow-button dark:bg-white/10">
+        <Activity className="h-5 w-5" strokeWidth={2.2} />
       </span>
       <span className="min-w-0 leading-tight">
-        <span className="block truncate text-[15px] font-bold text-fg">Điều dưỡng NNN</span>
-        {!compact && <span className="mt-0.5 block text-xs text-fg-muted">NANDA-I · NOC · NIC</span>}
+        <span className="block truncate font-display text-[17px] font-semibold tracking-[-0.01em] text-fg">Điều dưỡng NNN</span>
+        {!compact && <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-700 dark:text-accent-300">NANDA-I · NOC · NIC</span>}
       </span>
     </a>
   );
@@ -102,7 +102,7 @@ export function Layout({ section, children }: { section: string; children: React
       </aside>
 
       <div className="pb-20 lg:pb-0 lg:pl-64 print:p-0">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-surface/85 px-4 backdrop-blur sm:px-6 print:hidden">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line-soft bg-canvas/80 px-4 backdrop-blur-md sm:px-6 print:hidden">
           <span className="min-w-0 lg:hidden">{logo(true)}</span>
           <button
             type="button"
@@ -158,9 +158,9 @@ export function Layout({ section, children }: { section: string; children: React
               key={item.key}
               href={item.href}
               aria-current={active ? 'page' : undefined}
-              className={cx('flex min-h-[3.75rem] flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium', active ? 'text-primary-700 dark:text-primary-300' : 'text-fg-muted')}
+              className={cx('flex min-h-[3.75rem] flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium', active ? 'text-fg' : 'text-fg-muted')}
             >
-              <span className={cx('flex h-7 w-12 items-center justify-center rounded-full transition', active && 'bg-primary-100 dark:bg-primary-500/20')}>{item.icon}</span>
+              <span className={cx('flex h-7 w-12 items-center justify-center rounded-full transition', active && 'bg-ink-900 text-accent-300 dark:bg-white/10')}>{item.icon}</span>
               <span className="max-w-full truncate">{item.short ?? item.label}</span>
             </a>
           );
