@@ -46,7 +46,7 @@ export function StandardsPage() {
       edition: editionLabel(NIC_EDITION, lang),
       bar: SYSTEM_DOT.nic,
       text: SYSTEM_TEXT.nic,
-      stats: `${NIC_ITEMS.length} can thiệp trong danh mục NIC 8 (bản dịch đang rà soát)`,
+      stats: `${NIC_ITEMS.length} can thiệp điều dưỡng`,
       desc: t.standards.nicSchema,
       example: [['3330', 'Hỗ trợ thay đổi tư thế: nằm sấp']],
     },
@@ -54,7 +54,7 @@ export function StandardsPage() {
 
   return (
     <>
-      <PageHeader title="Hướng dẫn chẩn đoán" subtitle="Quy trình lập kế hoạch, cấu trúc mã NANDA-I, NOC, NIC và thang đo Likert của NOC." />
+      <PageHeader title="Hướng dẫn chẩn đoán" />
       <div className="mb-8"><NnnReasoningWorkflow /></div>
 
       <SectionTitle>{t.standards.schema}</SectionTitle>
