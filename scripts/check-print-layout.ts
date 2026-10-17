@@ -37,5 +37,5 @@ assert.ok(view.includes('entry.relatedFactors.map'), 'Do not lose related/risk f
 assert.ok(css.includes('@page') && css.includes('A4 portrait'));
 assert.ok(css.includes('break-after: avoid') && css.includes('break-inside: auto'),
   'A4 layout should keep headings and allow long plan pages to flow');
-assert.ok(css.includes('font-size: 9.2pt'), 'Printed text must remain legible');
+assert.ok(css.includes('font-size: 9pt'), 'Printed text must remain legible after A4 pagination tuning');
 console.log('OK: A4 clinical print hierarchy, separate assistant notes and no misleading empty fields.');
