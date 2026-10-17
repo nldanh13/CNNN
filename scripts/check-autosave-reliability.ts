@@ -43,7 +43,7 @@ assert.equal(parkPlanDraft(draftKey, parkedKey, { version: 1, plans: [], baseRev
 assert.equal(memory.get(parkedKey), '{corrupt-archive');
 assert.ok(removePlanDraft(draftKey));
 assert.equal(readPlanDraft(draftKey), null);
-assert.ok(readPlanDraft(parkedKey), 'Parking must not delete a pending copy');
+assert.equal(memory.get(parkedKey), '{corrupt-archive', 'Parking must retain unreadable archive bytes');
 memory.set(draftKey, '{corrupt');
 assert.throws(() => readPlanDraft(draftKey), /Bản nháp/, 'Corrupt journal must not be treated as empty');
 assert.equal(memory.get(draftKey), '{corrupt', 'Corrupt journal must not be overwritten by read');
