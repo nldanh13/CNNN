@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import {
   authConfigured, bootstrapSession, refreshSession, signIn as apiSignIn, signUp as apiSignUp,
   requestPasswordReset as apiReset, changePassword as apiPassword, changeFullName as apiName,
-  revokeSession, storeSession, type AccountSession, type AccountUser,
+  revokeSession, storeSession, verifyTotp as apiVerifyTotp, type AccountSession, type AccountUser,
 } from './supabaseAuth';
 
 interface AuthState {
@@ -16,6 +16,7 @@ interface AuthState {
   updatePassword: (password: string) => Promise<void>;
   updateName: (name: string) => Promise<void>;
   signOut: () => Promise<void>;
+  verifyMfa: (factorId: string, code: string) => Promise<void>;
 }
 
 const Context = createContext<AuthState | null>(null);
@@ -73,6 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     commit({ ...session, user });
   }, [session, commit]);
 
+  const verifyMfa = useCallback(async (factorId: string, code: string) => {
+    if (!session) throw new Error('Bạn cần đăng nhập.');
+    const next = await apiVerifyTotp(session, factorId, code);
+    commit(next);
+  }, [session, commit]);
+
   const signOut = useCallback(async () => {
     const old = session;
     commit(null);
@@ -83,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return <Context.Provider value={{
     enabled: authConfigured, ready, session, user: session?.user ?? null,
-    signIn, signUp, resetPassword, updatePassword, updateName, signOut,
+    signIn, signUp, resetPassword, updatePassword, updateName, signOut, verifyMfa,
   }}>{children}</Context.Provider>;
 }
 
