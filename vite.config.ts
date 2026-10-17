@@ -5,10 +5,15 @@ export default defineConfig({
   base:'./',
   plugins:[react()],
   server:{
-    host:'127.0.0.1',
-    cors:{origin:/^http:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?$/},
+    host:'0.0.0.0',
+    port:3000,
+    cors:true,
     fs:{deny:['.env','.env.*','*.{crt,pem}','**/.git/**',
       '**/private-data/**','**/dist-private/**','**/public/private/**']},
+  },
+  preview:{
+    host:'0.0.0.0',
+    port:3000,
   },
   build:{outDir:'dist'},
 });

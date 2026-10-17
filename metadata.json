@@ -1,0 +1,8 @@
+{
+  "name": "Thư viện Điều dưỡng NNN",
+  "description": "Thư viện Điều dưỡng NNN – Tra cứu NANDA-I, NOC, NIC và hỗ trợ lập kế hoạch chăm sóc điều dưỡng.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -80,11 +80,21 @@ export function DataIssueReport({system,code,label,fallbackEdition}:{
           onClick={()=>{void navigator.clipboard.writeText(makeDataReportText(draft))
             .then(()=>toast('Đã sao chép báo cáo'))
             .catch(()=>toast('Không thể sao chép','error'));}}>Sao chép</Button>
-        <Button size="sm" variant="primary" disabled={!valid}
-          icon={<ExternalLink className="h-3.5 w-3.5"/>}
-          onClick={()=>window.open(makeDataReportIssueUrl(draft),'_blank','noopener,noreferrer')}>
-          Mở GitHub để gửi
-        </Button>
+        {valid ? (
+          <a
+            href={makeDataReportIssueUrl(draft)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60 bg-brand-600 text-white hover:bg-brand-700 shadow-sm h-8 px-2.5 text-xs gap-1.5"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            Mở GitHub để gửi
+          </a>
+        ) : (
+          <Button size="sm" variant="primary" disabled icon={<ExternalLink className="h-3.5 w-3.5" />}>
+            Mở GitHub để gửi
+          </Button>
+        )}
       </div>
     </Modal>
   </>;
