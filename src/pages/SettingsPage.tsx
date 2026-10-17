@@ -1,7 +1,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
-import { Badge, Card, CardBody, CardHeader, PageHeader, Segmented, SettingRow } from '../ui';
+import { Badge, Card, CardHeader, PageHeader, Segmented, SettingRow } from '../ui';
 import { AccountSettings } from './AccountPage';
 
 export function SettingsPage() {
