@@ -124,6 +124,10 @@ export function NicReaderPage({ query }: { query: URLSearchParams }) {
               <h2 className="mt-3 text-xl font-semibold text-fg">{titles.vi}</h2>
               <p className="mt-1 text-sm text-fg-muted">{titles.en}</p>
               <p lang="es" className="mt-1 text-xs italic text-fg-muted">{titles.es}</p>
+              <p className="mt-2 text-xs leading-relaxed text-fg-muted">
+                Nhãn tiếng Việt NIC 8 thuộc bản dịch dự thảo chưa thẩm định. Nội dung tiếng Anh/Việt có thể chưa đầy đủ;
+                khi thiếu bản dịch, trình đọc sẽ hiển thị tiếng Tây Ban Nha. Đối chiếu ấn bản gốc khi dùng cho chuyên môn.
+              </p>
               <div className="mt-5 flex items-center gap-2 border-b border-line pb-4">
                 <Languages className="h-5 w-5 shrink-0 text-fg-subtle" />
                 <label htmlFor="nic8-lang" className="sr-only">Ngôn ngữ đọc</label>
