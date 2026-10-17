@@ -9,6 +9,7 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { captchaMetadata } from '../src/auth/captchaMetadata';
 
 const tracked = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
 const forbidden = tracked.filter(path =>
@@ -44,7 +45,12 @@ const migration = readFileSync('supabase/migrations/20261017000200_limit_account
 assert.ok(app.includes('import.meta.env.PROD && !auth.enabled'), 'Production must fail closed without Auth config');
 assert.ok(index.includes('Content-Security-Policy') && index.includes('object-src \'none\''), 'Missing HTML-level CSP');
 assert.ok(index.includes('name="referrer" content="no-referrer"'), 'Do not leak recovery fragments by referrer');
-assert.ok(auth.includes('captcha_token'), 'Supabase Auth must receive server-verified CAPTCHA token');
+assert.deepEqual(captchaMetadata('test-captcha-token'), {
+  gotrue_meta_security: { captcha_token: 'test-captcha-token' },
+}, 'GoTrue expects a nested CAPTCHA token; the top-level token is ignored');
+assert.deepEqual(captchaMetadata(), {}, 'CAPTCHA stays optional until configured');
+assert.equal((auth.match(/\.\.\.captchaMetadata\(captchaToken\)/g) || []).length, 3,
+  'Login, signup and password recovery must all send the GoTrue CAPTCHA payload');
 assert.ok(gate.includes('TurnstileChallenge') && gate.includes('turnstileSiteKey && !captchaToken'),
   'Auth forms must require CAPTCHA when a site key is configured');
 assert.ok(deploy.includes('vars.VITE_TURNSTILE_SITE_KEY'), 'Deploy must include public CAPTCHA site key');
