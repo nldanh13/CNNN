@@ -1,15 +1,15 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { ClipboardList, Copy, Plus, ShieldCheck, Trash2 } from 'lucide-react';
+import { ClipboardList, Copy, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { navigate } from '../store/router';
 import { newPlan, nextPlanCode, planProgress } from '../lib/carePlan';
 import { formatDate, matches, uid } from '../lib/utils';
 import { Badge, Button, Card, CodeBadge, EmptyState, Field, IconButton, Input, Modal, ModalFooter, ModalHeader, PageHeader, ProgressBar, SearchInput, Table, TBody, Td, Th, THead, Tr } from '../ui';
 import type { CarePlan } from '../types';
-import { PlanBackupButtons } from '../components/PlanBackup';
+import { MAX_PATIENTS } from '../cloud/patientWorkspace';
 
 export function PlansPage() {
-  const { t, lang, plans, upsertPlan } = useApp();
+  const { t, lang, plans, upsertPlan, planSyncMessage, retryStorage } = useApp();
   const [q, setQ] = useState('');
 
   const filtered = useMemo(
@@ -21,7 +21,7 @@ export function PlansPage() {
   );
 
   const [adding, setAdding] = useState(false);
-  const create = () => setAdding(true);
+  const create = () => { if (plans.length < MAX_PATIENTS) setAdding(true); };
 
   return (
     <>
@@ -29,23 +29,16 @@ export function PlansPage() {
         title={t.plans.title}
         actions={
           <>
-            <PlanBackupButtons />
-            <Button variant="primary" className="order-first w-full sm:w-auto lg:order-none" icon={<Plus className="h-4 w-4" />} onClick={create}>
+            <Button variant="primary" className="order-first w-full sm:w-auto lg:order-none" icon={<Plus className="h-4 w-4" />} onClick={create}
+              disabled={plans.length >= MAX_PATIENTS}>
               {t.plans.newTitle}
             </Button>
           </>
         }
       />
 
-      <details className="mb-4 text-xs text-fg-muted">
-        <summary className="inline-flex cursor-pointer items-center gap-1.5 hover:text-fg">
-          <ShieldCheck className="h-3.5 w-3.5" /> Lưu trữ & quyền riêng tư
-        </summary>
-        <div className="mt-2 max-w-3xl rounded-control bg-surface-muted px-3 py-2 leading-relaxed">
-          {t.backup.notice}
-        </div>
-      </details>
-
+      {planSyncMessage && <div role="status" className="mb-3 flex flex-wrap items-center gap-2 text-xs text-fg-muted">{planSyncMessage}{(planSyncMessage.includes('Không') || planSyncMessage.includes('thay đổi trên thiết bị khác') || planSyncMessage.includes('hết hạn')) && <button type="button" onClick={retryStorage} className="underline">Thử lưu lại</button>}</div>}
+      <p className="mb-3 text-xs text-fg-muted">{plans.length}/{MAX_PATIENTS} người bệnh</p>
       <Card className="overflow-hidden">
         <div className="border-b border-line-soft p-4">
           <SearchInput value={q} onChange={setQ} placeholder={t.plans.searchPlaceholder} className="max-w-sm" />
@@ -56,7 +49,7 @@ export function PlansPage() {
             icon={<ClipboardList className="h-5 w-5" />}
             title={plans.length ? t.app.noResults : t.plans.empty}
             action={
-              !plans.length && (
+              !plans.length && plans.length < MAX_PATIENTS && (
                 <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={create}>
                   {t.plans.newTitle}
                 </Button>
@@ -147,9 +140,10 @@ export function PlansPage() {
       </Card>
 
       <NewPatientDialog
-        open={adding}
+        open={adding && plans.length < MAX_PATIENTS}
         onClose={() => setAdding(false)}
         onCreate={(patient) => {
+          if (plans.length >= MAX_PATIENTS) return;
           const plan = newPlan(plans);
           upsertPlan({ ...plan, patient: { ...plan.patient, ...patient } });
           navigate(`/plans/${plan.id}`);
@@ -166,7 +160,9 @@ function RowActions({ plan: p }: { plan: CarePlan }) {
     <div className="flex justify-end gap-0.5">
       <IconButton
         label={t.plans.duplicate}
+        disabled={plans.length >= MAX_PATIENTS}
         onClick={() => {
+          if (plans.length >= MAX_PATIENTS) return;
           const now = new Date().toISOString();
           upsertPlan({
             ...structuredClone(p),

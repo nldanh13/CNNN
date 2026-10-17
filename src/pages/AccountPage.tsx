@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, KeyRound, LogIn, LogOut, ShieldCheck, UserRoun
 import { useAuth } from '../auth/AuthContext';
 import { TurnstileChallenge, turnstileSiteKey } from '../auth/TurnstileChallenge';
 import { navigate } from '../store/router';
+import { patientCloudEnabled } from '../cloud/patientWorkspace';
 import { Alert, BrandLogo, BrandMark, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
@@ -123,7 +124,7 @@ export function AccountGate({ initialMode = 'login' }: { initialMode?: Mode }) {
           </p>
         </div>
         <p className="text-center text-xs text-fg-muted">
-          Kế hoạch chăm sóc lưu riêng theo tài khoản. Không nhập dữ liệu nhận dạng người bệnh thật.
+          Mỗi tài khoản được lưu tối đa 3 người bệnh. Không nhập dữ liệu nhận dạng người bệnh thật.
         </p>
       </div>
     </div>
@@ -193,8 +194,8 @@ export function AccountSettings() {
           <ShieldCheck className="h-4 w-4" /> Lưu trữ & quyền riêng tư
         </summary>
         <p className="mt-2 rounded-control bg-surface-muted p-3 leading-relaxed">
-          Kế hoạch lưu riêng theo tài khoản trong trình duyệt hiện tại, không đồng bộ giữa các thiết bị.
-          Bộ nhớ trình duyệt không mã hóa hồ sơ bệnh án. Không nhập dữ liệu nhận dạng người bệnh thật.
+          {patientCloudEnabled ? 'Kế hoạch được tự lưu theo tài khoản trên Supabase (tối đa 3 người bệnh).' : 'Kế hoạch hiện lưu theo tài khoản trên thiết bị này; tính năng tự lưu đang chờ cấu hình.'}
+          {' '}Không nhập dữ liệu nhận dạng người bệnh thật khi chưa có hệ thống bảo vệ hồ sơ được phê duyệt.
         </p>
       </details>
       <form className="space-y-3" onSubmit={e => {
