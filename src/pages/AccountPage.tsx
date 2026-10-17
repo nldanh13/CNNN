@@ -83,9 +83,8 @@ export function AccountGate() {
             {mode !== 'forgot' && <TextLink onClick={() => selectMode('forgot')}>Quên mật khẩu?</TextLink>}
           </div>
         </Card>
-        <p className="mt-4 text-center text-xs leading-relaxed text-fg-muted">
-          Kế hoạch chăm sóc hiện lưu trên thiết bị của từng tài khoản, không tự đồng bộ giữa các máy.
-          Không nhập dữ liệu nhận dạng người bệnh khi chưa có hệ thống lưu trữ được phê duyệt.
+        <p className="mt-4 text-center text-xs text-fg-muted">
+          Kế hoạch chăm sóc lưu trên thiết bị này.
         </p>
       </div>
     </div>
@@ -150,10 +149,15 @@ export function AccountSettings() {
       <div className="flex items-center gap-2 text-sm text-fg"><UserRound className="h-4 w-4 text-fg-muted" />
         <span className="font-medium">{auth.user.email}</span>
       </div>
-      <Alert tone="neutral" size="sm" icon={<ShieldCheck className="h-4 w-4" />}>
-        Mỗi tài khoản có dữ liệu kế hoạch riêng trên trình duyệt hiện tại. Chưa có lưu trữ đám mây
-        hoặc đồng bộ giữa thiết bị. Không sử dụng để lưu hồ sơ bệnh án thật.
-      </Alert>
+      <details className="text-xs text-fg-muted">
+        <summary className="flex cursor-pointer items-center gap-2 font-medium">
+          <ShieldCheck className="h-4 w-4" /> Lưu trữ & quyền riêng tư
+        </summary>
+        <p className="mt-2 rounded-control bg-surface-muted p-3 leading-relaxed">
+          Kế hoạch lưu riêng theo tài khoản trong trình duyệt hiện tại, không đồng bộ giữa các thiết bị.
+          Bộ nhớ trình duyệt không mã hóa hồ sơ bệnh án. Không nhập dữ liệu nhận dạng người bệnh thật.
+        </p>
+      </details>
       <form className="space-y-3" onSubmit={e => {
         e.preventDefault();
         void action(() => auth.updateName(fullName));
