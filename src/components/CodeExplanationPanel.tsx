@@ -1,4 +1,4 @@
-import { ClipboardList } from 'lucide-react';
+import { ChevronDown, ClipboardList, Info } from 'lucide-react';
 import type { TaxonomySystem } from '../types';
 import { explainNnnCode } from '../data/nnnExplanations';
 import { useApp } from '../store/AppContext';
@@ -11,18 +11,29 @@ export function CodeExplanationPanel({
   const { lang, t } = useApp();
   if (!code || !label) return null;
   const guide = explainNnnCode(system, code, label, lang);
+  // Trong biểu mẫu kế hoạch, phần giải thích thu gọn thành một dòng, chỉ mở khi người dùng cần.
+  if (compact) return (
+    <details className="group text-xs">
+      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-control py-0.5 font-medium text-fg-muted hover:text-fg [&::-webkit-details-marker]:hidden">
+        <Info className="h-3.5 w-3.5" /> {lang === 'vi' ? 'Giải thích mã' : 'About this code'}
+        <ChevronDown className="h-3.5 w-3.5 transition group-open:rotate-180" />
+      </summary>
+      <div className="mt-2 space-y-1.5 rounded-control border border-line-soft bg-surface-muted p-3 leading-relaxed text-fg-body">
+        <p>{guide.summary}</p>
+        <a href={`#/library?sys=${system}&code=${code}&label=${encodeURIComponent(label)}`}
+          className="font-medium text-primary-700 hover:underline dark:text-primary-300">{t.guide.openDetail}</a>
+      </div>
+    </details>
+  );
   return (
-    <section className={compact
-      ? 'space-y-2 rounded-control border border-info-200 bg-info-50 p-3 text-xs dark:border-info-500/30 dark:bg-info-500/10'
-      : 'mt-5 space-y-4 rounded-card border border-line bg-surface-muted p-4 text-sm'}>
+    <section className="mt-5 space-y-4 rounded-card border border-line bg-surface-muted p-4 text-sm">
       <div className="flex flex-wrap items-center gap-2">
         <ClipboardList className="h-4 w-4 shrink-0 text-info-700 dark:text-info-400" />
         <h3 className="font-semibold text-fg">{t.guide.title}</h3>
-        {!compact && <span className="text-[11px] text-fg-muted">#{code}</span>}
+        <span className="text-[11px] text-fg-muted">#{code}</span>
       </div>
       <p className="leading-relaxed text-fg-body">{guide.summary}</p>
-      {!compact && (
-        <>
+      <>
           <div>
             <h4 className="mb-1 font-semibold text-fg-body">{t.guide.reasoning}</h4>
             <p className="leading-relaxed text-fg-body">{guide.reasoning}</p>
@@ -37,18 +48,12 @@ export function CodeExplanationPanel({
             <h4 className="mb-1 font-semibold text-fg-body">{t.guide.application}</h4>
             <p className="leading-relaxed text-fg-body">{guide.use}</p>
           </div>
-        </>
-      )}
-      {compact ? (
-        <a href={`#/library?sys=${system}&code=${code}&label=${encodeURIComponent(label)}`}
-          className="text-xs font-medium text-primary-700 hover:underline dark:text-primary-300">{t.guide.openDetail}</a>
-      ) : (
-        <details className="border-t border-line pt-2 text-xs text-fg-muted">
+      </>
+      <details className="border-t border-line pt-2 text-xs text-fg-muted">
           <summary className="cursor-pointer">Thông tin nội dung</summary>
           <p className="mt-2">{guide.level === 'source-reviewed' ? t.guide.sourceReviewed : t.guide.editorial}</p>
           <p className="mt-1 leading-relaxed">{t.guide.copyrightNotice}</p>
         </details>
-      )}
     </section>
   );
 }

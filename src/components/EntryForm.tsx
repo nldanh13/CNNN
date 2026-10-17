@@ -13,12 +13,29 @@ import { resetEntryForDiagnosisChange, resetNocOnChange, validateCareEntry } fro
 import { CodeExplanationPanel } from './CodeExplanationPanel';
 import { RETIRED_NIC7 } from '../data/nicMigration';
 
+type DiagnosisKind = 'risk' | 'promotion' | 'problem';
+/** Loại chẩn đoán NANDA-I quyết định cần ghi gì: nguy cơ chỉ có yếu tố nguy cơ, nâng cao sức khỏe chỉ có đặc điểm xác định. */
+function diagnosisKind(label: string): DiagnosisKind {
+  if (/^risk for\b/i.test(label)) return 'risk';
+  if (/^readiness for\b/i.test(label)) return 'promotion';
+  return 'problem';
+}
+const KIND_LABEL: Record<DiagnosisKind, { vi: string; en: string }> = {
+  risk: { vi: 'Chẩn đoán nguy cơ', en: 'Risk diagnosis' },
+  promotion: { vi: 'Chẩn đoán nâng cao sức khỏe', en: 'Health promotion diagnosis' },
+  problem: { vi: 'Chẩn đoán tập trung vào vấn đề', en: 'Problem-focused diagnosis' },
+};
+
+function Meta({ children }: { children: ReactNode }) {
+  return <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-fg-muted">{children}</div>;
+}
+
 function Section({ step, title, color, children }: { step: number; title: string; color: string; children: ReactNode }) {
   return (
     <section className="relative pl-10">
       <span className={`absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold text-white ${color}`}>{step}</span>
-      <h3 className="mb-4 pt-1 text-[15px] font-semibold text-fg">{title}</h3>
-      <div className="space-y-4">{children}</div>
+      <h3 className="mb-3 pt-1 text-[15px] font-semibold text-fg">{title}</h3>
+      <div className="space-y-3">{children}</div>
     </section>
   );
 }
@@ -51,6 +68,10 @@ export function EntryForm({
   const nandaItem = entry.nanda.code ? dataHub.getTerm('nanda', entry.nanda.code, entry.nanda.label) : undefined;
   const nocItem = entry.noc.code ? dataHub.getTerm('noc', entry.noc.code) : undefined;
   const scale = NOC_SCALES.find((s) => s.code === entry.noc.scaleCode);
+  const kind = diagnosisKind(entry.nanda.label);
+  // Dữ liệu cũ đã nhập vẫn hiện, kể cả khi loại chẩn đoán không dùng ô đó.
+  const showDefining = kind !== 'risk' || entry.definingCharacteristics.length > 0;
+  const showRelated = kind !== 'promotion' || entry.relatedFactors.length > 0;
   const [scaleError, setScaleError] = useState(false);
 
   const save = () => {
@@ -106,36 +127,47 @@ export function EntryForm({
             placeholder={t.entryForm.pickNanda}
             onPick={chooseNanda}
           />
-          {entry.nanda.code && <CodeExplanationPanel system="nanda" code={entry.nanda.code} label={entry.nanda.label} compact />}
           {nandaItem && (
-            <p className="text-xs text-fg-muted">
-              {t.library.domain} {nandaItem.domainNumber}: {lang === 'vi' ? nandaDomain(nandaItem.domainNumber)?.nameVi : nandaDomain(nandaItem.domainNumber)?.nameEn} ·{' '}
-              {t.library.class} {nandaItem.classNumber}: <Term code={null} en={nandaItem.className} showOriginal={false} />
-            </p>
+            <Meta>
+              <span className="rounded-full bg-nanda-50 px-2 py-0.5 font-medium text-nanda-700 dark:bg-nanda-500/15 dark:text-nanda-300">{KIND_LABEL[kind][lang === 'vi' ? 'vi' : 'en']}</span>
+              <span>
+                {t.library.domain} {nandaItem.domainNumber}: {lang === 'vi' ? nandaDomain(nandaItem.domainNumber)?.nameVi : nandaDomain(nandaItem.domainNumber)?.nameEn} ·{' '}
+                {t.library.class} {nandaItem.classNumber}: <Term code={null} en={nandaItem.className} showOriginal={false} />
+              </span>
+            </Meta>
           )}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label={t.editor.definingChars}>
-              <TagInput
-                values={entry.definingCharacteristics}
-                onChange={(v) => set({ definingCharacteristics: v })}
-                placeholder={t.entryForm.definingCharsHint}
-              />
-            </Field>
-            <Field label={t.editor.relatedFactors}>
-              <TagInput values={entry.relatedFactors} onChange={(v) => set({ relatedFactors: v })} placeholder={t.entryForm.relatedFactorsHint} />
-            </Field>
-          </div>
+          {entry.nanda.code && <CodeExplanationPanel system="nanda" code={entry.nanda.code} label={entry.nanda.label} compact />}
+          {entry.nanda.code && (
+            <div className={showDefining && showRelated ? 'grid gap-4 pt-1 sm:grid-cols-2' : 'pt-1'}>
+              {showDefining && (
+                <Field label={t.editor.definingChars}>
+                  <TagInput
+                    values={entry.definingCharacteristics}
+                    onChange={(v) => set({ definingCharacteristics: v })}
+                    placeholder={t.entryForm.definingCharsHint}
+                  />
+                </Field>
+              )}
+              {showRelated && (
+                <Field label={kind === 'risk' ? (lang === 'vi' ? 'Yếu tố nguy cơ' : 'Risk factors') : (lang === 'vi' ? 'Yếu tố liên quan' : 'Related factors')}>
+                  <TagInput values={entry.relatedFactors} onChange={(v) => set({ relatedFactors: v })}
+                    placeholder={kind === 'risk' ? (lang === 'vi' ? 'Yếu tố làm tăng nguy cơ' : 'Factors that raise the risk') : t.entryForm.relatedFactorsHint} />
+                </Field>
+              )}
+            </div>
+          )}
         </Section>
 
         <Section step={2} title={t.entryForm.step2} color="bg-noc-500">
           <TaxonomyPicker system="noc" value={entry.noc} placeholder={t.entryForm.pickNoc} onPick={chooseNoc} />
-          {entry.noc.code && <CodeExplanationPanel system="noc" code={entry.noc.code} label={entry.noc.label} compact />}
           {nocItem && (
-            <p className="text-xs text-fg-muted">
+            <Meta>
               {t.library.domain} {nocDomain(nocItem.domainId)?.roman}: {lang === 'vi' ? nocDomain(nocItem.domainId)?.nameVi : nocDomain(nocItem.domainId)?.nameEn} ·{' '}
               {t.library.class} {nocItem.classLetter}: <Term code={null} en={nocItem.className} showOriginal={false} />
-            </p>
+            </Meta>
           )}
+          {entry.noc.code && <CodeExplanationPanel system="noc" code={entry.noc.code} label={entry.noc.label} compact />}
+          {entry.noc.code && (<>
           <Field label={t.editor.scale} error={scaleError && !scale ? t.entryForm.selectScale : undefined}>
             <Select id="entry-noc-scale" className={scaleError && !scale ? '!border-danger-500' : undefined} value={entry.noc.scaleCode} onChange={(e) => setNoc({ scaleCode: e.target.value, current: null, indicators: entry.noc.indicators.map((i) => ({ ...i, score: null })) })}>
               <option value="">{t.entryForm.selectScale}</option>
@@ -146,32 +178,32 @@ export function EntryForm({
               ))}
             </Select>
           </Field>
-          <div className="grid gap-4 rounded-card border border-line p-4 sm:grid-cols-3">
-            {(
-              [
-                ['baseline', t.editor.baseline, 'neutral'],
-                ['target', t.editor.target, 'success'],
-                ['current', t.editor.current, 'info'],
-              ] as const
-            ).map(([key, label, tone]) => (
-              <div key={key}>
-                <p className="mb-1.5 text-xs font-medium text-fg-body">{label}</p>
-                {key === 'current' ? (
-                  <p className="py-1 text-sm font-semibold">{entry.noc.current ?? '—'} <span className="text-xs font-normal text-fg-muted">{t.entryForm.assessInPlan}</span></p>
-                ) : (
+          {scale ? (
+            <div className="grid gap-4 rounded-card border border-line bg-surface-muted/50 p-4 sm:grid-cols-2">
+              {(
+                [
+                  ['baseline', t.editor.baseline, 'neutral'],
+                  ['target', t.editor.target, 'success'],
+                ] as const
+              ).map(([key, label, tone]) => (
+                <div key={key}>
+                  <p className="mb-1.5 text-xs font-medium text-fg-body">{label}</p>
                   <LikertInput value={entry.noc[key]} tone={tone} scaleCode={entry.noc.scaleCode}
                     onChange={(v) => setNoc({ [key]: v ?? 1 } as Partial<CareEntry['noc']>)} />
-                )}
-                <p className="mt-1 h-4 truncate text-[11px] text-fg-subtle">{scaleLabel(entry.noc.scaleCode, entry.noc[key], lang)}</p>
-              </div>
-            ))}
-            {entry.noc.current != null && (
-              <p className="text-xs text-fg-muted sm:col-span-3">
-                {t.editor.change}: <strong className="font-semibold text-fg-body">{signed(entry.noc.current - entry.noc.baseline)}</strong>
-                {scale && <span className="ml-2 text-fg-subtle">({lang === 'vi' ? scale.meaningVi : scale.meaningEn})</span>}
+                  <p className="mt-1 h-4 truncate text-[11px] text-fg-subtle">{scaleLabel(entry.noc.scaleCode, entry.noc[key], lang)}</p>
+                </div>
+              ))}
+              <p className="text-xs text-fg-muted sm:col-span-2">
+                {entry.noc.current != null
+                  ? <>{t.editor.current}: <strong className="font-semibold text-fg-body">{entry.noc.current}</strong> · {t.editor.change}: <strong className="font-semibold text-fg-body">{signed(entry.noc.current - entry.noc.baseline)}</strong></>
+                  : <>{t.editor.current}: {lang === 'vi' ? 'chấm khi lượng giá trong kế hoạch' : 'scored when you evaluate the plan'}</>}
               </p>
-            )}
-          </div>
+            </div>
+          ) : entry.noc.code ? (
+            <p className="rounded-control border border-dashed border-line px-4 py-3 text-xs text-fg-muted">
+              {lang === 'vi' ? 'Chọn thang đo để đặt điểm ban đầu và mục tiêu.' : 'Choose a scale to set baseline and target scores.'}
+            </p>
+          ) : null}
 
           <Field label={t.editor.indicators}>
             <div className="space-y-2">
@@ -214,13 +246,14 @@ export function EntryForm({
               </Button>
             </div>
           </Field>
+          </>)}
         </Section>
 
         <Section step={3} title={t.entryForm.step3} color="bg-nic-500">
           <div className="space-y-3">
             {entry.nic.map((n, i) => (
-              <div key={n.code} className="rounded-card border border-line p-3">
-                <div className="mb-3 flex items-start gap-3">
+              <div key={n.code} className="rounded-card border border-line bg-surface p-3">
+                <div className="mb-2 flex items-start gap-3">
                   <CodeBadge system="nic" code={n.code} className="mt-0.5" />
                   <span className="min-w-0 flex-1"><Term code={n.code} en={n.label} className="block text-sm font-medium text-fg" />
                     {RETIRED_NIC7[n.code]
