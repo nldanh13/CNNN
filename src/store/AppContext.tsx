@@ -8,7 +8,7 @@ import { usePatientPlans } from './usePatientPlans';
 
 const KEYS = { lang: 'clinicalnnn.lang', theme: 'clinicalnnn.theme' };
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'system';
 export interface Toast {
   id: number;
   message: string;
@@ -51,7 +51,10 @@ const Ctx = createContext<AppState | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const lang: Lang = 'vi';
-  const [theme, setTheme] = useState<Theme>(() => document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = typeof localStorage === 'undefined' ? null : localStorage.getItem(KEYS.theme);
+    return stored === 'light' || stored === 'dark' ? stored : 'system';
+  });
   const {
     plans, status: planStatus, statusError: planError,
     syncMessage: planSyncMessage, legacyCount: oldPlansCount,
@@ -67,8 +70,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang;
   }, [lang]);
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
     save(KEYS.theme, theme);
+    // "Theo hệ thống" bám theo cài đặt sáng/tối của máy và đổi ngay khi máy đổi.
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && media.matches));
+    apply();
+    if (theme !== 'system') return;
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
   }, [theme]);
 
   const dismissToast = useCallback((id: number) => setToasts((ts) => ts.filter((x) => x.id !== id)), []);
