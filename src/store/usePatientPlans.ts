@@ -84,6 +84,8 @@ export function usePatientPlans(auth: {
   const revisionRef = useRef(0);
   const chainRef = useRef<Promise<void>>(Promise.resolve());
   const timerRef = useRef<number | null>(null);
+  const statusRef = useRef(status);
+  statusRef.current = status;
   const identityRef = useRef(userId);
   const sessionRef = useRef(auth.session);
   identityRef.current = userId;
@@ -103,6 +105,7 @@ export function usePatientPlans(auth: {
     revisionRef.current = 0;
     chainRef.current = Promise.resolve();
     setState({ key: planKey, plans: plansRef.current });
+    statusRef.current = cloud ? 'loading' : 'local';
     setStatus(cloud ? 'loading' : 'local');
     setStatusError('');
     setSyncMessage('');
@@ -178,7 +181,7 @@ export function usePatientPlans(auth: {
       timerRef.current = null;
       chainRef.current = chainRef.current.catch(() => undefined).then(async () => {
         const session = sessionRef.current;
-        if (identityRef.current !== uid || !session || session.user.id !== uid) return;
+        if (identityRef.current !== uid || !session || session.user.id !== uid || statusRef.current !== 'ready') return;
         if (!readPlanDraft(draftKey) && !load<boolean>(pendingKey, false)) return;
         const snapshot = plansRef.current;
         const startingRevision = revisionRef.current;
@@ -197,12 +200,15 @@ export function usePatientPlans(auth: {
             }
             setSyncMessage('Đã lưu vào tài khoản');
             setSyncState('saved');
+          } else if (!writePlanDraft(draftKey, plansRef.current, nextRevision)) {
+            setStorageError(true);
           }
         } catch (err) {
           if (identityRef.current !== uid) return;
           if (err instanceof CloudWorkspaceError && err.kind === 'conflict') {
             // Freeze further edits and load server revision; NEVER retry by overwriting.
             setSyncState('conflict');
+            statusRef.current = 'loading';
             setStatus('loading');
             setSyncMessage('Có chỉnh sửa từ thiết bị khác. Cần đối chiếu trước khi tiếp tục.');
             const draft = readPlanDraft(draftKey);
@@ -216,6 +222,7 @@ export function usePatientPlans(auth: {
               setLegacyPlans(unsynced);
               setLegacyRevision(draft?.baseRevision ?? startingRevision);
               setMigrationKind('pending');
+              statusRef.current = 'migration';
               setStatus('migration');
             } catch (loadError) {
               if (identityRef.current !== uid) return;
