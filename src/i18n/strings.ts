@@ -93,11 +93,12 @@ const vi = {
     title: 'Cài đặt',
     display: 'Hiển thị',
     language: 'Ngôn ngữ',
-    languageHint: 'Toàn bộ giao diện sử dụng tiếng Việt. Mã NANDA-I, NOC và NIC được giữ nguyên để đối chiếu theo ấn bản.',
+    languageHint: 'Mã NANDA-I, NOC, NIC giữ nguyên theo ấn bản.',
     theme: 'Giao diện',
     data: 'Kế hoạch trên máy này',
     dataHint: 'Kế hoạch chăm sóc chỉ lưu trong trình duyệt này, không gửi lên máy chủ. Xóa lịch sử trình duyệt hoặc đổi máy sẽ mất kế hoạch, hãy sao lưu thường xuyên.',
     planCount: 'kế hoạch đang lưu',
+    backupHint: 'Sao lưu ra tệp .json hoặc khôi phục từ tệp đã lưu.',
   },
   backup: {
     backup: 'Sao lưu',
@@ -451,6 +452,7 @@ const en: Strings = {
     data: 'Plans on this device',
     dataHint: 'Care plans are stored only in this browser and never sent to a server. Clearing browser data or switching devices loses them, so back up regularly.',
     planCount: 'plans stored',
+    backupHint: 'Back up to a .json file or restore from a saved one.',
   },
   backup: {
     backup: 'Back up',

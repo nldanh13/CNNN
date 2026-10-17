@@ -14,8 +14,8 @@ export function Card({ className, children, ...props }: { className?: string; ch
 export function CardHeader({ title, subtitle, actions, icon }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode; icon?: ReactNode }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line-soft px-5 py-4">
-      <div className="flex min-w-0 items-start gap-3">
-        {icon && <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-300">{icon}</div>}
+      <div className="flex min-w-0 items-center gap-3">
+        {icon && <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-300">{icon}</div>}
         <div className="min-w-0">
           <h2 className="text-[15px] font-semibold text-fg">{title}</h2>
           {subtitle && <p className="mt-0.5 text-xs leading-relaxed text-fg-muted">{subtitle}</p>}

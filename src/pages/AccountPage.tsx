@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { navigate } from '../store/router';
-import { Alert, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
+import { Alert, Button, Card, CardHeader, Field, Input, SettingRow, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
 const errorText = (e: unknown) => e instanceof Error ? e.message : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
@@ -123,71 +123,94 @@ export function RecoveryGate() {
   </div>;
 }
 
+const privacyNote = <p className="flex gap-2 border-t border-line-soft px-5 py-3 text-xs leading-relaxed text-fg-muted">
+  <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+  <span><span className="font-medium text-fg-body">Lưu trữ & quyền riêng tư:</span> kế hoạch lưu riêng theo tài khoản trong trình duyệt
+    hiện tại, không đồng bộ giữa các thiết bị và không được mã hóa. Không nhập dữ liệu nhận dạng người bệnh thật.</span>
+</p>;
+
 export function AccountSettings() {
   const auth = useAuth();
-  const [fullName, setFullName] = useState(auth.user?.user_metadata?.full_name ?? '');
+  const savedName = auth.user?.user_metadata?.full_name ?? '';
+  const [fullName, setFullName] = useState(savedName);
   const [newPassword, setNewPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const action = async (fn: () => Promise<void>) => {
+  const action = async (fn: () => Promise<void>, done: string) => {
     setBusy(true); setMessage(''); setError('');
-    try { await fn(); setMessage('Đã cập nhật tài khoản.'); }
+    try { await fn(); setMessage(done); }
     catch (e) { setError(errorText(e)); }
     finally { setBusy(false); }
   };
   if (!auth.enabled) {
     return <Card>
-      <CardHeader title="Tài khoản" subtitle="Chưa kết nối dịch vụ tài khoản" />
-      <p className="px-5 py-4 text-sm leading-relaxed text-fg-muted">
-        Ứng dụng hiện đang ở chế độ thiết bị cá nhân. Quản trị viên cần cấu hình VITE_SUPABASE_URL và
-        VITE_SUPABASE_ANON_KEY để bật đăng ký, đăng nhập cho mọi người.
-      </p>
+      <CardHeader icon={<UserRound className="h-4 w-4" />} title="Tài khoản" subtitle="Đang dùng ở chế độ thiết bị cá nhân, chưa bật đăng nhập." />
+      {privacyNote}
     </Card>;
   }
   if (!auth.user) return null;
-  return <Card>
-    <CardHeader title="Tài khoản của tôi" subtitle="Quản lý thông tin đăng nhập" />
-    <CardBody className="space-y-5">
-      <div className="flex items-center gap-2 text-sm text-fg"><UserRound className="h-4 w-4 text-fg-muted" />
-        <span className="font-medium">{auth.user.email}</span>
+  const displayName = savedName || auth.user.email.split('@')[0];
+  const initials = displayName.trim().split(/\s+/).slice(-2).map(w => w[0]).join('').toUpperCase();
+  const closePassword = () => { setChangingPassword(false); setNewPassword(''); setError(''); };
+
+  return <>
+    <Card className="flex flex-wrap items-center gap-4 p-5">
+      <span aria-hidden className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary-600 text-lg font-semibold text-white">
+        {initials}
+      </span>
+      <div className="min-w-0 flex-1 basis-48">
+        <p className="truncate text-lg font-semibold text-fg">{displayName}</p>
+        <p className="truncate text-sm text-fg-muted">{auth.user.email}</p>
       </div>
-      <details className="text-xs text-fg-muted">
-        <summary className="flex cursor-pointer items-center gap-2 font-medium">
-          <ShieldCheck className="h-4 w-4" /> Lưu trữ & quyền riêng tư
-        </summary>
-        <p className="mt-2 rounded-control bg-surface-muted p-3 leading-relaxed">
-          Kế hoạch lưu riêng theo tài khoản trong trình duyệt hiện tại, không đồng bộ giữa các thiết bị.
-          Bộ nhớ trình duyệt không mã hóa hồ sơ bệnh án. Không nhập dữ liệu nhận dạng người bệnh thật.
-        </p>
-      </details>
-      <form className="space-y-3" onSubmit={e => {
-        e.preventDefault();
-        void action(() => auth.updateName(fullName));
-      }}>
-        <Field label="Họ tên hiển thị">
-          <Input value={fullName} onChange={e => setFullName(e.target.value)} maxLength={80} required />
-        </Field>
-        <Button type="submit" disabled={busy}>Lưu họ tên</Button>
-      </form>
-      <form className="space-y-3 border-t border-line-soft pt-4" onSubmit={e => {
-        e.preventDefault();
-        if (newPassword.length < 12) { setError('Mật khẩu phải có ít nhất 12 ký tự.'); return; }
-        void action(async () => { await auth.updatePassword(newPassword); setNewPassword(''); });
-      }}>
-        <Field label="Đổi mật khẩu" hint="Ít nhất 12 ký tự.">
-          <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-            autoComplete="new-password" minLength={12} required />
-        </Field>
-        <Button type="submit" disabled={busy}>Đổi mật khẩu</Button>
-      </form>
-      {message && <Alert role="status" tone="success" size="sm">{message}</Alert>}
-      {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
-      <div className="border-t border-line-soft pt-4">
-        <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => void auth.signOut()}>
-          Đăng xuất
-        </Button>
+      <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => void auth.signOut()}>
+        Đăng xuất
+      </Button>
+    </Card>
+
+    <Card>
+      <CardHeader icon={<UserRound className="h-4 w-4" />} title="Tài khoản" />
+      <div className="divide-y divide-line-soft">
+        <form className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center" onSubmit={e => {
+          e.preventDefault();
+          void action(() => auth.updateName(fullName), 'Đã lưu họ tên.');
+        }}>
+          <label htmlFor="account-name" className="text-sm font-medium text-fg sm:w-40 sm:shrink-0">Họ tên hiển thị</label>
+          <div className="flex flex-1 gap-2">
+            <Input id="account-name" value={fullName} onChange={e => setFullName(e.target.value)} maxLength={80} required />
+            <Button type="submit" disabled={busy || !fullName.trim() || fullName.trim() === savedName}>Lưu</Button>
+          </div>
+        </form>
+        {changingPassword ? (
+          <form className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start" onSubmit={e => {
+            e.preventDefault();
+            if (newPassword.length < 12) { setError('Mật khẩu phải có ít nhất 12 ký tự.'); return; }
+            void action(async () => { await auth.updatePassword(newPassword); closePassword(); }, 'Đã đổi mật khẩu.');
+          }}>
+            <label htmlFor="account-password" className="text-sm font-medium text-fg sm:w-40 sm:shrink-0 sm:pt-2.5">Mật khẩu mới</label>
+            <div className="flex-1 space-y-2">
+              <Input id="account-password" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+                autoComplete="new-password" minLength={12} placeholder="Ít nhất 12 ký tự" required autoFocus />
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={closePassword}>Hủy</Button>
+                <Button type="submit" variant="primary" disabled={busy}>Lưu mật khẩu</Button>
+              </div>
+            </div>
+          </form>
+        ) : (
+          <SettingRow label="Mật khẩu" hint="Đổi mật khẩu đăng nhập của bạn">
+            <Button icon={<KeyRound className="h-4 w-4" />} onClick={() => { setChangingPassword(true); setMessage(''); }}>
+              Đổi mật khẩu
+            </Button>
+          </SettingRow>
+        )}
       </div>
-    </CardBody>
-  </Card>;
+      {(message || error) && <div className="px-5 pb-4">
+        {message && <Alert role="status" tone="success" size="sm">{message}</Alert>}
+        {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
+      </div>}
+      {privacyNote}
+    </Card>
+  </>;
 }

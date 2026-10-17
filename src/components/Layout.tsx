@@ -87,21 +87,23 @@ export function Layout({ section, children }: { section: string; children: React
   );
 
   return (
-    <div className="min-h-screen bg-canvas text-fg-body print:bg-white">
-      {/* Thanh bên cố định trên màn hình lớn */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface lg:flex print:hidden">
-        <div className="px-5 py-5">{logo(false)}</div>
-        <nav aria-label={t.app.name} className="flex-1 overflow-y-auto px-3 pb-6">
-          <ul className="space-y-1">
-            {items.map((item) => (
-              <li key={item.key}>{sideLink(item)}</li>
-            ))}
-          </ul>
-        </nav>
-        <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>
+    <div className="min-h-screen bg-canvas text-fg-body lg:flex print:block print:bg-white">
+      {/* Thanh bên trên màn hình lớn: nền kéo dài theo trang, nội dung luôn bám đỉnh màn hình */}
+      <aside className="hidden w-64 shrink-0 border-r border-line bg-surface lg:block print:hidden">
+        <div className="sticky top-0 flex h-screen flex-col">
+          <div className="px-5 py-5">{logo(false)}</div>
+          <nav aria-label={t.app.name} className="flex-1 overflow-y-auto px-3 pb-6">
+            <ul className="space-y-1">
+              {items.map((item) => (
+                <li key={item.key}>{sideLink(item)}</li>
+              ))}
+            </ul>
+          </nav>
+          <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>
+        </div>
       </aside>
 
-      <div className="pb-20 lg:pb-0 lg:pl-64 print:p-0">
+      <div className="min-w-0 flex-1 pb-20 lg:pb-0 print:p-0">
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-surface/85 px-4 backdrop-blur sm:px-6 print:hidden">
           <span className="min-w-0 lg:hidden">{logo(true)}</span>
           <button
@@ -128,7 +130,7 @@ export function Layout({ section, children }: { section: string; children: React
           >
             <Settings className="h-5 w-5" />
           </a>
-          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-48 truncate text-xs font-medium text-fg-body hover:underline md:block">{user.email}</a>}
+          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-56 truncate text-sm font-medium text-fg-muted hover:text-fg md:block lg:ml-auto">{user.email}</a>}
         </header>
 
         {storageError && (
