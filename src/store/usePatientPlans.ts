@@ -14,7 +14,7 @@ import {
 } from '../cloud/patientWorkspace';
 
 type Status = 'local' | 'loading' | 'ready' | 'migration' | 'error';
-type MigrationKind = 'legacy' | 'pending' | 'parked';
+export type MigrationKind = 'legacy' | 'pending' | 'parked';
 export type PlanSyncState = 'idle' | 'saving' | 'saved' | 'error' | 'conflict';
 export interface PlansStore {
   plans: CarePlan[];
@@ -24,6 +24,7 @@ export interface PlansStore {
   syncState: PlanSyncState;
   hasParkedDraft: boolean;
   reviewParkedDraft: () => void;
+  migrationKind: MigrationKind;
   legacyCount: number;
   storageError: boolean;
   retryStorage: () => void;
@@ -385,7 +386,7 @@ export function usePatientPlans(auth: {
 
   return {
     plans, status, statusError, syncMessage, syncState, hasParkedDraft, reviewParkedDraft,
-    legacyCount: legacyPlans.length,
+    migrationKind, legacyCount: legacyPlans.length,
     storageError, retryStorage, retryLoad, importOldPlans, skipOldPlans,
     upsertPlan, updatePlan, deletePlan, mergePlans,
   };
