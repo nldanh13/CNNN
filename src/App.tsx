@@ -10,11 +10,17 @@ import { StandardsPage } from './pages/StandardsPage';
 import { QualityPage } from './pages/QualityPage';
 import { ReferencesPage } from './pages/ReferencesPage';
 import { AssistantPage } from './pages/AssistantPage';
+import { useAuth } from './auth/AuthContext';
+import { AccountGate, RecoveryGate } from './pages/AccountPage';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
 
 export function App() {
   const { path, query } = useRoute();
+  const auth = useAuth();
+  if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-slate-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
+  if (auth.enabled && !auth.user) return <AccountGate />;
+  if (auth.enabled && auth.session?.recovery) return <RecoveryGate />;
   const [section = 'library', id] = path;
 
   let page;
