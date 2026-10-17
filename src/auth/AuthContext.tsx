@@ -10,9 +10,9 @@ interface AuthState {
   ready: boolean;
   user: AccountUser | null;
   session: AccountSession | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<boolean>;
-  resetPassword: (email: string) => Promise<void>;
+  signIn: (email: string, password: string, captchaToken?: string) => Promise<void>;
+  signUp: (email: string, password: string, name: string, captchaToken?: string) => Promise<boolean>;
+  resetPassword: (email: string, captchaToken?: string) => Promise<void>;
   updatePassword: (password: string) => Promise<void>;
   updateName: (name: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -49,17 +49,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(id);
   }, [session, commit]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    commit(await apiSignIn(email.trim(), password));
+  const signIn = useCallback(async (email: string, password: string, captchaToken?: string) => {
+    commit(await apiSignIn(email.trim(), password, captchaToken));
   }, [commit]);
 
-  const signUp = useCallback(async (email: string, password: string, name: string) => {
-    const next = await apiSignUp(email.trim(), password, name);
+  const signUp = useCallback(async (email: string, password: string, name: string, captchaToken?: string) => {
+    const next = await apiSignUp(email.trim(), password, name, captchaToken);
     if (next) commit(next);
     return Boolean(next);
   }, [commit]);
 
-  const resetPassword = useCallback((email: string) => apiReset(email.trim()), []);
+  const resetPassword = useCallback((email: string, captchaToken?: string) => apiReset(email.trim(), captchaToken), []);
 
   const updatePassword = useCallback(async (password: string) => {
     if (!session) throw new Error('Bạn cần đăng nhập.');
