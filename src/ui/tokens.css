@@ -4,42 +4,54 @@
  * Mỗi biến là bộ ba R G B để Tailwind thêm được độ trong suốt (vd. bg-primary-500/20).
  */
 :root {
-  /* Trung tính: chữ, viền, nền */
-  --c-ink-50: 248 250 252;
-  --c-ink-100: 241 245 249;
-  --c-ink-200: 226 232 240;
-  --c-ink-300: 203 213 225;
-  --c-ink-400: 148 163 184;
-  --c-ink-500: 100 116 139;
-  --c-ink-600: 71 85 105;
-  --c-ink-700: 51 65 85;
-  --c-ink-800: 30 41 59;
-  --c-ink-900: 15 23 42;
-  --c-ink-950: 2 6 23;
-  /* Màu chủ đạo (xanh ngọc điều dưỡng) */
-  --c-primary-50: 239 250 248;
-  --c-primary-100: 214 243 238;
-  --c-primary-200: 174 230 221;
-  --c-primary-300: 125 211 198;
-  --c-primary-400: 72 184 169;
-  --c-primary-500: 35 156 142;
-  --c-primary-600: 21 127 116;
-  --c-primary-700: 18 103 95;
-  --c-primary-800: 18 83 77;
-  --c-primary-900: 18 69 65;
-  --c-primary-950: 5 41 38;
-  /* Thông tin */
-  --c-info-50: 240 249 255;
-  --c-info-100: 224 242 254;
-  --c-info-200: 186 230 253;
-  --c-info-300: 125 211 252;
-  --c-info-400: 56 189 248;
-  --c-info-500: 14 165 233;
-  --c-info-600: 2 132 199;
-  --c-info-700: 3 105 161;
-  --c-info-800: 7 89 133;
-  --c-info-900: 12 74 110;
-  --c-info-950: 8 47 73;
+  /* Trung tính: xám đá ngả xanh rêu, ấm ở nền sáng, sâu ở nền tối */
+  --c-ink-50: 247 247 244;
+  --c-ink-100: 240 240 235;
+  --c-ink-200: 225 226 219;
+  --c-ink-300: 200 203 195;
+  --c-ink-400: 152 157 150;
+  --c-ink-500: 108 114 108;
+  --c-ink-600: 80 87 82;
+  --c-ink-700: 58 65 61;
+  --c-ink-800: 34 41 38;
+  --c-ink-900: 21 27 25;
+  --c-ink-950: 10 14 13;
+  /* Màu chủ đạo: xanh ngọc thông, trầm và sang hơn xanh ngọc phổ thông */
+  --c-primary-50: 238 247 243;
+  --c-primary-100: 214 238 229;
+  --c-primary-200: 172 220 203;
+  --c-primary-300: 120 196 172;
+  --c-primary-400: 64 165 138;
+  --c-primary-500: 26 138 112;
+  --c-primary-600: 14 112 91;
+  --c-primary-700: 12 91 75;
+  --c-primary-800: 13 73 61;
+  --c-primary-900: 12 60 51;
+  --c-primary-950: 4 35 30;
+  /* Điểm nhấn: vàng đồng, dùng rất ít (nhãn nhỏ, biểu trưng, mục đang chọn) */
+  --c-accent-50: 251 248 240;
+  --c-accent-100: 245 237 219;
+  --c-accent-200: 235 219 183;
+  --c-accent-300: 222 196 140;
+  --c-accent-400: 205 168 98;
+  --c-accent-500: 184 141 66;
+  --c-accent-600: 154 113 47;
+  --c-accent-700: 122 88 38;
+  --c-accent-800: 97 70 33;
+  --c-accent-900: 79 57 29;
+  --c-accent-950: 45 31 14;
+  /* Thông tin: xanh cô-ban dịu */
+  --c-info-50: 240 246 252;
+  --c-info-100: 222 235 248;
+  --c-info-200: 189 214 240;
+  --c-info-300: 140 184 228;
+  --c-info-400: 88 148 210;
+  --c-info-500: 52 117 189;
+  --c-info-600: 36 95 165;
+  --c-info-700: 31 77 135;
+  --c-info-800: 30 64 110;
+  --c-info-900: 29 54 91;
+  --c-info-950: 19 35 61;
   /* Thành công, đạt mục tiêu */
   --c-success-50: 236 253 245;
   --c-success-100: 209 250 229;
@@ -88,18 +100,18 @@
   --c-nanda-800: 159 18 57;
   --c-nanda-900: 136 19 55;
   --c-nanda-950: 76 5 25;
-  /* NOC (kết quả) */
-  --c-noc-50: 240 249 255;
-  --c-noc-100: 224 242 254;
-  --c-noc-200: 186 230 253;
-  --c-noc-300: 125 211 252;
-  --c-noc-400: 56 189 248;
-  --c-noc-500: 14 165 233;
-  --c-noc-600: 2 132 199;
-  --c-noc-700: 3 105 161;
-  --c-noc-800: 7 89 133;
-  --c-noc-900: 12 74 110;
-  --c-noc-950: 8 47 73;
+  /* NOC (kết quả): cùng sắc xanh cô-ban với Thông tin */
+  --c-noc-50: 240 246 252;
+  --c-noc-100: 222 235 248;
+  --c-noc-200: 189 214 240;
+  --c-noc-300: 140 184 228;
+  --c-noc-400: 88 148 210;
+  --c-noc-500: 52 117 189;
+  --c-noc-600: 36 95 165;
+  --c-noc-700: 31 77 135;
+  --c-noc-800: 30 64 110;
+  --c-noc-900: 29 54 91;
+  --c-noc-950: 19 35 61;
   /* NIC (can thiệp) */
   --c-nic-50: 236 253 245;
   --c-nic-100: 209 250 229;
@@ -114,28 +126,36 @@
   --c-nic-950: 2 44 34;
 
   /* Vai trò bề mặt và chữ: tự đổi theo chế độ sáng/tối */
-  --canvas: 244 247 249;
+  --canvas: 245 244 239;
   --surface: 255 255 255;
-  --surface-muted: 248 250 252;
-  --line: 226 232 240;
-  --line-soft: 241 245 249;
-  --fg: 15 23 42;
-  --fg-body: 51 65 85;
-  --fg-muted: 100 116 139;
-  --fg-subtle: 148 163 184;
+  --surface-muted: 249 248 244;
+  --line: 228 227 219;
+  --line-soft: 238 237 231;
+  --fg: 21 27 25;
+  --fg-body: 58 65 61;
+  --fg-muted: 108 114 108;
+  --fg-subtle: 152 157 150;
 
   --radius-control: 0.625rem;
-  --radius-card: 1rem;
+  --radius-card: 1.125rem;
+
+  --shadow-card: 0 1px 0 rgb(21 27 25 / 0.02), 0 1px 2px rgb(21 27 25 / 0.04), 0 12px 32px -18px rgb(21 27 25 / 0.12);
+  --shadow-raised: 0 2px 4px rgb(21 27 25 / 0.04), 0 18px 40px -16px rgb(21 27 25 / 0.22);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(21 27 25 / 0.18);
 }
 
 .dark {
-  --canvas: 2 6 23;
-  --surface: 15 23 42;
-  --surface-muted: 30 41 59;
-  --line: 30 41 59;
-  --line-soft: 30 41 59;
-  --fg: 241 245 249;
-  --fg-body: 203 213 225;
-  --fg-muted: 148 163 184;
-  --fg-subtle: 100 116 139;
+  --canvas: 10 14 13;
+  --surface: 17 22 21;
+  --surface-muted: 25 31 29;
+  --line: 37 45 42;
+  --line-soft: 29 36 34;
+  --fg: 236 239 234;
+  --fg-body: 200 206 200;
+  --fg-muted: 143 152 146;
+  --fg-subtle: 104 113 108;
+
+  --shadow-card: inset 0 1px 0 rgb(255 255 255 / 0.03), 0 12px 32px -20px rgb(0 0 0 / 0.6);
+  --shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 20px 48px -16px rgb(0 0 0 / 0.7);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 1px 2px rgb(0 0 0 / 0.4);
 }

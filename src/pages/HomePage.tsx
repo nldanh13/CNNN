@@ -61,13 +61,14 @@ export function HomePage() {
   return (
     <div className="mx-auto max-w-5xl space-y-7 pb-4 sm:space-y-9">
       <section className="relative isolate overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-ink-900 via-primary-950 to-ink-950 p-6 text-white shadow-raised sm:rounded-[1.75rem] sm:p-9">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-28 h-72 w-72 rounded-full border border-white/10 bg-primary-500/10 blur-[2px] sm:right-0" />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-28 h-72 w-72 rounded-full border border-accent-300/20 bg-primary-500/10 blur-[2px] sm:right-0" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent-300/50 to-transparent sm:inset-x-9" />
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 right-24 h-60 w-60 rounded-full bg-primary-400/10 blur-3xl" />
         <div className="relative max-w-2xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-primary-100">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-accent-200">
             <HeartPulse className="h-3.5 w-3.5" /> KHÔNG GIAN ĐIỀU DƯỠNG
           </span>
-          <h1 className="mt-5 text-balance text-2xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="mt-5 text-balance text-[2rem] font-medium leading-[1.1] sm:text-5xl">
             {displayName ? `Xin chào, ${displayName}` : 'Chào mừng đến CNNN'}
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-200 sm:text-base">
@@ -75,7 +76,7 @@ export function HomePage() {
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <a href="#/assistant"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-primary-400 px-5 text-sm font-semibold text-ink-950 shadow-sm transition hover:bg-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-accent-300 px-5 text-sm font-semibold text-ink-950 shadow-button transition hover:bg-accent-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
               <Sparkles className="h-4 w-4" /> Bắt đầu chẩn đoán <ArrowRight className="h-4 w-4" />
             </a>
             <a href="#/plans"
@@ -145,7 +146,7 @@ export function HomePage() {
         <>
           <section aria-labelledby="home-catalog-heading">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <h2 id="home-catalog-heading" className="text-base font-semibold text-fg sm:text-lg">Thư viện NNN</h2>
+              <h2 id="home-catalog-heading" className="font-display text-lg font-medium text-fg sm:text-xl">Thư viện NNN</h2>
               <a href="#/library" className="inline-flex items-center gap-1 text-xs font-semibold text-primary-700 hover:underline dark:text-primary-300">
                 Mở thư viện <ArrowRight className="h-4 w-4" />
               </a>
@@ -162,7 +163,7 @@ export function HomePage() {
                     <span className="mt-0.5 block text-xs text-fg-muted">{item.subtitle}</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 sm:mt-2 sm:w-full sm:justify-between">
-                    <span className={`text-xl font-semibold tabular-nums ${item.countClass}`}>
+                    <span className={`font-display text-2xl font-medium tabular-nums ${item.countClass}`}>
                       {dataHub.listLibrary(item.system).length}
                       <span className="ml-1 text-xs font-normal text-fg-muted">mã</span>
                     </span>

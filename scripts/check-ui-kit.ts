@@ -6,7 +6,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ALLOWED = new Set([
-  'ink', 'primary', 'info', 'success', 'warning', 'danger', 'nanda', 'noc', 'nic',
+  'ink', 'primary', 'accent', 'info', 'success', 'warning', 'danger', 'nanda', 'noc', 'nic',
   'canvas', 'surface', 'line', 'fg', 'white', 'black', 'transparent', 'current', 'inherit',
 ]);
 const UTIL = '(?:bg|text|border|border-[trblxy]|ring|ring-offset|divide|outline|fill|stroke|from|via|to|placeholder|decoration|accent|caret|shadow)';
@@ -14,7 +14,7 @@ const COLOR_CLASS = new RegExp(`(?<![\\w-])(?:[a-z-]+:)*${UTIL}-([a-z]+)(?:-(?:5
 // Các hậu tố không phải màu của cùng tiện ích.
 const NOT_COLOR = new Set([
   'xs', 'sm', 'base', 'lg', 'xl', 'left', 'right', 'center', 'justify', 'start', 'end', 'wrap', 'nowrap', 'balance', 'pretty', 'ellipsis', 'clip',
-  'none', 'solid', 'dashed', 'dotted', 'double', 'hidden', 'collapse', 'separate', 'inset', 'card', 'raised', 'md', 'inner',
+  'none', 'solid', 'dashed', 'dotted', 'double', 'hidden', 'collapse', 'separate', 'inset', 'card', 'raised', 'button', 'md', 'inner',
   'cover', 'contain', 'auto', 'fixed', 'local', 'scroll', 'repeat', 'top', 'bottom', 'opacity', 'offset', 'y', 'x', 't', 'b', 'l', 'r', 'gradient',
 ]);
 
