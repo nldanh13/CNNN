@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from 'react';
-import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
+import { BookOpen, Eye, EyeOff, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { navigate } from '../store/router';
-import { Alert, Button, Card, CardHeader, Field, Input, SettingRow, TextLink } from '../ui';
+import { accountName, initials } from '../lib/utils';
+import { Alert, Button, Card, CardHeader, Field, IconButton, Input, SettingRow, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
 const errorText = (e: unknown) => e instanceof Error ? e.message : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
@@ -135,6 +136,7 @@ export function AccountSettings() {
   const [fullName, setFullName] = useState(savedName);
   const [newPassword, setNewPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -151,14 +153,13 @@ export function AccountSettings() {
     </Card>;
   }
   if (!auth.user) return null;
-  const displayName = savedName || auth.user.email.split('@')[0];
-  const initials = displayName.trim().split(/\s+/).slice(-2).map(w => w[0]).join('').toUpperCase();
-  const closePassword = () => { setChangingPassword(false); setNewPassword(''); setError(''); };
+  const displayName = accountName(auth.user);
+  const closePassword = () => { setChangingPassword(false); setNewPassword(''); setShowPassword(false); setError(''); };
 
   return <>
     <Card className="flex flex-wrap items-center gap-4 p-5">
       <span aria-hidden className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary-600 text-lg font-semibold text-white">
-        {initials}
+        {initials(displayName)}
       </span>
       <div className="min-w-0 flex-1 basis-48">
         <p className="truncate text-lg font-semibold text-fg">{displayName}</p>
@@ -190,8 +191,14 @@ export function AccountSettings() {
           }}>
             <label htmlFor="account-password" className="text-sm font-medium text-fg sm:w-40 sm:shrink-0 sm:pt-2.5">Mật khẩu mới</label>
             <div className="flex-1 space-y-2">
-              <Input id="account-password" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-                autoComplete="new-password" minLength={12} placeholder="Ít nhất 12 ký tự" required autoFocus />
+              <div className="relative">
+                <Input id="account-password" type={showPassword ? 'text' : 'password'} value={newPassword} onChange={e => setNewPassword(e.target.value)}
+                  autoComplete="new-password" minLength={12} placeholder="Ít nhất 12 ký tự" required autoFocus className="pr-11" />
+                <IconButton label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} aria-pressed={showPassword}
+                  className="absolute right-1 top-1/2 -translate-y-1/2" onClick={() => setShowPassword(v => !v)}>
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </IconButton>
+              </div>
               <div className="flex justify-end gap-2">
                 <Button variant="ghost" onClick={closePassword}>Hủy</Button>
                 <Button type="submit" variant="primary" disabled={busy}>Lưu mật khẩu</Button>

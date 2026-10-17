@@ -21,6 +21,16 @@ export function uid(prefix = 'id'): string {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/** Tên hiển thị của tài khoản: họ tên nếu có, nếu không lấy phần trước @ của email. */
+export function accountName(user: { email: string; user_metadata?: { full_name?: string } }): string {
+  return user.user_metadata?.full_name?.trim() || user.email.split('@')[0];
+}
+
+/** Chữ viết tắt cho ảnh đại diện: chữ đầu của hai từ cuối (tên người Việt đặt tên riêng ở cuối). */
+export function initials(name: string): string {
+  return name.trim().split(/\s+/).slice(-2).map(w => w[0] ?? '').join('').toUpperCase();
+}
+
 export function cx(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ');
 }

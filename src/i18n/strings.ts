@@ -8,6 +8,7 @@ const vi = {
     theme: 'Giao diện',
     light: 'Sáng',
     dark: 'Tối',
+    system: 'Theo máy',
     machineTranslated: 'Dịch máy',
     machineTranslatedHint: 'Bản dịch tự động theo luật, chưa được biên soạn. Hãy đối chiếu với nhãn tiếng Anh gốc.',
     cancel: 'Hủy',
@@ -99,6 +100,8 @@ const vi = {
     dataHint: 'Kế hoạch chăm sóc chỉ lưu trong trình duyệt này, không gửi lên máy chủ. Xóa lịch sử trình duyệt hoặc đổi máy sẽ mất kế hoạch, hãy sao lưu thường xuyên.',
     planCount: 'kế hoạch đang lưu',
     backupHint: 'Sao lưu ra tệp .json hoặc khôi phục từ tệp đã lưu.',
+    backupEmpty: 'Chưa có kế hoạch để sao lưu. Bạn vẫn có thể khôi phục từ tệp đã lưu.',
+    themeHint: 'Theo máy: tự đổi sáng/tối theo cài đặt của thiết bị.',
   },
   backup: {
     backup: 'Sao lưu',
@@ -362,6 +365,7 @@ const en: Strings = {
     theme: 'Theme',
     light: 'Light',
     dark: 'Dark',
+    system: 'System',
     machineTranslated: 'Machine',
     machineTranslatedHint: 'Rule-based translation, not reviewed.',
     cancel: 'Cancel',
@@ -453,6 +457,8 @@ const en: Strings = {
     dataHint: 'Care plans are stored only in this browser and never sent to a server. Clearing browser data or switching devices loses them, so back up regularly.',
     planCount: 'plans stored',
     backupHint: 'Back up to a .json file or restore from a saved one.',
+    backupEmpty: 'No plans to back up yet. You can still restore from a saved file.',
+    themeHint: 'System follows your device light/dark setting.',
   },
   backup: {
     backup: 'Back up',

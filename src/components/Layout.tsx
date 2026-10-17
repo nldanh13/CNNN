@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles, House } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { cx } from '../lib/utils';
+import { accountName, cx, initials } from '../lib/utils';
 import { Alert, Button, Kbd } from '../ui';
 import { CommandPalette } from './CommandPalette';
 import { useAuth } from '../auth/AuthContext';
@@ -119,18 +119,29 @@ export function Layout({ section, children }: { section: string; children: React
               <Kbd>K</Kbd>
             </span>
           </button>
-          <a
-            href={settingsItem.href}
-            aria-label={settingsItem.label}
-            aria-current={activeKey === 'settings' ? 'page' : undefined}
-            className={cx(
-              'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
-              activeKey === 'settings' ? 'border-primary-600 bg-primary-600 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
-            )}
-          >
-            <Settings className="h-5 w-5" />
-          </a>
-          {user && <a href="#/settings" title="Cài đặt tài khoản" className="hidden max-w-56 truncate text-sm font-medium text-fg-muted hover:text-fg md:block lg:ml-auto">{user.email}</a>}
+          {!user && (
+            <a
+              href={settingsItem.href}
+              aria-label={settingsItem.label}
+              aria-current={activeKey === 'settings' ? 'page' : undefined}
+              className={cx(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
+                activeKey === 'settings' ? 'border-primary-600 bg-primary-600 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
+              )}
+            >
+              <Settings className="h-5 w-5" />
+            </a>
+          )}
+          {user && (
+            <a href="#/settings" title={`${accountName(user)} · ${user.email}`} aria-label="Cài đặt tài khoản"
+              aria-current={activeKey === 'settings' ? 'page' : undefined}
+              className={cx(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white ring-offset-2 ring-offset-surface transition hover:ring-2 hover:ring-primary-500/50 lg:ml-auto',
+                activeKey === 'settings' && 'ring-2 ring-primary-500/50',
+              )}>
+              {initials(accountName(user))}
+            </a>
+          )}
         </header>
 
         {storageError && (
