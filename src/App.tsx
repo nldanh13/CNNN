@@ -13,6 +13,7 @@ import { AssistantPage } from './pages/AssistantPage';
 import { UiKitPage } from './pages/UiKitPage';
 import { useAuth } from './auth/AuthContext';
 import { AccountGate, RecoveryGate } from './pages/AccountPage';
+import { LandingPage } from './pages/LandingPage';
 import { PageSkeleton } from './ui';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
@@ -23,9 +24,14 @@ export function App() {
   // Production must never silently switch into guest mode when Auth configuration is absent.
   if (import.meta.env.PROD && !auth.enabled) return <div role="alert" className="mx-auto mt-20 max-w-lg rounded-xl border border-danger-500/40 bg-canvas p-6 text-center text-fg">CNNN đang tạm bảo trì đăng nhập. Vui lòng quay lại sau.</div>;
   if (!auth.ready) return <div role="status" className="flex min-h-screen items-center justify-center bg-ink-950 text-white">Đang kiểm tra phiên tài khoản…</div>;
-  if (auth.enabled && !auth.user) return <AccountGate />;
-  if (auth.enabled && auth.session?.recovery) return <RecoveryGate />;
   const [section = 'home', id] = path;
+  // Người chưa đăng nhập xem trang giới thiệu trước; Đăng nhập và Đăng ký có đường dẫn riêng.
+  if (auth.enabled && !auth.user) {
+    if (section === 'dang-nhap') return <AccountGate key="login" initialMode="login" />;
+    if (section === 'dang-ky') return <AccountGate key="signup" initialMode="signup" />;
+    return <LandingPage />;
+  }
+  if (auth.enabled && auth.session?.recovery) return <RecoveryGate />;
 
   let page;
   switch (section) {

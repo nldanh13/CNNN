@@ -1,16 +1,16 @@
 import { useState, type FormEvent } from 'react';
-import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { TurnstileChallenge, turnstileSiteKey } from '../auth/TurnstileChallenge';
 import { navigate } from '../store/router';
-import { Alert, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
+import { Alert, BrandLogo, BrandMark, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
 
 type Mode = 'login' | 'signup' | 'forgot';
 const errorText = (e: unknown) => e instanceof Error ? e.message : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
 
-export function AccountGate() {
+export function AccountGate({ initialMode = 'login' }: { initialMode?: Mode }) {
   const auth = useAuth();
-  const [mode, setMode] = useState<Mode>('login');
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -57,49 +57,73 @@ export function AccountGate() {
     setCaptchaToken(null); setCaptchaAttempt(n => n + 1);
   };
 
+  const title = mode === 'login' ? 'Đăng nhập' : mode === 'signup' ? 'Tạo tài khoản' : 'Khôi phục mật khẩu';
+  const lead = mode === 'login' ? 'Chào mừng trở lại. Đăng nhập để tiếp tục công việc của bạn.'
+    : mode === 'signup' ? 'Tạo tài khoản để lưu kế hoạch chăm sóc theo tài khoản của bạn.'
+    : 'Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.';
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-8">
-      <div className="w-full max-w-md">
-        <div className="mb-7 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-card bg-primary-600 text-white shadow-sm">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <h1 className="text-2xl font-bold text-fg">Thư viện Điều dưỡng NNN</h1>
-          <p className="mt-2 text-sm text-fg-muted">Một tài khoản để truy cập NANDA-I, NOC, NIC và trợ lý chẩn đoán.</p>
-        </div>
-        <Card className="p-6">
-          <h2 className="mb-5 text-xl font-semibold text-fg">
-            {mode === 'login' ? 'Đăng nhập' : mode === 'signup' ? 'Tạo tài khoản' : 'Khôi phục mật khẩu'}
+    <div className="grid min-h-screen bg-canvas lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <aside className="relative hidden overflow-hidden bg-primary-900 p-12 text-white lg:flex lg:flex-col dark:bg-primary-950">
+        <BrandLogo href="#/" inverted />
+        <div className="my-auto max-w-md">
+          <h2 className="text-balance font-sans text-3xl font-bold leading-tight tracking-[-0.015em]">
+            Kế hoạch chăm sóc điều dưỡng chuẩn NANDA-I, NOC, NIC
           </h2>
-          <form className="space-y-4" onSubmit={submit}>
+          <ul className="mt-8 space-y-4 text-[15px] text-primary-100">
+            {['Tra cứu 1.431 mã chẩn đoán, kết quả và can thiệp', 'Trợ lý gợi ý chẩn đoán từ dữ kiện đánh giá', 'Lập, chấm điểm và in kế hoạch chăm sóc'].map(text => (
+              <li key={text} className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary-300" />{text}</li>
+            ))}
+          </ul>
+        </div>
+        <p className="text-xs leading-relaxed text-primary-200">
+          Công cụ hỗ trợ học tập và tham khảo, không thay thế đánh giá lâm sàng.
+        </p>
+      </aside>
+
+      <div className="flex flex-col px-4 py-6 sm:px-8">
+        <div className="flex items-center justify-between">
+          <span className="lg:hidden"><BrandLogo href="#/" compact /></span>
+          <a href="#/" className="ml-auto inline-flex items-center gap-1.5 rounded-control px-2 py-1.5 text-sm font-medium text-fg-muted transition hover:bg-surface-muted hover:text-fg">
+            <ArrowLeft className="h-4 w-4" /> Trang giới thiệu
+          </a>
+        </div>
+        <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">
+          <BrandMark className="mb-6 hidden h-11 w-11 lg:flex" />
+          <h1 className="font-sans text-[1.75rem] font-bold tracking-[-0.015em] text-fg">{title}</h1>
+          <p className="mt-2 text-sm leading-relaxed text-fg-muted">{lead}</p>
+          <form className="mt-8 space-y-4" onSubmit={submit}>
             {mode === 'signup' && <Field label="Họ tên hiển thị">
               <Input value={name} onChange={e => setName(e.target.value)} autoComplete="name" maxLength={80} required />
             </Field>}
             <Field label="Email">
               <Input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                autoComplete="email" inputMode="email" required />
+                autoComplete="email" inputMode="email" placeholder="ten@vidu.com" required />
             </Field>
             {mode !== 'forgot' && <Field label="Mật khẩu" hint={mode === 'signup' ? 'Ít nhất 12 ký tự.' : undefined}>
               <Input type="password" value={password} onChange={e => setPassword(e.target.value)}
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 minLength={mode === 'signup' ? 12 : undefined} required />
             </Field>}
+            {mode === 'login' && <div className="-mt-1 flex justify-end text-sm">
+              <TextLink onClick={() => selectMode('forgot')}>Quên mật khẩu?</TextLink>
+            </div>}
             <TurnstileChallenge key={mode + ':' + captchaAttempt} onToken={setCaptchaToken} />
             {failure && <Alert role="alert" tone="danger" size="sm">{failure}</Alert>}
             {feedback && <Alert role="status" tone="info" size="sm">{feedback}</Alert>}
-            <Button type="submit" variant="primary" className="w-full" disabled={busy || Boolean(turnstileSiteKey && !captchaToken)}
+            <Button type="submit" variant="primary" size="lg" className="w-full" disabled={busy || Boolean(turnstileSiteKey && !captchaToken)}
               icon={mode === 'forgot' ? <KeyRound className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}>
               {busy ? 'Đang xử lý…' : mode === 'login' ? 'Đăng nhập' : mode === 'signup' ? 'Đăng ký' : 'Gửi email khôi phục'}
             </Button>
           </form>
-          <div className="mt-5 flex flex-wrap justify-center gap-4 text-sm">
-            {mode !== 'login' && <TextLink onClick={() => selectMode('login')}>Đăng nhập</TextLink>}
-            {mode !== 'signup' && <TextLink onClick={() => selectMode('signup')}>Đăng ký tài khoản</TextLink>}
-            {mode !== 'forgot' && <TextLink onClick={() => selectMode('forgot')}>Quên mật khẩu?</TextLink>}
-          </div>
-        </Card>
-        <p className="mt-4 text-center text-xs text-fg-muted">
-          Kế hoạch chăm sóc lưu trên thiết bị này.
+          <p className="mt-8 border-t border-line-soft pt-6 text-center text-sm text-fg-muted">
+            {mode === 'signup' ? <>Đã có tài khoản? <TextLink onClick={() => selectMode('login')}>Đăng nhập</TextLink></>
+              : mode === 'forgot' ? <>Nhớ lại mật khẩu? <TextLink onClick={() => selectMode('login')}>Đăng nhập</TextLink></>
+              : <>Chưa có tài khoản? <TextLink onClick={() => selectMode('signup')}>Đăng ký tài khoản</TextLink></>}
+          </p>
+        </div>
+        <p className="text-center text-xs text-fg-muted">
+          Kế hoạch chăm sóc lưu riêng theo tài khoản. Không nhập dữ liệu nhận dạng người bệnh thật.
         </p>
       </div>
     </div>
@@ -196,7 +220,7 @@ export function AccountSettings() {
       {message && <Alert role="status" tone="success" size="sm">{message}</Alert>}
       {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
       <div className="border-t border-line-soft pt-4">
-        <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => void auth.signOut()}>
+        <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => { void auth.signOut(); navigate('/'); }}>
           Đăng xuất
         </Button>
       </div>

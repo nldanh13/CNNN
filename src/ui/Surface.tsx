@@ -37,7 +37,7 @@ export function PageHeader({ title, subtitle, actions, breadcrumb, icon }: { tit
     <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div className="min-w-0">
         {breadcrumb && <div className="mb-2">{breadcrumb}</div>}
-        <h1 className="flex items-center gap-3 text-[1.625rem] font-medium leading-tight text-fg sm:text-[2rem]">
+        <h1 className="flex items-center gap-3 text-[1.625rem] font-bold leading-tight text-fg sm:text-[2rem]">
           {icon && <span className="text-accent-600 dark:text-accent-300">{icon}</span>}
           {title}
         </h1>
@@ -52,7 +52,7 @@ export function PageHeader({ title, subtitle, actions, breadcrumb, icon }: { tit
 export function SectionTitle({ children, actions, className }: { children: ReactNode; actions?: ReactNode; className?: string }) {
   return (
     <div className={cx('mb-3 flex flex-wrap items-end justify-between gap-3', className)}>
-      <h2 className="font-display text-lg font-medium tracking-[-0.01em] text-fg">{children}</h2>
+      <h2 className="text-lg font-semibold tracking-[-0.01em] text-fg">{children}</h2>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>
   );
@@ -87,7 +87,7 @@ export function Steps({ steps, columns = 3 }: { steps: { title: ReactNode; text:
     <ol className={cx('grid gap-2', columns === 5 ? 'sm:grid-cols-2 lg:grid-cols-5' : 'sm:grid-cols-3')}>
       {steps.map((s, i) => (
         <li key={i} className="flex items-start gap-3 rounded-card border border-line bg-surface p-3.5 text-xs shadow-card">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink-900 font-display text-sm font-medium text-accent-200 dark:bg-white/10">{i + 1}</span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-700 text-sm font-bold text-white">{i + 1}</span>
           <span className="min-w-0">
             <strong className="flex items-center gap-1.5 text-sm text-fg">
               {s.icon && <span className="text-accent-600 dark:text-accent-300">{s.icon}</span>}

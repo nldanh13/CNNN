@@ -87,8 +87,8 @@ export function UiKitPage() {
           <SectionTitle>Chữ</SectionTitle>
           <Card>
             <CardBody className="space-y-2">
-              <p className="font-display text-[2rem] font-medium leading-tight tracking-[-0.02em] text-fg">Tiêu đề trang · Fraunces 32px</p>
-              <p className="font-display text-lg font-medium text-fg">Tiêu đề nhóm · Fraunces 18px</p>
+              <p className="text-[2rem] font-bold leading-tight tracking-[-0.02em] text-fg">Tiêu đề trang · Be Vietnam Pro 32px</p>
+              <p className="text-lg font-semibold text-fg">Tiêu đề nhóm · Be Vietnam Pro 18px</p>
               <p className="text-[15px] font-semibold text-fg">Tiêu đề thẻ · 15px</p>
               <p className="text-sm text-fg-body">Nội dung · 14px. Người bệnh 75 tuổi, ho yếu, đờm đặc khó khạc.</p>
               <p className="text-xs text-fg-muted">Chú thích · 12px, màu phụ</p>
