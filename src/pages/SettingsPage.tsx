@@ -1,7 +1,7 @@
-import { Moon, Palette, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import type { Theme } from '../store/AppContext';
-import { Badge, Card, CardBody, CardHeader, LinkButton, PageHeader, Segmented, SettingRow } from '../ui';
+import { Badge, Card, CardBody, CardHeader, PageHeader, Segmented, SettingRow } from '../ui';
 import { PlanBackupButtons } from '../components/PlanBackup';
 import { AccountSettings } from './AccountPage';
 
@@ -10,7 +10,7 @@ export function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader title={t.settings.title} subtitle="Tài khoản, giao diện và sao lưu dữ liệu." />
+      <PageHeader title={t.settings.title} />
 
       <div className="space-y-6">
         <AccountSettings />
@@ -30,16 +30,12 @@ export function SettingsPage() {
                 ]}
               />
             </SettingRow>
-            <SettingRow label="Kho giao diện" hint="Xem bảng màu và các thành phần dùng chung của ứng dụng.">
-              <LinkButton href="#/ui" icon={<Palette className="h-4 w-4" />}>Mở kho giao diện</LinkButton>
-            </SettingRow>
           </div>
         </Card>
 
         <Card>
           <CardHeader title={t.settings.data} subtitle={`${plans.length} ${t.settings.planCount}`} />
           <CardBody className="space-y-4">
-            <p className="text-sm leading-relaxed text-fg-muted">{t.settings.dataHint}</p>
             <div className="flex flex-wrap gap-2">
               <PlanBackupButtons />
             </div>
