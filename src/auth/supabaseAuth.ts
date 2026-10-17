@@ -132,9 +132,18 @@ export async function bootstrapSession(): Promise<AccountSession | null> {
   }
 }
 
+/**
+ * Supabase GoTrue expects the CAPTCHA token nested under
+ * gotrue_meta_security.captcha_token (not a top-level captcha_token).
+ * Keep the token out of the request when Turnstile is not yet configured.
+ */
+function captchaMetadata(captchaToken?: string) {
+  return captchaToken ? { gotrue_meta_security: { captcha_token: captchaToken } } : {};
+}
+
 export async function signIn(email: string, password: string, captchaToken?: string): Promise<AccountSession> {
   const token = await request<TokenResponse>('token?grant_type=password', 'POST',
-    { email, password, ...(captchaToken ? { captcha_token: captchaToken } : {}) });
+    { email, password, ...captchaMetadata(captchaToken) });
   return toSession(token);
 }
 
@@ -150,7 +159,7 @@ export async function signUp(email: string, password: string, fullName: string, 
   const redirect = authRedirectUrl();
   const response = await request<Partial<TokenResponse>>('signup?redirect_to=' + encodeURIComponent(redirect), 'POST', {
     email, password, data: { full_name: fullName.trim() },
-    ...(captchaToken ? { captcha_token: captchaToken } : {}),
+    ...captchaMetadata(captchaToken),
   });
   return response.access_token && response.refresh_token && response.user
     ? toSession(response as TokenResponse)
@@ -160,7 +169,7 @@ export async function signUp(email: string, password: string, fullName: string, 
 export async function requestPasswordReset(email: string, captchaToken?: string): Promise<void> {
   const redirect = authRedirectUrl();
   await request('recover?redirect_to=' + encodeURIComponent(redirect), 'POST', {
-    email, ...(captchaToken ? { captcha_token: captchaToken } : {}),
+    email, ...captchaMetadata(captchaToken),
   });
 }
 
