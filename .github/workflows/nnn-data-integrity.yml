@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: ["design/unified-data-architecture"]
+    branches: [main, "design/unified-data-architecture"]
 
 permissions:
   contents: read
@@ -31,6 +31,7 @@ jobs:
       - run: npm run check:account
       - run: npm run check:security
       - run: npm run check:account-storage
+      - run: npm run check:autosave-reliability
       - run: npm run check:consolidated-sql
       - run: npm run check:home-navigation
       - run: npm run check:clean-interface
