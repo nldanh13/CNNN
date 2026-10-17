@@ -5,6 +5,7 @@ import { Badge, Card, CardBody, CardHeader, PageHeader, Segmented, SettingRow } 
 import { PlanBackupButtons } from '../components/PlanBackup';
 import { CloudBackupPanel } from '../components/CloudBackupPanel';
 import { AccountSettings } from './AccountPage';
+import { MfaSettings } from '../components/MfaSettings';
 
 export function SettingsPage() {
   const { t, theme, setTheme, plans } = useApp();
