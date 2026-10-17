@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { BookOpen, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
+import { TurnstileChallenge, turnstileSiteKey } from '../auth/TurnstileChallenge';
 import { navigate } from '../store/router';
 import { Alert, Button, Card, CardBody, CardHeader, Field, Input, TextLink } from '../ui';
 
@@ -16,34 +17,44 @@ export function AccountGate() {
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [failure, setFailure] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setBusy(true);
     setFeedback('');
     setFailure('');
+    if (turnstileSiteKey && !captchaToken) {
+      setFailure('Vui lòng hoàn tất xác minh bảo mật trước khi tiếp tục.');
+      setBusy(false);
+      return;
+    }
     try {
       if (mode === 'forgot') {
-        await auth.resetPassword(email);
+        await auth.resetPassword(email, captchaToken ?? undefined);
         setFeedback('Nếu email đã đăng ký, bạn sẽ nhận được liên kết đặt lại mật khẩu.');
       } else if (mode === 'signup') {
         if (password.length < 12) throw new Error('Mật khẩu phải có ít nhất 12 ký tự.');
-        const signedIn = await auth.signUp(email, password, name);
+        const signedIn = await auth.signUp(email, password, name, captchaToken ?? undefined);
         if (signedIn) navigate('/home');
         else setFeedback('Đã gửi hướng dẫn xác nhận tài khoản đến email (nếu dịch vụ cho phép đăng ký).');
       } else {
-        await auth.signIn(email, password);
+        await auth.signIn(email, password, captchaToken ?? undefined);
         navigate('/home');
       }
     } catch (error) {
       setFailure(errorText(error));
     } finally {
       setBusy(false);
+      setCaptchaToken(null);
+      setCaptchaAttempt(n => n + 1);
     }
   };
 
   const selectMode = (next: Mode) => {
     setMode(next); setFailure(''); setFeedback(''); setPassword('');
+    setCaptchaToken(null); setCaptchaAttempt(n => n + 1);
   };
 
   return (
@@ -73,9 +84,10 @@ export function AccountGate() {
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 minLength={mode === 'signup' ? 12 : undefined} required />
             </Field>}
+            <TurnstileChallenge key={mode + ':' + captchaAttempt} onToken={setCaptchaToken} />
             {failure && <Alert role="alert" tone="danger" size="sm">{failure}</Alert>}
             {feedback && <Alert role="status" tone="info" size="sm">{feedback}</Alert>}
-            <Button type="submit" variant="primary" className="w-full" disabled={busy}
+            <Button type="submit" variant="primary" className="w-full" disabled={busy || Boolean(turnstileSiteKey && !captchaToken)}
               icon={mode === 'forgot' ? <KeyRound className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}>
               {busy ? 'Đang xử lý…' : mode === 'login' ? 'Đăng nhập' : mode === 'signup' ? 'Đăng ký' : 'Gửi email khôi phục'}
             </Button>
