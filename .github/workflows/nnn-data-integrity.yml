@@ -28,6 +28,7 @@ jobs:
       - run: npm run check:nic8-reader
       - run: npm run check:care-plan
       - run: npm run check:account
+      - run: npm run check:totp-mfa
       - run: npm run check:security
       - run: npm run check:cloud-backup
       - run: npm run check:rls-read
