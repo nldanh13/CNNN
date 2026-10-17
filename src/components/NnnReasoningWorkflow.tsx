@@ -1,6 +1,6 @@
 import { ClipboardList, Target, Activity, ListChecks, RefreshCcw } from 'lucide-react';
 import { useApp } from '../store/AppContext';
-import { Alert, Steps } from '../ui';
+import { Steps } from '../ui';
 
 export function NnnReasoningWorkflow() {
   const { t } = useApp();
@@ -23,7 +23,10 @@ export function NnnReasoningWorkflow() {
           { title: n(t.reasoningWorkflow.stage5), text: t.reasoningWorkflow.stage5Detail, icon: <RefreshCcw className={i} /> },
         ]}
       />
-      <Alert tone="warning" size="sm">{t.reasoningWorkflow.warning}</Alert>
+      <details className="text-xs text-fg-muted">
+        <summary className="cursor-pointer hover:text-fg">Giới hạn của hướng dẫn</summary>
+        <p className="mt-2 max-w-3xl leading-relaxed">{t.reasoningWorkflow.warning}</p>
+      </details>
     </section>
   );
 }
