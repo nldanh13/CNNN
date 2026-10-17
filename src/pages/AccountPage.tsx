@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { ArrowLeft, CheckCircle2, KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, KeyRound, LogIn, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { TurnstileChallenge, turnstileSiteKey } from '../auth/TurnstileChallenge';
 import { navigate } from '../store/router';
@@ -220,11 +220,6 @@ export function AccountSettings() {
       </form>
       {message && <Alert role="status" tone="success" size="sm">{message}</Alert>}
       {error && <Alert role="alert" tone="danger" size="sm">{error}</Alert>}
-      <div className="border-t border-line-soft pt-4">
-        <Button icon={<LogOut className="h-4 w-4" />} variant="danger" onClick={() => { void auth.signOut(); navigate('/'); }}>
-          Đăng xuất
-        </Button>
-      </div>
     </CardBody>
   </Card>;
 }
