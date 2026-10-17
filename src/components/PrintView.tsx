@@ -2,7 +2,7 @@ import type { CareEntry, CarePlan } from '../types';
 import { useApp } from '../store/AppContext';
 import { computeBmi, formatDate, signed } from '../lib/utils';
 import { scaleLabel } from './Likert';
-import { optionalPrintMetric, splitClinicalPrintNotes } from './printNotes';
+import { isRiskDiagnosisLabel, optionalPrintMetric, shouldPrintDiagnosticStatement, splitClinicalPrintNotes } from './printNotes';
 import './PrintView.css';
 
 type PatientField = { label: string; value: string };
@@ -12,12 +12,15 @@ function PrintDiagnosis({ entry, tr }: {
 }) {
   const notes = splitClinicalPrintNotes(entry.notes);
   const name = tr(entry.nanda.code, entry.nanda.label);
-  const isRisk = /^nguy cơ\b/iu.test(name);
+  const isRisk = isRiskDiagnosisLabel(name);
+  const showStatement = shouldPrintDiagnosticStatement(
+    notes.diagnosticStatement, name, entry.relatedFactors.map(factor => tr(null, factor)),
+  );
   return (
     <section className="cnnn-print-section">
       <h3 className="cnnn-print-section-title"><span>01</span> Chẩn đoán điều dưỡng <small>NANDA-I</small></h3>
       <p className="cnnn-print-term"><strong>[{entry.nanda.code}]</strong> {name || 'Chưa chọn chẩn đoán'}</p>
-      {notes.diagnosticStatement && (
+      {showStatement && notes.diagnosticStatement && (
         <div className="cnnn-print-field">
           <div className="cnnn-print-field-label">Diễn giải chẩn đoán đã lưu</div>
           <div>{notes.diagnosticStatement}</div>
