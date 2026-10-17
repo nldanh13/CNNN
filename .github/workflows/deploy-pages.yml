@@ -47,7 +47,7 @@ jobs:
 
       - name: Check automatic account plan rollout
         env:
-          VITE_PATIENT_CLOUD_ENABLED: ${{ vars.VITE_PATIENT_CLOUD_ENABLED }}
+          VITE_PATIENT_CLOUD_ENABLED: ${{ vars.VITE_PATIENT_CLOUD_ENABLED || 'true' }}
         run: |
           if [[ -n "$VITE_PATIENT_CLOUD_ENABLED" && "$VITE_PATIENT_CLOUD_ENABLED" != "true" && "$VITE_PATIENT_CLOUD_ENABLED" != "false" ]]; then
             echo "::error::VITE_PATIENT_CLOUD_ENABLED must be true or false."
@@ -79,8 +79,9 @@ jobs:
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-          # OFF until SQL migration for patient workspaces is deployed and verified.
-          VITE_PATIENT_CLOUD_ENABLED: ${{ vars.VITE_PATIENT_CLOUD_ENABLED }}
+          # Owner confirmed all-in-one SQL applied on Supabase (2026-10-17).
+          # Default ON for CNNN. Set GitHub Actions variable to literal false to roll back safely.
+          VITE_PATIENT_CLOUD_ENABLED: ${{ vars.VITE_PATIENT_CLOUD_ENABLED || 'true' }}
         run: npm run build
 
       - name: Configure GitHub Pages
