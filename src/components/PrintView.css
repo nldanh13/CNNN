@@ -1,0 +1,311 @@
+/*
+ * Clinical A4 print sheet. Scoped to PrintView only: the application layout
+ * and color theme must not affect printed medical training plans.
+ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 13mm;
+  }
+
+  .cnnn-print-document {
+    display: block !important;
+    position: static !important;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: none;
+    color: #1d2933 !important;
+    background: #fff !important;
+    font-family: "Be Vietnam Pro", Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.42;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cnnn-print-document *,
+  .cnnn-print-document *::before,
+  .cnnn-print-document *::after {
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+  }
+  .cnnn-print-document h1,
+  .cnnn-print-document h2,
+  .cnnn-print-document h3,
+  .cnnn-print-document p,
+  .cnnn-print-document ul,
+  .cnnn-print-document ol {
+    margin: 0;
+  }
+  .cnnn-print-document ul,
+  .cnnn-print-document ol {
+    padding: 0;
+  }
+
+  .cnnn-print-header {
+    border-bottom: 2px solid #1d6155;
+    padding: 0 0 9pt;
+    margin-bottom: 11pt;
+  }
+  .cnnn-print-eyebrow {
+    font-size: 7.5pt;
+    color: #4b615d;
+    font-weight: 700;
+    letter-spacing: .075em;
+  }
+  .cnnn-print-eyebrow span { padding: 0 4pt; }
+  .cnnn-print-header h1 {
+    font-size: 16pt;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.24;
+    color: #183a35;
+    margin: 5pt 0 10pt;
+    text-wrap: wrap;
+  }
+  .cnnn-print-document-meta {
+    display: flex;
+    gap: 16pt;
+    flex-wrap: wrap;
+    font-size: 8.5pt;
+    color: #485560;
+  }
+  .cnnn-print-document-meta strong { color: #1e2932; }
+
+  .cnnn-print-patient {
+    border: 1px solid #cbd8d4;
+    border-radius: 4pt;
+    padding: 8pt 10pt 7pt;
+    margin-bottom: 11pt;
+  }
+  .cnnn-print-patient h2,
+  .cnnn-print-plan-heading h2 {
+    font-size: 9pt;
+    font-weight: 800;
+    letter-spacing: .035em;
+    color: #23483f;
+    margin-bottom: 8pt;
+  }
+  .cnnn-print-patient-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 13pt;
+    row-gap: 6pt;
+  }
+  .cnnn-print-patient-grid > div {
+    display: grid;
+    grid-template-columns: 75pt minmax(0, 1fr);
+    column-gap: 3pt;
+    align-items: baseline;
+    break-inside: avoid;
+    font-size: 8.5pt;
+  }
+  .cnnn-print-patient-grid dt { color: #647178; }
+  .cnnn-print-patient-grid dd { margin: 0; color: #1d2933; font-weight: 600; }
+
+  .cnnn-print-plan-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12pt;
+    margin-bottom: 8pt;
+  }
+  .cnnn-print-plan-heading h2 { margin-bottom: 0; }
+  .cnnn-print-plan-heading > span { color: #647178; font-size: 8pt; }
+
+  .cnnn-print-entry {
+    border: 1px solid #d2dbdc;
+    border-radius: 4pt;
+    margin-bottom: 15pt;
+    overflow: visible;
+    break-inside: auto;
+  }
+  .cnnn-print-entry-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10pt;
+    background: #f0f7f4;
+    border-bottom: 1px solid #d2dbdc;
+    padding: 7pt 10pt;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .cnnn-print-entry-heading h2 {
+    font-size: 9.5pt;
+    color: #174d43;
+    letter-spacing: .01em;
+    font-weight: 800;
+  }
+  .cnnn-print-entry-heading span {
+    color: #42695f;
+    border: 1px solid #aecbc1;
+    border-radius: 12pt;
+    font-size: 7.4pt;
+    padding: 1pt 7pt;
+    white-space: nowrap;
+  }
+  .cnnn-print-section {
+    padding: 7pt 10pt;
+    border-bottom: 1px solid #e2e8e7;
+    break-inside: auto;
+  }
+  .cnnn-print-section:last-child { border-bottom: none; }
+  .cnnn-print-section-title {
+    display: flex;
+    align-items: baseline;
+    gap: 7pt;
+    font-size: 9.4pt;
+    font-weight: 800;
+    color: #183a35;
+    margin-bottom: 6pt !important;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .cnnn-print-section-title > span {
+    color: #0b7564;
+    font-size: 8.2pt;
+    font-weight: 800;
+  }
+  .cnnn-print-section-title small {
+    font-weight: 600;
+    font-size: 7.5pt;
+    color: #68767d;
+    letter-spacing: .05em;
+  }
+  .cnnn-print-term {
+    font-size: 9.6pt;
+    font-weight: 650;
+    color: #1d2933;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .cnnn-print-term strong { color: #0d6c5e; }
+  .cnnn-print-field { margin-top: 8pt; }
+  .cnnn-print-field-label {
+    font-size: 8.1pt;
+    color: #52636a;
+    font-weight: 750;
+    margin-bottom: 3pt;
+    break-after: avoid;
+  }
+  .cnnn-print-field ul {
+    list-style: disc;
+    padding-left: 17pt;
+  }
+  .cnnn-print-field li { margin: 2pt 0; }
+
+  .cnnn-print-scores {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid #d5dfdc;
+    margin: 9pt 0 5pt;
+    break-inside: avoid;
+  }
+  .cnnn-print-scores > div {
+    padding: 5pt 8pt;
+    display: flex;
+    flex-direction: column;
+    gap: 2pt;
+    border-right: 1px solid #d5dfdc;
+  }
+  .cnnn-print-scores > div:last-child { border-right: none; }
+  .cnnn-print-scores span { color: #66747b; font-size: 7.7pt; }
+  .cnnn-print-scores strong { color: #153c35; font-size: 10pt; }
+  .cnnn-print-small {
+    color: #626f75;
+    font-size: 8.2pt;
+    margin-top: 4pt !important;
+  }
+  .cnnn-print-indicators {
+    list-style: none !important;
+    padding-left: 0 !important;
+  }
+  .cnnn-print-indicators li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12pt;
+    border-bottom: 1px dotted #d9e0dd;
+    padding: 3pt 0;
+  }
+  .cnnn-print-indicator-score {
+    color: #4b5d63;
+    font-size: 8pt;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .cnnn-print-interventions { list-style: none; }
+  .cnnn-print-intervention {
+    padding: 6pt 0;
+    border-top: 1px dotted #dfe5e4;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .cnnn-print-intervention:first-child { border-top: none; }
+  .cnnn-print-intervention-heading {
+    display: flex;
+    gap: 9pt;
+    font-weight: 650;
+    break-after: avoid;
+  }
+  .cnnn-print-intervention-heading strong { color: #0d6c5e; }
+  .cnnn-print-intervention-no {
+    color: #7e8c91;
+    min-width: 14pt;
+    font-size: 8pt;
+  }
+  .cnnn-print-activities {
+    list-style: disc;
+    padding-left: 32pt !important;
+    margin-top: 4pt !important;
+    color: #425058;
+  }
+  .cnnn-print-activities li { margin: 2pt 0; }
+  .cnnn-print-evaluation-summary {
+    color: #40545d;
+    break-inside: avoid;
+  }
+  .cnnn-print-evaluation-summary strong { color: #193932; }
+  .cnnn-print-assessment-list {
+    list-style: decimal;
+    padding-left: 20pt !important;
+  }
+  .cnnn-print-assessment-list li {
+    margin: 5pt 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .cnnn-print-assessment-list p { color: #52636a; }
+  .cnnn-print-note { margin-bottom: 4pt !important; }
+  .cnnn-print-provenance {
+    font-size: 7.3pt;
+    color: #6f7c81;
+    margin-top: 8pt !important;
+  }
+
+  .cnnn-print-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16pt;
+    border-top: 1px solid #cfdbd7;
+    padding-top: 11pt;
+    margin-top: 11pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .cnnn-print-footer-note {
+    max-width: 58%;
+    font-size: 7.4pt;
+    line-height: 1.65;
+    color: #67767c;
+  }
+  .cnnn-print-signature {
+    min-width: 175pt;
+    text-align: center;
+    font-size: 8.5pt;
+  }
+  .cnnn-print-signature strong { font-weight: 750; }
+  .cnnn-print-signature-space { height: 27pt; }
+}
