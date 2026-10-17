@@ -10,6 +10,7 @@ import { StandardsPage } from './pages/StandardsPage';
 import { QualityPage } from './pages/QualityPage';
 import { ReferencesPage } from './pages/ReferencesPage';
 import { AssistantPage } from './pages/AssistantPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { UiKitPage } from './pages/UiKitPage';
 import { useAuth } from './auth/AuthContext';
 import { AccountGate, RecoveryGate } from './pages/AccountPage';
@@ -56,6 +57,9 @@ export function App() {
       break;
     case 'quality':
       page = <QualityPage />;
+      break;
+    case 'reports':
+      page = <ReportsPage />;
       break;
     default:
       page = <HomePage />;

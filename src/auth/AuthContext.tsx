@@ -3,7 +3,7 @@ import {
   authConfigured, bootstrapSession, refreshSession, signIn as apiSignIn, signUp as apiSignUp,
   requestPasswordReset as apiReset, changePassword as apiPassword, changeFullName as apiName,
   revokeSession, storeSession, type AccountSession, type AccountUser,
-} from './supabaseAuth';
+} from './authGateway';
 
 interface AuthState {
   enabled: boolean;
