@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
-import { optionalPrintMetric, splitClinicalPrintNotes } from '../src/components/printNotes';
+import { isRiskDiagnosisLabel, optionalPrintMetric, shouldPrintDiagnosticStatement, splitClinicalPrintNotes } from '../src/components/printNotes';
 
 const notes = [
   'Mục tiêu đề xuất: Trong thời gian nằm viện, da vùng tỳ đè nguyên vẹn.',
@@ -20,6 +20,37 @@ assert.equal(optionalPrintMetric(0, 'kg'), null, 'Zero weight must not print as 
 assert.equal(optionalPrintMetric(0.5, 'kg'), '0,5 kg', 'Existing entered weight must not be silently modified');
 assert.equal(optionalPrintMetric(160, 'cm'), '160 cm');
 
+const diagnosisLabel = 'Nguy cơ tổn thương do tỳ đè ở người lớn';
+const factors = [
+  'Thang Braden ≤ 18 (nguy cơ tỳ đè)',
+  'Da thường xuyên ẩm (mồ hôi, nước tiểu, phân)',
+];
+assert.equal(isRiskDiagnosisLabel(diagnosisLabel), true,
+  'Vietnamese accented risk diagnosis must be detected without ASCII word-boundary bug');
+assert.equal(isRiskDiagnosisLabel('Nguy cơ: tổn thương da'), true);
+assert.equal(isRiskDiagnosisLabel('Nguy cơ\u00A0tổn thương da'), true,
+  'Unicode whitespace should work in risk labels');
+assert.equal(isRiskDiagnosisLabel('Suy giảm tính toàn vẹn da'), false);
+assert.equal(shouldPrintDiagnosticStatement(
+  'Nguy cơ tổn thương do tỳ đè ở người lớn, yếu tố nguy cơ: thang Braden ≤ 18 (nguy cơ tỳ đè); da thường xuyên ẩm (mồ hôi, nước tiểu, phân).',
+  diagnosisLabel, factors,
+), false, 'Do not duplicate title and risk factors already printed below');
+assert.equal(shouldPrintDiagnosticStatement(diagnosisLabel + '.', diagnosisLabel, factors), false,
+  'Do not print diagnosis title twice');
+assert.equal(shouldPrintDiagnosticStatement(
+  'Nguy cơ tổn thương do tỳ đè ở người lớn, yếu tố nguy cơ: da thường xuyên ẩm (mồ hôi, nước tiểu, phân).',
+  diagnosisLabel, factors,
+), true, 'Keep statement if it does not match all recorded risk factors');
+assert.equal(shouldPrintDiagnosticStatement(
+  'Nguy cơ tổn thương do tỳ đè ở người lớn, yếu tố nguy cơ: thang Braden ≤ 18 (nguy cơ tỳ đè); da thường xuyên ẩm (mồ hôi, nước tiểu, phân). Cần kiểm tra mỗi ca trực.',
+  diagnosisLabel, factors,
+), true, 'Keep any additional clinical detail');
+assert.equal(shouldPrintDiagnosticStatement(
+  'Suy giảm tính toàn vẹn da, có đỏ da kéo dài hơn 30 phút.',
+  'Suy giảm tính toàn vẹn da', [],
+), true, 'Do not hide non-risk diagnostic statements with clinical findings');
+assert.equal(shouldPrintDiagnosticStatement(null, diagnosisLabel, factors), false);
+
 const view = readFileSync('src/components/PrintView.tsx', 'utf8');
 const css = readFileSync('src/components/PrintView.css', 'utf8');
 for (const heading of [
@@ -29,6 +60,8 @@ for (const heading of [
 ]) assert.ok(view.includes(heading), 'Missing clinical hierarchy: ' + heading);
 assert.ok(!view.includes('<table'), 'Do not restore cramped NANDA/NOC/NIC table');
 assert.ok(view.includes('splitClinicalPrintNotes(entry.notes)'), 'Assistant notes must be shown in clinical sections');
+assert.ok(view.includes('isRiskDiagnosisLabel(name)') && view.includes('shouldPrintDiagnosticStatement('),
+  'A4 rendering must use risk identification and safe note de-duplication');
 assert.ok(view.includes("entry.noc.assessments ?? []"), 'Old plans must still render without assessments');
 assert.ok(view.includes('(a.indicatorRatings ?? [])'), 'Old assessments may have no indicator ratings');
 assert.ok(view.includes('plan.entries.map'), 'Do not lose diagnoses in new print layout');
