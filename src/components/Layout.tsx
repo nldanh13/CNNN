@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from 'react';
 import { Activity, AlertTriangle, CheckCircle2, Info, Library, Search, Settings, BookOpen, ClipboardList, BookText, Sparkles } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { cx } from '../lib/utils';
-import { Kbd } from './ui';
+import { Alert, Button, Kbd } from '../ui';
 import { CommandPalette } from './CommandPalette';
 
 interface NavItem {
@@ -25,6 +25,7 @@ const NAV_OF_SECTION: Record<string, string> = {
   references: 'references',
   quality: 'references',
   settings: 'settings',
+  ui: 'settings',
 };
 
 export function Layout({ section, children }: { section: string; children: ReactNode }) {
@@ -58,36 +59,34 @@ export function Layout({ section, children }: { section: string; children: React
         href={item.href}
         aria-current={active ? 'page' : undefined}
         className={cx(
-          'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60',
-          active
-            ? 'bg-brand-50 text-brand-800 before:absolute before:inset-y-1.5 before:-left-3 before:w-1 before:rounded-r-full before:bg-brand-500 dark:bg-brand-500/10 dark:text-brand-300'
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white',
+          'flex items-center gap-3 rounded-control px-3 py-2.5 text-[15px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
+          active ? 'bg-primary-600 text-white shadow-sm' : 'text-ink-600 hover:bg-ink-100 hover:text-fg dark:text-ink-300 dark:hover:bg-ink-800',
         )}
       >
-        <span className={active ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400'}>{item.icon}</span>
+        <span className={active ? 'text-white' : 'text-fg-subtle'}>{item.icon}</span>
         <span className="flex-1">{item.label}</span>
         {item.badge}
       </a>
     );
   };
 
-  const logo = (
-    <a href="#/library" className="flex items-center gap-2.5">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white shadow-sm">
+  const logo = (compact: boolean) => (
+    <a href="#/library" className="flex min-w-0 items-center gap-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary-600 text-white shadow-sm">
         <Activity className="h-5 w-5" strokeWidth={2.4} />
       </span>
-      <span className="leading-tight">
-        <span className="block text-[15px] font-semibold text-slate-900 dark:text-white">{t.app.name}</span>
-        <span className="hidden text-[11px] leading-snug text-slate-500 lg:block dark:text-slate-400">{t.app.tagline}</span>
+      <span className="min-w-0 leading-tight">
+        <span className="block truncate text-[15px] font-bold text-fg">Điều dưỡng NNN</span>
+        {!compact && <span className="mt-0.5 block text-xs text-fg-muted">NANDA-I · NOC · NIC</span>}
       </span>
     </a>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 print:bg-white">
+    <div className="min-h-screen bg-canvas text-ink-800 dark:text-ink-200 print:bg-white">
       {/* Thanh bên cố định trên màn hình lớn */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 bg-white lg:flex dark:border-slate-800 dark:bg-slate-900 print:hidden">
-        <div className="px-5 py-5">{logo}</div>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-line bg-surface lg:flex print:hidden">
+        <div className="px-5 py-5">{logo(false)}</div>
         <nav aria-label={t.app.name} className="flex-1 overflow-y-auto px-3 pb-6">
           <ul className="space-y-1">
             {items.map((item) => (
@@ -95,17 +94,17 @@ export function Layout({ section, children }: { section: string; children: React
             ))}
           </ul>
         </nav>
-        <div className="border-t border-slate-200 p-3 dark:border-slate-800">{sideLink(settingsItem)}</div>
+        <div className="border-t border-line p-3">{sideLink(settingsItem)}</div>
       </aside>
 
       <div className="pb-20 lg:pb-0 lg:pl-64 print:p-0">
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur sm:px-6 dark:border-slate-800 dark:bg-slate-900/80 print:hidden">
-          <span className="lg:hidden">{logo}</span>
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-surface/85 px-4 backdrop-blur sm:px-6 print:hidden">
+          <span className="min-w-0 lg:hidden">{logo(true)}</span>
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
             aria-label={t.app.search}
-            className="ml-auto flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 transition hover:border-slate-300 hover:bg-white sm:w-full sm:max-w-md lg:ml-0 dark:border-slate-700 dark:bg-slate-800/60 dark:hover:bg-slate-800"
+            className="ml-auto flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-control border border-line bg-surface-muted text-sm text-fg-subtle transition hover:border-ink-300 hover:text-fg-muted sm:w-full sm:max-w-md sm:justify-start sm:px-3 lg:ml-0 dark:hover:border-ink-600"
           >
             <Search className="h-4 w-4" />
             <span className="hidden flex-1 truncate text-left sm:block">{t.app.search}</span>
@@ -119,10 +118,8 @@ export function Layout({ section, children }: { section: string; children: React
             aria-label={settingsItem.label}
             aria-current={activeKey === 'settings' ? 'page' : undefined}
             className={cx(
-              'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition lg:hidden',
-              activeKey === 'settings'
-                ? 'border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300'
-                : 'border-slate-200 bg-slate-50 text-slate-500 hover:bg-white dark:border-slate-700 dark:bg-slate-800/60',
+              'flex h-10 w-10 shrink-0 items-center justify-center rounded-control border transition lg:hidden',
+              activeKey === 'settings' ? 'border-primary-600 bg-primary-600 text-white' : 'border-line bg-surface-muted text-fg-muted hover:text-fg',
             )}
           >
             <Settings className="h-5 w-5" />
@@ -130,12 +127,13 @@ export function Layout({ section, children }: { section: string; children: React
         </header>
 
         {storageError && (
-          <div role="alert" className="mx-auto max-w-7xl px-4 pt-4 print:hidden sm:px-6 lg:px-8">
-            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-900 dark:border-rose-800 dark:bg-rose-950 dark:text-rose-200">
-              <AlertTriangle className="h-5 w-5 shrink-0" />
-              <span className="flex-1">{t.app.storageFailure}</span>
-              <button type="button" onClick={retryStorage} className="rounded border border-rose-400 px-3 py-1 font-medium hover:bg-rose-100 dark:hover:bg-rose-900">{t.app.retryStorage}</button>
-            </div>
+          <div className="mx-auto max-w-7xl px-4 pt-4 print:hidden sm:px-6 lg:px-8">
+            <Alert role="alert" tone="danger">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="flex-1">{t.app.storageFailure}</span>
+                <Button size="sm" onClick={retryStorage}>{t.app.retryStorage}</Button>
+              </div>
+            </Alert>
           </div>
         )}
         <main key={section} className="mx-auto max-w-7xl animate-rise px-4 py-6 sm:px-6 lg:px-8 lg:py-8 print:max-w-none print:animate-none print:p-0">
@@ -146,7 +144,7 @@ export function Layout({ section, children }: { section: string; children: React
       {/* Thanh điều hướng dưới cùng trên điện thoại và máy tính bảng */}
       <nav
         aria-label={t.app.name}
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/95 print:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden print:hidden"
       >
         {items.map((item) => {
           const active = activeKey === item.key;
@@ -155,12 +153,9 @@ export function Layout({ section, children }: { section: string; children: React
               key={item.key}
               href={item.href}
               aria-current={active ? 'page' : undefined}
-              className={cx(
-                'flex min-h-[3.75rem] flex-col items-center justify-center gap-0.5 px-1 text-[11px] font-medium',
-                active ? 'text-brand-700 dark:text-brand-300' : 'text-slate-500 dark:text-slate-400',
-              )}
+              className={cx('flex min-h-[3.75rem] flex-col items-center justify-center gap-1 px-1 text-[11px] font-medium', active ? 'text-primary-700 dark:text-primary-300' : 'text-fg-muted')}
             >
-              {item.icon}
+              <span className={cx('flex h-7 w-12 items-center justify-center rounded-full transition', active && 'bg-primary-100 dark:bg-primary-500/20')}>{item.icon}</span>
               <span className="max-w-full truncate">{item.short ?? item.label}</span>
             </a>
           );
@@ -172,16 +167,13 @@ export function Layout({ section, children }: { section: string; children: React
       {/* Thông báo */}
       <div className="pointer-events-none fixed bottom-20 right-4 z-[60] flex flex-col items-end gap-2 lg:bottom-4 print:hidden" aria-live="polite">
         {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className="pointer-events-auto flex max-w-sm animate-rise items-center gap-2.5 rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-xl ring-1 ring-white/10 dark:bg-slate-800"
-          >
+          <div key={toast.id} className="pointer-events-auto flex max-w-sm animate-rise items-center gap-2.5 rounded-control bg-ink-900 px-4 py-3 text-sm text-white shadow-raised ring-1 ring-white/10 dark:bg-ink-800">
             {toast.tone === 'error' ? (
-              <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
+              <AlertTriangle className="h-4 w-4 shrink-0 text-danger-400" />
             ) : toast.tone === 'info' ? (
-              <Info className="h-4 w-4 shrink-0 text-sky-400" />
+              <Info className="h-4 w-4 shrink-0 text-info-400" />
             ) : (
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-400" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-primary-300" />
             )}
             {toast.message}
           </div>

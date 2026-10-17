@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Download, Upload } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { backupFileName, backupJson, downloadText, parseBackup } from '../lib/backup';
-import { Button } from './ui';
+import { Button } from '../ui';
 
 /** Hai nút Sao lưu / Khôi phục cho toàn bộ kế hoạch lưu trong trình duyệt. */
 export function PlanBackupButtons() {

@@ -1,0 +1,139 @@
+/*
+ * Kho giao diện CNNN: mã màu dùng chung cho toàn bộ ứng dụng.
+ * Đổi một giá trị ở đây là mọi trang đổi theo. Không dùng mã màu riêng lẻ trong trang.
+ * Mỗi biến là bộ ba R G B để Tailwind thêm được độ trong suốt (vd. bg-primary-500/20).
+ */
+:root {
+  /* Trung tính: chữ, viền, nền */
+  --c-ink-50: 248 250 252;
+  --c-ink-100: 241 245 249;
+  --c-ink-200: 226 232 240;
+  --c-ink-300: 203 213 225;
+  --c-ink-400: 148 163 184;
+  --c-ink-500: 100 116 139;
+  --c-ink-600: 71 85 105;
+  --c-ink-700: 51 65 85;
+  --c-ink-800: 30 41 59;
+  --c-ink-900: 15 23 42;
+  --c-ink-950: 2 6 23;
+  /* Màu chủ đạo (xanh ngọc điều dưỡng) */
+  --c-primary-50: 239 250 248;
+  --c-primary-100: 214 243 238;
+  --c-primary-200: 174 230 221;
+  --c-primary-300: 125 211 198;
+  --c-primary-400: 72 184 169;
+  --c-primary-500: 35 156 142;
+  --c-primary-600: 21 127 116;
+  --c-primary-700: 18 103 95;
+  --c-primary-800: 18 83 77;
+  --c-primary-900: 18 69 65;
+  --c-primary-950: 5 41 38;
+  /* Thông tin */
+  --c-info-50: 240 249 255;
+  --c-info-100: 224 242 254;
+  --c-info-200: 186 230 253;
+  --c-info-300: 125 211 252;
+  --c-info-400: 56 189 248;
+  --c-info-500: 14 165 233;
+  --c-info-600: 2 132 199;
+  --c-info-700: 3 105 161;
+  --c-info-800: 7 89 133;
+  --c-info-900: 12 74 110;
+  --c-info-950: 8 47 73;
+  /* Thành công, đạt mục tiêu */
+  --c-success-50: 236 253 245;
+  --c-success-100: 209 250 229;
+  --c-success-200: 167 243 208;
+  --c-success-300: 110 231 183;
+  --c-success-400: 52 211 153;
+  --c-success-500: 16 185 129;
+  --c-success-600: 5 150 105;
+  --c-success-700: 4 120 87;
+  --c-success-800: 6 95 70;
+  --c-success-900: 6 78 59;
+  --c-success-950: 2 44 34;
+  /* Lưu ý, cần thẩm định */
+  --c-warning-50: 255 251 235;
+  --c-warning-100: 254 243 199;
+  --c-warning-200: 253 230 138;
+  --c-warning-300: 252 211 77;
+  --c-warning-400: 251 191 36;
+  --c-warning-500: 245 158 11;
+  --c-warning-600: 217 119 6;
+  --c-warning-700: 180 83 9;
+  --c-warning-800: 146 64 14;
+  --c-warning-900: 120 53 15;
+  --c-warning-950: 69 26 3;
+  /* Nguy hiểm, xóa, lỗi */
+  --c-danger-50: 255 241 242;
+  --c-danger-100: 255 228 230;
+  --c-danger-200: 254 205 211;
+  --c-danger-300: 253 164 175;
+  --c-danger-400: 251 113 133;
+  --c-danger-500: 244 63 94;
+  --c-danger-600: 225 29 72;
+  --c-danger-700: 190 18 60;
+  --c-danger-800: 159 18 57;
+  --c-danger-900: 136 19 55;
+  --c-danger-950: 76 5 25;
+  /* NANDA-I (chẩn đoán) */
+  --c-nanda-50: 255 241 242;
+  --c-nanda-100: 255 228 230;
+  --c-nanda-200: 254 205 211;
+  --c-nanda-300: 253 164 175;
+  --c-nanda-400: 251 113 133;
+  --c-nanda-500: 244 63 94;
+  --c-nanda-600: 225 29 72;
+  --c-nanda-700: 190 18 60;
+  --c-nanda-800: 159 18 57;
+  --c-nanda-900: 136 19 55;
+  --c-nanda-950: 76 5 25;
+  /* NOC (kết quả) */
+  --c-noc-50: 240 249 255;
+  --c-noc-100: 224 242 254;
+  --c-noc-200: 186 230 253;
+  --c-noc-300: 125 211 252;
+  --c-noc-400: 56 189 248;
+  --c-noc-500: 14 165 233;
+  --c-noc-600: 2 132 199;
+  --c-noc-700: 3 105 161;
+  --c-noc-800: 7 89 133;
+  --c-noc-900: 12 74 110;
+  --c-noc-950: 8 47 73;
+  /* NIC (can thiệp) */
+  --c-nic-50: 236 253 245;
+  --c-nic-100: 209 250 229;
+  --c-nic-200: 167 243 208;
+  --c-nic-300: 110 231 183;
+  --c-nic-400: 52 211 153;
+  --c-nic-500: 16 185 129;
+  --c-nic-600: 5 150 105;
+  --c-nic-700: 4 120 87;
+  --c-nic-800: 6 95 70;
+  --c-nic-900: 6 78 59;
+  --c-nic-950: 2 44 34;
+
+  /* Vai trò bề mặt và chữ: tự đổi theo chế độ sáng/tối */
+  --canvas: 244 247 249;
+  --surface: 255 255 255;
+  --surface-muted: 248 250 252;
+  --line: 226 232 240;
+  --line-soft: 241 245 249;
+  --fg: 15 23 42;
+  --fg-muted: 100 116 139;
+  --fg-subtle: 148 163 184;
+
+  --radius-control: 0.625rem;
+  --radius-card: 1rem;
+}
+
+.dark {
+  --canvas: 2 6 23;
+  --surface: 15 23 42;
+  --surface-muted: 30 41 59;
+  --line: 30 41 59;
+  --line-soft: 30 41 59;
+  --fg: 241 245 249;
+  --fg-muted: 148 163 184;
+  --fg-subtle: 100 116 139;
+}

@@ -10,6 +10,7 @@ import { StandardsPage } from './pages/StandardsPage';
 import { QualityPage } from './pages/QualityPage';
 import { ReferencesPage } from './pages/ReferencesPage';
 import { AssistantPage } from './pages/AssistantPage';
+import { UiKitPage } from './pages/UiKitPage';
 
 const NicReaderPage = lazy(() => import('./pages/NicReaderPage').then(m => ({ default: m.NicReaderPage })));
 
@@ -33,7 +34,7 @@ export function App() {
       page = <LibraryPage query={query} />;
       break;
     case 'nic-reader':
-      page = <Suspense fallback={<div role="status" className="p-5 text-sm text-slate-500">Đang tải nội dung NIC 8…</div>}><NicReaderPage query={query}/></Suspense>;
+      page = <Suspense fallback={<div role="status" className="p-5 text-sm text-ink-500">Đang tải nội dung NIC 8…</div>}><NicReaderPage query={query}/></Suspense>;
       break;
     case 'standards':
       page = <StandardsPage />;
@@ -43,6 +44,9 @@ export function App() {
       break;
     case 'settings':
       page = <SettingsPage />;
+      break;
+    case 'ui':
+      page = <UiKitPage />;
       break;
     case 'quality':
       page = <QualityPage />;

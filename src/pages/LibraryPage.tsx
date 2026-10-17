@@ -8,7 +8,7 @@ import { dataHub } from '../data/dataHub';
 import type { AnyItem } from '../lib/search';
 import { copyText, cx } from '../lib/utils';
 import { DataIssueReport } from '../components/DataIssueReport';
-import { Badge, Button, Card, CodeBadge, Drawer, EmptyState, Input, PageHeader, Segmented, Select, SYSTEM_DOT, Term } from '../components/ui';
+import { Alert, Badge, Button, Card, CodeBadge, Drawer, EmptyState, LinkButton, PageHeader, SearchInput, Segmented, Select, SYSTEM_DOT, Term } from '../ui';
 import { CodeExplanationPanel } from '../components/CodeExplanationPanel';
 
 function useIsDesktop() {
@@ -56,20 +56,16 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
 
   return <>
     <PageHeader title={t.library.title} subtitle="Tra cứu NANDA-I, NOC, NIC theo mã hoặc tên, gõ có dấu hay không dấu đều được. Chọn một mục NIC để đọc định nghĩa và hoạt động NIC 8." />
-    <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-200">
+    <Alert tone="warning" size="sm" className="mb-4">
       {dataHub.translationReview.draft} nhãn tiếng Việt là bản dịch dự thảo, phân lớp NOC đã được bổ sung nhưng chưa đối chiếu sách. Cần chuyên gia thẩm định trước khi dùng làm chuẩn lâm sàng.
-    </p>
+    </Alert>
     <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
       <Segmented value={system} onChange={sys=>{setSystem(sys);setDomain('ALL');setSelected(null);}}
         options={(['nanda','noc','nic'] as const).map(s=>({
           value:s,label:s==='nanda'?'NANDA-I':s.toUpperCase(),
           icon:<span className={cx('h-2 w-2 rounded-full',SYSTEM_DOT[s])}/>,
         }))}/>
-      <div className="relative flex-1">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"/>
-        <Input value={q} onChange={e=>setQ(e.target.value)} placeholder={placeholder} aria-label={placeholder} className="pl-9 pr-9"/>
-        {q&&<button type="button" onClick={()=>setQ('')} aria-label="Xóa nội dung tìm kiếm" className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white">×</button>}
-      </div>
+      <SearchInput value={q} onChange={setQ} placeholder={placeholder} className="flex-1"/>
       {system!=='nic'&&<Select value={domain} onChange={e=>setDomain(e.target.value)} className="lg:w-72">
         <option value="ALL">{t.library.allDomains}</option>
         {system==='nanda'
@@ -79,7 +75,7 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
     </div>
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_30rem]">
       <Card className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3 text-xs text-slate-500 dark:border-slate-800">
+        <div className="flex items-center justify-between border-b border-ink-100 px-5 py-3 text-xs text-ink-500 dark:border-ink-800">
           <span><strong className="font-semibold tabular-nums">{results.length}</strong> {t.app.results}</span>
           <span>{edition}</span>
         </div>
@@ -98,14 +94,14 @@ export function LibraryPage({query}:{query:URLSearchParams}) {
                 {header&&<GroupHeader system={system} item={item}/>}
                 <button type="button" onClick={()=>setSelected(itemKey(item))}
                   className={cx('flex w-full items-center gap-3 border-l-2 px-5 py-2.5 text-left transition',
-                    active?'border-brand-500 bg-brand-50/70 dark:bg-brand-500/10':'border-transparent hover:bg-slate-50 dark:hover:bg-slate-800/40')}>
+                    active?'border-primary-500 bg-primary-50/70 dark:bg-primary-500/10':'border-transparent hover:bg-ink-50 dark:hover:bg-ink-800/40')}>
                   <CodeBadge system={system} code={item.code} className="w-14 justify-center"/>
                   <span className="min-w-0 flex-1"><Term code={item.code} en={item.label}
-                    className="block truncate text-sm text-slate-800 dark:text-slate-200"/>
+                    className="block truncate text-sm text-ink-800 dark:text-ink-200"/>
                     {dataHub.getTranslationMethod(system,item.code)==='rule-draft'&&(
-                      <span className="mt-0.5 block text-[10px] text-amber-600">Bản dịch dự thảo</span>
+                      <span className="mt-0.5 block text-[10px] text-warning-600">Bản dịch dự thảo</span>
                     )}</span>
-                  {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<AlertTriangle className="h-4 w-4 text-amber-500"/>}
+                  {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<AlertTriangle className="h-4 w-4 text-warning-500"/>}
                 </button>
               </li>;
             })}
@@ -125,13 +121,13 @@ function GroupHeader({system,item}:{system:TaxonomySystem;item:AnyItem}) {
   if(system==='nanda'){
     const n=item as NandaItem;
     const d=nandaDomain(n.domainNumber);
-    return <div className="sticky top-0 z-[1] border-y border-slate-100 bg-slate-50/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:border-slate-800 dark:bg-slate-900/95">
+    return <div className="sticky top-0 z-[1] border-y border-ink-100 bg-ink-50/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-500 dark:border-ink-800 dark:bg-ink-900/95">
       {n.domainNumber}.{n.classNumber} · {d?.nameVi} — {term(null,n.className).text}
     </div>;
   }
   const n=item as NocItem;
   const d=nocDomain(n.domainId);
-  return <div className="sticky top-0 z-[1] border-y border-slate-100 bg-slate-50/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:border-slate-800 dark:bg-slate-900/95">
+  return <div className="sticky top-0 z-[1] border-y border-ink-100 bg-ink-50/95 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-ink-500 dark:border-ink-800 dark:bg-ink-900/95">
     {d?.roman}-{n.classLetter} · {d?.nameVi} — {term(null,n.className).text}
   </div>;
 }
@@ -153,23 +149,21 @@ function ItemDetail({system,item,edition}:{system:TaxonomySystem;item:AnyItem;ed
     <div className="flex items-center gap-2">
       <CodeBadge system={system} code={item.code} className="text-sm"/>
       <Badge>{system==='nanda'?'NANDA-I':system.toUpperCase()}</Badge>
-      <span className="text-xs text-slate-500">{edition}</span>
+      <span className="text-xs text-ink-500">{edition}</span>
     </div>
-    <h2 className="mt-3 text-lg font-semibold leading-snug text-slate-900 dark:text-white">{tr.text}</h2>
-    <p className="mt-2 text-xs text-slate-500">Tên gốc để đối chiếu: {item.label}</p>
-    {tr.machine&&<p className="mt-1 text-xs text-amber-600">{t.app.machineTranslatedHint}</p>}
+    <h2 className="mt-3 text-lg font-semibold leading-snug text-fg">{tr.text}</h2>
+    <p className="mt-2 text-xs text-ink-500">Tên gốc để đối chiếu: {item.label}</p>
+    {tr.machine&&<p className="mt-1 text-xs text-warning-600">{t.app.machineTranslatedHint}</p>}
     <dl className="mt-5 space-y-3 text-sm">{rows.map(([label,value])=><div key={label}>
-      <dt className="text-xs text-slate-500">{label}</dt>
-      <dd className="mt-0.5 text-slate-700 dark:text-slate-300">{value}</dd>
+      <dt className="text-xs text-ink-500">{label}</dt>
+      <dd className="mt-0.5 text-ink-700 dark:text-ink-300">{value}</dd>
     </div>)}</dl>
     <CodeExplanationPanel system={system} code={item.code} label={item.label}/>
-    {system==='nic'&&<a href={'#/nic-reader?code='+encodeURIComponent(item.code)}
-      className="mt-3 inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
+    {system==='nic'&&<LinkButton variant="primary" className="mt-3" href={'#/nic-reader?code='+encodeURIComponent(item.code)}>
       Xem định nghĩa và hoạt động NIC 8 →
-    </a>}
-    {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<a href="#/quality"
-      className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-      <AlertTriangle className="mt-0.5 h-4 w-4"/>{t.library.duplicateCode}
+    </LinkButton>}
+    {system==='nanda'&&DUPLICATE_NANDA_CODES.has(item.code)&&<a href="#/quality" className="mt-3 block">
+      <Alert tone="warning" size="sm">{t.library.duplicateCode}</Alert>
     </a>}
     <div className="mt-6 flex flex-wrap gap-2">
       <Button size="sm" icon={<Copy className="h-3.5 w-3.5"/>}
