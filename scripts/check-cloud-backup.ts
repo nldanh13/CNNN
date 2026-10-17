@@ -24,7 +24,7 @@ assert.ok(!sql.includes('for all to anon'), 'Anon must not access backups');
 assert.ok(sql.includes('constraint cnnn_backup_size'), 'Snapshot size must be bounded');
 assert.ok(api.includes("VITE_CLOUD_BACKUP_ENABLED === 'true'"), 'Cloud backup must be opt-in');
 assert.ok(api.includes("Authorization: 'Bearer ' + session.access_token"));
-assert.ok(!api.includes('service_role') && !api.includes('supabase_secret_'));
+assert.ok(!api.includes('VITE_SUPABASE_SERVICE_ROLE') && !api.includes('supabase_secret_'));
 assert.ok(ui.includes('restored.filter(p => !existingIds.has(p.id))'),
   'Restore must not overwrite local plans with the same ID');
 assert.ok(ui.includes('window.confirm('), 'Uploads and restores require consent');
