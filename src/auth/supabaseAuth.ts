@@ -1,3 +1,5 @@
+import { captchaMetadata } from './captchaMetadata';
+
 /**
  * Supabase GoTrue authentication over its documented HTTP API.
  * No backend service key or password is stored in browser storage.
@@ -130,15 +132,6 @@ export async function bootstrapSession(): Promise<AccountSession | null> {
     storeSession(null);
     return null;
   }
-}
-
-/**
- * Supabase GoTrue expects the CAPTCHA token nested under
- * gotrue_meta_security.captcha_token (not a top-level captcha_token).
- * Keep the token out of the request when Turnstile is not yet configured.
- */
-function captchaMetadata(captchaToken?: string) {
-  return captchaToken ? { gotrue_meta_security: { captcha_token: captchaToken } } : {};
 }
 
 export async function signIn(email: string, password: string, captchaToken?: string): Promise<AccountSession> {
