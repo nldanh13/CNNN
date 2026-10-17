@@ -24,7 +24,7 @@ import { nandaDomain, nocDomain } from '../data/taxonomy';
 import { dataHub } from '../data/dataHub';
 import { NOC_SCALES } from '../data/reference';
 import { bmiCategory, computeBmi, cx, formatDate, signed, uid } from '../lib/utils';
-import { Alert, CardBody, SYSTEM_TEXT, Disclosure, Badge, Button, Card, CardHeader, CodeBadge, EmptyState, Field, IconButton, Input, PageHeader, ProgressBar, Select, SYSTEM_DOT, TagInput, Term } from '../ui';
+import { CardBody, SYSTEM_TEXT, Disclosure, Badge, Button, Card, CardHeader, CodeBadge, EmptyState, Field, IconButton, Input, PageHeader, ProgressBar, Select, SYSTEM_DOT, TagInput, Term } from '../ui';
 import { EntryForm } from '../components/EntryForm';
 import { scaleLabel } from '../components/Likert';
 import { NocAssessmentPanel } from '../components/NocAssessmentPanel';
