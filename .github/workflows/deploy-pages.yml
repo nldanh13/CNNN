@@ -65,6 +65,8 @@ jobs:
       - name: Check Turnstile deployment configuration
         env:
           VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+          # OFF until tested with two accounts and recovery procedure.
+          VITE_TOTP_MFA_ENABLED: ${{ vars.VITE_TOTP_MFA_ENABLED }}
         run: |
           # Do not print the public key itself; only confirm whether it is set.
           if [[ -n "${VITE_TURNSTILE_SITE_KEY//[[:space:]]/}" ]]; then
