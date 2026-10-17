@@ -46,7 +46,14 @@ export function AssistantPage() {
   const [evidence, setEvidence] = useState<Record<string, string>>(initial.evidence);
   const [analysis, setAnalysis] = useState<NoteAnalysis | null>(null);
   const [pushing, setPushing] = useState<CareEntry | null>(null);
-  const { toast } = useApp();
+  const { toast, plans, upsertPlan } = useApp();
+  // Chưa có kế hoạch nào thì tạo luôn kế hoạch mới, không cần hỏi chọn.
+  const push = (entry: CareEntry) => {
+    if (plans.length > 0) return setPushing(entry);
+    const plan = newPlan(plans);
+    upsertPlan(plan);
+    openEntryInPlan(entry, plan.id);
+  };
 
   useEffect(() => {
     try { sessionStorage.setItem(STATE_KEY, JSON.stringify({ note, selected, evidence })); } catch { /* bỏ qua */ }
@@ -115,7 +122,7 @@ export function AssistantPage() {
             ) : (
               <ol className="divide-y divide-slate-100 dark:divide-slate-800">
                 {main.map((s, i) => (
-                  <SuggestionCard key={s.rule.code} rank={i + 1} s={s} evidence={evidence} selected={selectedSet} onAddCue={add} onPush={setPushing} defaultOpen={i === 0} />
+                  <SuggestionCard key={s.rule.code} rank={i + 1} s={s} evidence={evidence} selected={selectedSet} onAddCue={add} onPush={push} defaultOpen={i === 0} />
                 ))}
               </ol>
             )}
@@ -405,13 +412,18 @@ function SuggestionCard({ rank, s, evidence, selected, onAddCue, onPush, default
   );
 }
 
+/** Mở biểu mẫu kế hoạch với mục đã điền sẵn từ Trợ lý. */
+function openEntryInPlan(entry: CareEntry, planId: string) {
+  try { sessionStorage.setItem(PREFILL_KEY, JSON.stringify({ ...entry, id: uid('entry') })); } catch { /* bỏ qua */ }
+  navigate(`/plans/${planId}?add=assistant`);
+}
+
 function PushToPlanModal({ entry, onClose }: { entry: CareEntry; onClose: () => void }) {
   const { plans, upsertPlan } = useApp();
   const sorted = [...plans].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   const go = (planId: string) => {
-    try { sessionStorage.setItem(PREFILL_KEY, JSON.stringify({ ...entry, id: uid('entry') })); } catch { /* bỏ qua */ }
     onClose();
-    navigate(`/plans/${planId}?add=assistant`);
+    openEntryInPlan(entry, planId);
   };
   const createAndGo = () => {
     const plan = newPlan(plans);
