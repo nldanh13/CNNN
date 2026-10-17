@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { CloudDownload, CloudUpload, RefreshCw, Trash2 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { useApp } from '../store/AppContext';
-import { backupFileName, backupJson, downloadText } from '../lib/backup';
 import {
   cloudBackupEnabled, createCloudBackup, deleteCloudBackup,
   downloadCloudBackup, listCloudBackups, type CloudBackupSummary,
@@ -62,14 +61,15 @@ export function CloudBackupPanel() {
   const restore = (item: CloudBackupSummary) => {
     if (!window.confirm(
       'Khôi phục ' + item.plan_count + ' kế hoạch từ tài khoản? ' +
-      'Các kế hoạch cùng ID trong thiết bị sẽ được thay bằng nội dung sao lưu. ' +
-      'CNNN sẽ tải một bản JSON hiện tại về máy trước khi khôi phục.',
+      'CNNN chỉ bổ sung kế hoạch chưa có trên thiết bị, không ghi đè các kế hoạch trùng ID.',
     )) return;
     void perform(async () => {
       const restored = await downloadCloudBackup(session, item.id);
-      if (plans.length) downloadText(backupFileName(), backupJson(plans));
-      mergePlans(restored);
-      setMessage('Đã khôi phục ' + restored.length + ' kế hoạch. Dữ liệu trên thiết bị đã được cập nhật.');
+      const existingIds = new Set(plans.map(p => p.id));
+      const additions = restored.filter(p => !existingIds.has(p.id));
+      if (additions.length) mergePlans(additions);
+      setMessage('Đã thêm ' + additions.length + ' kế hoạch. Bỏ qua ' +
+        (restored.length - additions.length) + ' kế hoạch trùng để giữ dữ liệu hiện tại.');
     });
   };
 
